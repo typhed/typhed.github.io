@@ -74,7 +74,7 @@ export function CountdownTimer({ className }: { className?: string }) {
 
   return (
     <div
-      className={cn("flex items-end justify-center gap-2 sm:gap-4", className)}
+      className={cn("flex w-full max-w-full items-end justify-center gap-1.5 sm:gap-4", className)}
       role="timer"
       aria-label="Time remaining until launch"
     >
@@ -84,7 +84,7 @@ export function CountdownTimer({ className }: { className?: string }) {
         return (
           <React.Fragment key={unit.key}>
             <div className="flex flex-col items-center">
-              <div className="group relative grid h-20 w-16 place-items-center overflow-hidden rounded-2xl border border-border/60 bg-card/40 shadow-lg shadow-brand/5 backdrop-blur-xl sm:h-28 sm:w-24">
+              <div className="group relative grid h-20 w-14 place-items-center overflow-hidden rounded-2xl border border-border/60 bg-card/40 shadow-lg shadow-brand/5 backdrop-blur-xl sm:h-28 sm:w-24">
                 <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-brand/70 to-transparent" />
                 <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-transparent dark:from-white/[0.04]" />
                 <AnimatePresence mode="popLayout" initial={false}>
@@ -108,7 +108,7 @@ export function CountdownTimer({ className }: { className?: string }) {
             {index < UNITS.length - 1 ? (
               <span
                 aria-hidden="true"
-                className="mb-7 font-display text-2xl font-light text-brand/50 sm:mb-9 sm:text-4xl"
+                className="hidden font-display text-2xl font-light text-brand/50 sm:mb-9 sm:block sm:text-4xl"
               >
                 :
               </span>
