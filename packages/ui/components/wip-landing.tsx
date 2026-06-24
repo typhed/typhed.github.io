@@ -15,11 +15,11 @@ import { ThemeToggle } from "./theme-toggle"
  */
 export function WipLanding() {
   return (
-    <div className="relative flex min-h-dvh flex-col overflow-x-hidden">
+    <div className="relative flex h-dvh flex-col overflow-hidden">
       <AbstractBackground />
 
       <header className="relative z-10 w-full">
-        <div className="container flex items-center justify-between py-6">
+        <div className="container flex items-center justify-between py-[clamp(0.75rem,2vh,1.5rem)]">
           <a href="/" aria-label={`${SITE.name} home`} className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <BrandMark />
           </a>
@@ -27,8 +27,8 @@ export function WipLanding() {
         </div>
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:px-6">
-        <h1 className="animate-fade-up font-display text-4xl font-semibold leading-[1.05] tracking-tight sm:text-7xl">
+      <main className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-[clamp(1rem,3vh,3rem)] text-center sm:px-6">
+        <h1 className="animate-fade-up font-display text-[clamp(2.25rem,8vmin,4.5rem)] font-semibold leading-[1.05] tracking-tight">
           <span className="sr-only">{SITE.name} - </span>
           <span className="block text-foreground">Engineering</span>
           <span className="block bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent">
@@ -36,15 +36,15 @@ export function WipLanding() {
           </span>
         </h1>
 
-        <p className="mt-7 max-w-xl animate-fade-up text-balance text-base text-muted-foreground sm:text-lg">
+        <p className="mt-[clamp(0.75rem,2.5vh,1.75rem)] max-w-xl animate-fade-up text-balance text-base text-muted-foreground sm:text-lg">
           Something Extraordinary is in the Making!
         </p>
 
-        <CountdownTimer className="mt-12 animate-fade-up" />
+        <CountdownTimer className="mt-[clamp(1rem,4vh,3rem)] animate-fade-up" />
 
-        <LaunchProgress className="mt-10 w-full max-w-md animate-fade-up" />
+        <LaunchProgress className="mt-[clamp(0.75rem,3vh,2.5rem)] w-full max-w-md animate-fade-up" />
 
-        <p className="mt-8 animate-fade-up text-sm text-muted-foreground">
+        <p className="mt-[clamp(0.5rem,2.5vh,2rem)] animate-fade-up text-sm text-muted-foreground">
           Target Launch Date{" "}
           <span className="font-medium text-foreground">{LAUNCH_LABEL}</span>
         </p>

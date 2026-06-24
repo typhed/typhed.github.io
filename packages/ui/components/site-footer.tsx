@@ -17,7 +17,7 @@ const ICONS = {
 export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer className={cn("relative z-10 w-full border-t border-border/40", className)}>
-      <div className="container flex flex-col items-center gap-5 py-8 text-center">
+      <div className="container flex flex-col items-center gap-[clamp(0.5rem,2vh,1.25rem)] py-[clamp(0.75rem,2.5vh,2rem)] text-center">
         <nav aria-label="Contact links" className="flex items-center gap-3">
           {SOCIAL_LINKS.map((link) => {
             const Icon = ICONS[link.icon]

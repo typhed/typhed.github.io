@@ -107,9 +107,9 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${spaceGrotesk.variable}`}
+      className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
     >
-      <body className="min-h-dvh overflow-x-hidden bg-background font-sans text-foreground antialiased">
+      <body className="h-dvh overflow-hidden bg-background font-sans text-foreground antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
