@@ -42,7 +42,7 @@ export function WipLanding() {
         <CountdownTimer className="mt-12 animate-fade-up" />
 
         <p className="mt-10 animate-fade-up text-sm text-muted-foreground">
-          Target launch{" "}
+          Target Launch Date{" "}
           <span className="font-medium text-foreground">{LAUNCH_LABEL}</span>
         </p>
       </main>
