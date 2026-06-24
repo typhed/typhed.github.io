@@ -27,14 +27,6 @@ export function WipLanding() {
       </header>
 
       <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 py-12 text-center">
-        <span className="mb-8 inline-flex animate-fade-up items-center gap-2 rounded-full border border-border/60 bg-background/40 px-4 py-1.5 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground backdrop-blur-md">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand/70 motion-reduce:animate-none" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
-          </span>
-          Work in progress
-        </span>
-
         <h1 className="animate-fade-up font-display text-5xl font-semibold leading-[1.05] tracking-tight sm:text-7xl">
           <span className="sr-only">{SITE.name} - </span>
           <span className="block text-foreground">Engineering</span>
