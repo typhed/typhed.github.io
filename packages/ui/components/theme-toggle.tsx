@@ -23,18 +23,18 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="default"
       size="icon"
       aria-label="Toggle color theme"
       title="Toggle color theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="border-border/60 bg-background/40 backdrop-blur-md transition-transform hover:scale-105 hover:bg-accent/60"
+      className="border border-brand/40 bg-primary text-primary-foreground shadow-lg shadow-brand/30 transition-transform hover:scale-110 hover:bg-primary/90"
     >
       {mounted ? (
         isDark ? (
-          <Sun className="text-brand" />
+          <Sun />
         ) : (
-          <Moon className="text-brand-2" />
+          <Moon />
         )
       ) : (
         <span className="size-4" aria-hidden="true" />
