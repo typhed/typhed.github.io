@@ -20,6 +20,12 @@ export const SITE = {
  */
 export const LAUNCH_DATE = new Date("2027-03-31T18:30:00.000Z")
 
+/**
+ * Start of the journey, used as the 0% point of the launch progress bar:
+ * 2026-05-01 00:00 IST (= 2026-04-30T18:30:00Z).
+ */
+export const LAUNCH_START_DATE = new Date("2026-04-30T18:30:00.000Z")
+
 export const LAUNCH_LABEL = "01 April 2027, 00:00 IST"
 
 export const COPYRIGHT = {

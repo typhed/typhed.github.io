@@ -4,6 +4,7 @@ import { LAUNCH_LABEL, SITE } from "../lib/constants"
 import { AbstractBackground } from "./abstract-background"
 import { BrandMark } from "./brand-mark"
 import { CountdownTimer } from "./countdown-timer"
+import { LaunchProgress } from "./launch-progress"
 import { SiteFooter } from "./site-footer"
 import { ThemeToggle } from "./theme-toggle"
 
@@ -41,7 +42,9 @@ export function WipLanding() {
 
         <CountdownTimer className="mt-12 animate-fade-up" />
 
-        <p className="mt-10 animate-fade-up text-sm text-muted-foreground">
+        <LaunchProgress className="mt-10 w-full max-w-md animate-fade-up" />
+
+        <p className="mt-8 animate-fade-up text-sm text-muted-foreground">
           Target Launch Date{" "}
           <span className="font-medium text-foreground">{LAUNCH_LABEL}</span>
         </p>
