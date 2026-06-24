@@ -1,0 +1,10 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Native postinstall build scripts are opt-in. The static export does not use
+# sharp (images are unoptimized) and the lint import resolver works without its
+# native binary, so both are declined.
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
