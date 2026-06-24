@@ -36,9 +36,7 @@ export function WipLanding() {
         </h1>
 
         <p className="mt-7 max-w-xl animate-fade-up text-balance text-base text-muted-foreground sm:text-lg">
-          We are building something precise and ambitious. The brand homepage of{" "}
-          <span className="font-medium text-foreground">{SITE.legalEntity}</span> is under
-          construction. Here is the countdown to launch.
+          Something Extraordinary is in the Making!
         </p>
 
         <CountdownTimer className="mt-12 animate-fade-up" />
