@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" role="img" aria-label="TyPhed logo">
+  <defs>
+    <linearGradient id="typhed-logo-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="42" height="42" rx="12" fill="none" stroke="url(#typhed-logo-gradient)" stroke-width="2.5" opacity="0.55" />
+  <path d="M14 17 H34" stroke="url(#typhed-logo-gradient)" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M24 17 V33" stroke="url(#typhed-logo-gradient)" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="24" cy="33" r="3.4" fill="url(#typhed-logo-gradient)" />
+  <circle cx="14" cy="17" r="2.6" fill="url(#typhed-logo-gradient)" />
+  <circle cx="34" cy="17" r="2.6" fill="url(#typhed-logo-gradient)" />
+</svg>
