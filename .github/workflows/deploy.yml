@@ -1,8 +1,8 @@
-name: Deploy main site to GitHub Pages
+name: Deploy Main Sire to GitHub Pages
 
 on:
-  push:
-    branches: [master]
+  release:
+    types: [published]
   workflow_dispatch:
 
 # Allow the workflow to publish to GitHub Pages.
@@ -18,14 +18,14 @@ concurrency:
 
 jobs:
   build:
-    name: Build static export
+    name: Build Static Export
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       # Version is read from the "packageManager" field in package.json.
-      - name: Setup pnpm
+      - name: Setup Package Manager (pnpm)
         uses: pnpm/action-setup@v4
 
       - name: Setup Node
@@ -34,13 +34,13 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build apps/web
+      - name: Build apps/web for Release
         run: pnpm --filter web build
 
-      - name: Configure Pages
+      - name: Configure GH Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
@@ -56,6 +56,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy
+      - name: Deploy Artifacts
         id: deployment
         uses: actions/deploy-pages@v4
