@@ -43,6 +43,25 @@ jobs:
       - name: Configure GH Pages
         uses: actions/configure-pages@v5
 
+      # Generate the permalink redirect pages into the static export so the
+      # site and its /permalink/ redirects publish together in one deploy.
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: permalink/requirements.txt
+
+      - name: Install Redirect Generator Dependencies
+        run: python -m pip install --upgrade pip -r requirements.txt
+
+      - name: Generate Permalink Redirects
+        run: >-
+          python permalink/src/build.py
+          --config permalink/config/links.toml
+          --template permalink/src/templates/redirect.jinja
+          --output apps/web/out/permalink
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
