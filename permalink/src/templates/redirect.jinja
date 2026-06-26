@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="{{ target }}" />
+    <meta http-equiv="refresh" content="0; url={{ target }}" />
+    <title>Redirecting…</title>
+    <script>
+      location.replace({{ target | tojson }});
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="{{ target }}">{{ label }}</a>.</p>
+  </body>
+</html>
