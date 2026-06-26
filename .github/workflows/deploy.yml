@@ -53,7 +53,7 @@ jobs:
           cache-dependency-path: permalink/requirements.txt
 
       - name: Install Redirect Generator Dependencies
-        run: python -m pip install --upgrade pip -r requirements.txt
+        run: python -m pip install --upgrade pip -r permalink/requirements.txt
 
       - name: Generate Permalink Redirects
         run: >-

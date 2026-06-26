@@ -46,17 +46,24 @@ def loadLinks(data : pathlib.Path) -> dict[str, dict[str, str]]:
     :param data: Path to the TOML file that declares the redirects under
         a top-level ``[links]`` table.
 
-    :raises AssertionError: If the configuration file does not exist.
+    :raises SystemExit: If the configuration file does not exist, or the
+        loaded TOML document has no top-level ``links`` table.
 
     :rtype:   dict[str, dict[str, str]]
     :returns: The ``links`` table mapping each output filename to its
         redirect entry of string keys and values.
     """
 
-    assert data.is_file(), "Fatal Error: TOML File is Missing."
+    if not data.is_file():
+        raise SystemExit(f"Fatal Error: TOML File is Missing: {data}")
 
     with data.open("rb") as handle:
-        return tomllib.load(handle)["links"]
+        document = tomllib.load(handle)
+
+    try:
+        return document["links"]
+    except KeyError:
+        raise SystemExit(f"Fatal Error: TOML File has no [links] Table: {data}")
 
 
 def main(
