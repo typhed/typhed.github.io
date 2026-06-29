@@ -157,6 +157,10 @@ Once the button works locally, going live takes two things: the production key i
 
 The deployed build needs that Variable. If it is missing, the build stops with `Missing publishableKey` instead of shipping a dead button, which is the safer failure.
 
+**Side note - why a Variable and not a Secret.** The publishable key is not a secret, so there is nothing to hide. Its `NEXT_PUBLIC_` prefix is a Next.js instruction that bakes the value straight into the browser bundle, so it ships to every visitor in the page's JavaScript no matter where you keep it. After deploying you can open `https://typhed.com`, view the page source, and find the `pk_live_` key sitting right there, the same way a Stripe publishable key or a Firebase web config does. Storing it as a Secret would only mask it as `***` in the build logs and imply a secrecy it does not have. GitHub's own guidance matches this: Secrets are for credentials, Variables are for plain configuration.
+
+The key that genuinely must stay hidden is Clerk's **secret key** (`sk_...`), which authenticates server-to-server calls and can read or change your users. This project never uses it, so it belongs nowhere in this repository. What keeps the publishable key safe is not hiding it but Clerk's allowed-domains setting, which makes the production instance answer only requests from `typhed.com`, together with the sign-in itself, neither of which the key can bypass. The one rule to hold onto is about the name, not the storage: never give the `sk_` secret key a `NEXT_PUBLIC_` name, because that would ship it to browsers.
+
 ## Part 10 - Sync Clerk Users To Your Database With Webhooks
 
 Clerk owns the account, but your own features (saved data, roles, billing) need a matching user row in your database. Webhooks keep the two in step: Clerk calls an endpoint of yours whenever a user is created, updated, or deleted, and your code writes that change. The official walkthrough is [Clerk's syncing guide](https://clerk.com/docs/guides/development/webhooks/syncing).
