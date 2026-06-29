@@ -31,7 +31,9 @@ component runs as a React Server Component or ships a client bundle (`"use clien
 | :---: | --- | :---: | :---: |
 | AbstractBackground | [abstract-background.tsx](../../packages/ui/components/abstract-background.tsx) | Server | [abstract-background.md](abstract-background.md) |
 | BrandMark | [brand-mark.tsx](../../packages/ui/components/brand-mark.tsx) | Server | [brand-mark.md](brand-mark.md) |
+| SiteHeader | [site-header.tsx](../../packages/ui/components/site-header.tsx) | Server | [site-header.md](site-header.md) |
 | SiteFooter | [site-footer.tsx](../../packages/ui/components/site-footer.tsx) | Server | [site-footer.md](site-footer.md) |
+| ScrollToTop | [scroll-to-top.tsx](../../packages/ui/components/scroll-to-top.tsx) | Client | [scroll-to-top.md](scroll-to-top.md) |
 | ThemeToggle | [theme-toggle.tsx](../../packages/ui/components/theme-toggle.tsx) | Client | [theme-toggle.md](theme-toggle.md) |
 | ThemeProvider | [theme-provider.tsx](../../packages/ui/components/theme-provider.tsx) | Client | [theme-provider.md](theme-provider.md) |
 | Button | [ui/button.tsx](../../packages/ui/components/ui/button.tsx) | Server | [button.md](button.md) |

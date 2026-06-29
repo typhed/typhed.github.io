@@ -388,16 +388,46 @@ usage:
 
   theme_toggle:
     file: "packages/ui/components/theme-toggle.tsx"
-    fill: "bg-primary, text-primary-foreground"
-    border: "border-brand/40"
-    shadow: "shadow-lg shadow-brand/30  (strong brand-tinted glow at 30%)"
-    hover: "hover:bg-primary/90"
+    description: "A sliding switch with a dual-glyph track and animated knob."
+    track: "border-border, bg-secondary"
+    track_icons: "text-muted-foreground  (both Sun and Moon glyphs at rest)"
+    knob: "bg-primary, text-primary-foreground"
+    knob_animation: "translate-x-0 (light) or translate-x-6 (dark), transition-transform 200ms"
+    hover: "hover:border-brand/50"
 
-  footer_social_icons:
-    file: "packages/ui/components/site-footer.tsx"
-    resting: "text-muted-foreground, border-border/50, bg-background/40, backdrop-blur-md"
-    hover: "hover:border-brand/50 hover:text-brand"
+  header_backdrop:
+    file: "packages/ui/components/site-header.tsx"
+    background: "bg-background/70 with backdrop-blur-md  (translucent blend so content reads behind)"
     top_border: "border-border/40"
+    logo_link_focus: "focus-visible:ring-2 focus-visible:ring-ring"
+    nav_link_resting: "text-muted-foreground"
+    nav_link_hover: "hover:text-foreground"
+    mobile_menu_panel: "bg-background/95 with backdrop-blur-md, border-border/40"
+    mobile_link_hover: "hover:bg-accent hover:text-foreground"
+
+  scroll_to_top:
+    file: "packages/ui/components/scroll-to-top.tsx"
+    description: "A back-to-top button fixed at the bottom-center viewport."
+    button_border_resting: "border-border"
+    button_background: "bg-background/70 with backdrop-blur-md  (translucent frosted glass)"
+    icon_resting: "text-muted-foreground"
+    button_border_hover: "hover:border-brand/50"
+    icon_hover: "hover:text-brand"
+    focus_ring: "ring-ring"
+
+  footer_surface:
+    file: "packages/ui/components/site-footer.tsx"
+    description: "Footer grid with brand column (logo, inline tagline, company links), product and resources nav columns, and contact column."
+    background: "bg-card with gradient-to-b from-brand/5 to-brand-2/5  (faint on-brand wash)"
+    top_border: "border-border"
+    bottom_bar_border: "border-border"
+    column_headings: "text-foreground  (brand column, nav columns, contact, social connect)"
+    nav_link_resting: "text-muted-foreground"
+    nav_link_hover: "hover:text-brand"
+    tagline: "text-foreground for 'Engineering', bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent for 'Tomorrow'  (inline with logo, matches hero wordmark)"
+    secondary_text: "text-muted-foreground  (copyright, legal entity)"
+    social_icon_button_resting: "border-border, bg-background/40, text-muted-foreground"
+    social_icon_button_hover: "border-brand/50, text-brand"
 
   text_selection:
     file: "apps/web/app/globals.css (::selection)"
