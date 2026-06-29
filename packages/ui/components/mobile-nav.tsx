@@ -11,13 +11,17 @@ import { Button } from "./ui/button"
  * hamburger toggle opens a full-width panel below the sticky header that
  * lists the same `NAV_LINKS` plus the Login / Sign Up call-to-action.
  *
+ * The call-to-action is a slot: pass `authSlot` to inject an auth control
+ * (e.g. a Clerk Login / UserButton); when omitted it falls back to a plain
+ * link to `LOGIN_CTA`. Interacting with the slot closes the panel.
+ *
  * Only the open/close state lives here, keeping the rest of the header a
  * Server Component. The panel is anchored to the (sticky, hence
  * positioned) `<header>` via `top-full`. It closes on link click and on
  * Escape; the default closed state matches the server render, so there is
  * no hydration mismatch.
  */
-export function MobileNav() {
+export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
   const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
@@ -62,11 +66,17 @@ export function MobileNav() {
                 {link.label}
               </a>
             ))}
-            <Button asChild variant="default" size="sm" className="mt-2 w-full">
-              <a href={LOGIN_CTA.href} onClick={() => setOpen(false)}>
-                {LOGIN_CTA.label}
-              </a>
-            </Button>
+            {authSlot ? (
+              <div className="mt-2" onClick={() => setOpen(false)}>
+                {authSlot}
+              </div>
+            ) : (
+              <Button asChild variant="default" size="sm" className="mt-2 w-full">
+                <a href={LOGIN_CTA.href} onClick={() => setOpen(false)}>
+                  {LOGIN_CTA.label}
+                </a>
+              </Button>
+            )}
           </nav>
         </div>
       ) : null}

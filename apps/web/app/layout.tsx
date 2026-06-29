@@ -8,6 +8,9 @@ import { SiteHeader } from "@typhed/ui/components/site-header"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 import { SITE } from "@typhed/ui/lib/constants"
 
+import { AuthControls } from "../components/auth-controls"
+import { ClerkClientProvider } from "../components/clerk-provider"
+
 import "./globals.css"
 
 const inter = Inter({
@@ -114,20 +117,33 @@ export default function RootLayout({
       className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
     >
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <AbstractBackground />
-          <div className="relative z-10 flex min-h-dvh flex-col">
-            <SiteHeader />
-            <main className="flex-1">{children}</main>
-            <SiteFooter />
-          </div>
-          <ScrollToTop />
-        </ThemeProvider>
+        {/*
+          The homepage is a static export with no server runtime, so Clerk runs
+          entirely client-side: ClerkClientProvider (a "use client" wrapper) and
+          the control components in AuthControls read the session from Clerk's
+          Frontend API using the publishable key. There is deliberately no
+          middleware and no `auth()` call — those require a server and would
+          break the static export.
+        */}
+        <ClerkClientProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AbstractBackground />
+            <div className="relative z-10 flex min-h-dvh flex-col">
+              <SiteHeader
+                authSlot={<AuthControls />}
+                mobileAuthSlot={<AuthControls className="w-full" />}
+              />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
+            </div>
+            <ScrollToTop />
+          </ThemeProvider>
+        </ClerkClientProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

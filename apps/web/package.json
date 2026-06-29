@@ -11,6 +11,7 @@
     "clean": "rimraf .next out .turbo node_modules"
   },
   "dependencies": {
+    "@clerk/react": "^6.11.1",
     "@typhed/ui": "workspace:*",
     "next": "^15.1.6",
     "react": "^19.0.0",

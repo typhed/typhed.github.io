@@ -38,6 +38,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build apps/web for Release
+        # Public Clerk publishable key, injected from a repository Variable
+        # (not a Secret, since it ships to the browser). See setup.md ->
+        # "Add Login and Sign Up With Clerk".
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
         run: pnpm --filter web build
 
       - name: Configure GH Pages

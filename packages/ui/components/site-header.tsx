@@ -17,8 +17,19 @@ import { Button } from "./ui/button"
  * components: `ThemeToggle` and `MobileNav` (the small-screen menu). Both
  * the desktop nav and the mobile menu read `NAV_LINKS` from
  * `lib/constants.ts`, so the two never drift.
+ *
+ * The call-to-action is a slot: pass `authSlot` (desktop) and
+ * `mobileAuthSlot` (forwarded to `MobileNav`) to inject an auth control such
+ * as a Clerk Login / UserButton. When omitted, both fall back to a plain
+ * link to `LOGIN_CTA`, keeping this package free of any auth dependency.
  */
-export function SiteHeader() {
+export function SiteHeader({
+  authSlot,
+  mobileAuthSlot,
+}: {
+  authSlot?: React.ReactNode
+  mobileAuthSlot?: React.ReactNode
+} = {}) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-md">
       <div className="container flex h-16 items-center justify-between gap-4">
@@ -46,17 +57,21 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <Button
-            asChild
-            variant="default"
-            size="sm"
-            className="hidden md:inline-flex"
-          >
-            <a href={LOGIN_CTA.href}>{LOGIN_CTA.label}</a>
-          </Button>
+          {authSlot ? (
+            <div className="hidden md:flex md:items-center">{authSlot}</div>
+          ) : (
+            <Button
+              asChild
+              variant="default"
+              size="sm"
+              className="hidden md:inline-flex"
+            >
+              <a href={LOGIN_CTA.href}>{LOGIN_CTA.label}</a>
+            </Button>
+          )}
 
           <ThemeToggle />
-          <MobileNav />
+          <MobileNav authSlot={mobileAuthSlot} />
         </div>
       </div>
     </header>
