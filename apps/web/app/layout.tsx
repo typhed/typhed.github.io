@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Space_Grotesk } from "next/font/google"
 
+import { AbstractBackground } from "@typhed/ui/components/abstract-background"
+import { ScrollToTop } from "@typhed/ui/components/scroll-to-top"
+import { SiteFooter } from "@typhed/ui/components/site-footer"
+import { SiteHeader } from "@typhed/ui/components/site-header"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 import { SITE } from "@typhed/ui/lib/constants"
 
@@ -109,14 +113,20 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
     >
-      <body className="h-dvh overflow-hidden bg-background font-sans text-foreground antialiased">
+      <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AbstractBackground />
+          <div className="relative z-10 flex min-h-dvh flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
+          <ScrollToTop />
         </ThemeProvider>
         <script
           type="application/ld+json"

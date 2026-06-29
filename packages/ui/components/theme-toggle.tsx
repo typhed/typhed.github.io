@@ -4,12 +4,14 @@ import * as React from "react"
 import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
-import { Button } from "./ui/button"
+import { cn } from "../lib/utils"
 
 /**
- * Light/dark switch. Renders a neutral placeholder until mounted so the
- * server-rendered markup matches the client and avoids hydration warnings
- * (the resolved theme is only known in the browser).
+ * Light/dark switch styled as a sliding toggle: the track carries a sun and
+ * a moon, and the knob slides to the active side. Until mounted it renders
+ * in the light/sun position so the server markup matches the first client
+ * render (the resolved theme is only known in the browser), then settles to
+ * the real theme — this avoids a hydration mismatch.
  */
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -19,26 +21,40 @@ export function ThemeToggle() {
     setMounted(true)
   }, [])
 
-  const isDark = resolvedTheme === "dark"
+  const isDark = mounted && resolvedTheme === "dark"
 
   return (
-    <Button
-      variant="default"
-      size="icon"
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isDark}
       aria-label="Toggle color theme"
       title="Toggle color theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="border border-brand/40 bg-primary text-primary-foreground shadow-lg shadow-brand/30 transition-transform hover:scale-110 hover:bg-primary/90"
+      className="relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border border-border bg-secondary px-1 ring-offset-background transition-colors hover:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     >
-      {mounted ? (
-        isDark ? (
-          <Sun />
-        ) : (
-          <Moon />
-        )
-      ) : (
-        <span className="size-4" aria-hidden="true" />
-      )}
-    </Button>
+      <Sun
+        className="pointer-events-none absolute left-1.5 h-3.5 w-3.5 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <Moon
+        className="pointer-events-none absolute right-1.5 h-3.5 w-3.5 text-muted-foreground"
+        aria-hidden="true"
+      />
+      <span
+        className={cn(
+          "pointer-events-none relative z-10 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform duration-200",
+          isDark ? "translate-x-6" : "translate-x-0",
+        )}
+      >
+        {mounted ? (
+          isDark ? (
+            <Moon className="h-3.5 w-3.5" aria-hidden="true" />
+          ) : (
+            <Sun className="h-3.5 w-3.5" aria-hidden="true" />
+          )
+        ) : null}
+      </span>
+    </button>
   )
 }

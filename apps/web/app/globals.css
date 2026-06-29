@@ -72,13 +72,22 @@
   html,
   body {
     height: 100%;
-    /* Lock the document to the viewport: the page fits the screen and
-       never scrolls in any direction. */
-    overflow: hidden;
   }
 
   html {
     -webkit-text-size-adjust: 100%;
+    /* Single-page scroll: full-height sections snap gently into view as the
+       visitor scrolls down to the footer. `proximity` (not `mandatory`) never
+       traps the user on a sub-viewport section. */
+    scroll-snap-type: y proximity;
+    /* Offset snap targets and #anchor jumps by the sticky header height. */
+    scroll-padding-top: 4rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {

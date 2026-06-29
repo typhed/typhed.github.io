@@ -131,7 +131,9 @@ target = "https://github.com/typhed/.github/blob/master/.github/CODE_OF_CONDUCT.
 
   * **Change the launch date.** Edit `LAUNCH_DATE` and `LAUNCH_LABEL` in [constants.ts](packages/ui/lib/constants.ts). The
     value is UTC; the current `2027-03-31T18:30:00.000Z` is `01 April 2027, 00:00 IST`.
-  * **Change the brand text or contact links.** Edit `SITE` and `SOCIAL_LINKS` in the same file.
+  * **Change the brand text or contact links.** Edit `SITE`, `SOCIAL_LINKS`, and `CONTACT_EMAIL` in the same file.
+  * **Change the menu bar or footer links.** Edit `NAV_LINKS`, `LOGIN_CTA`, `FOOTER_COLUMNS` (and `COMPANY_LINKS` /
+    `PRODUCT_LINKS` / `RESOURCE_LINKS`), and `PRIVACY_LINK` in [constants.ts](packages/ui/lib/constants.ts).
   * **Change the colors.** The two themes are CSS variables in [globals.css](apps/web/app/globals.css) - light under `:root`,
     dark under `.dark`.
   * **Add or change a redirect.** Edit [links.toml](permalink/config/links.toml); see **Permanent Redirects** above for the table format.
