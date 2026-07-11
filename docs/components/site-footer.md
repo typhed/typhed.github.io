@@ -20,7 +20,7 @@ dark themes automatically.
   * **Source**: [packages/ui/components/site-footer.tsx](../../packages/ui/components/site-footer.tsx)
   * **Data**: `COMPANY_LINKS`, `CONTACT_EMAIL`, `COPYRIGHT`, `FOOTER_COLUMNS`, `PRIVACY_LINK`, and `SOCIAL_LINKS` from
     [lib/constants.ts](../../packages/ui/lib/constants.ts)
-  * **Depends on**: [BrandMark](brand-mark.md)
+  * **Depends on**: [BrandLockup](brand-lockup.md)
 
 ```tsx
 import { SiteFooter } from "@typhed/ui/components/site-footer"
@@ -38,7 +38,8 @@ The root is a `<footer>` with a top border and a faint brand-washed surface. It 
 
 **Top block** (the multi-column grid):
 
-  1. **Brand column** (spans 2 columns on large screens): `BrandMark`, followed by an inline em-dash separator and "Engineering Tomorrow" tagline (using `font-display`, with "Engineering" in `text-foreground` and "Tomorrow" in the brand gradient `bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent`, matching the hero wordmark), followed
+  1. **Brand column** (spans 2 columns on large screens): [BrandLockup](brand-lockup.md) (the official mark plus wordmark
+     plus "Engineering Tomorrow" tagline, sized `w-48 sm:w-56` and theme-matched via the `.dark` class), followed
      by a `<nav aria-label="Company">` list of `COMPANY_LINKS`. Links are quiet at rest (`text-muted-foreground`), brighten on
      hover (`hover:text-brand`).
   2. **Two nav columns** (Product Documentation, TyPhed Resources): each column has a heading (`<h2>`) and a `<nav>` list of links from `FOOTER_COLUMNS`.
@@ -75,8 +76,7 @@ See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 | Column headings | `text-foreground` (emphasized) |
 | Link text (resting) | `text-muted-foreground` |
 | Link text (hover) | `hover:text-brand` |
-| Tagline "Engineering" | `text-foreground` |
-| Tagline "Tomorrow" | `bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent` |
+| Brand lockup | Baked per-theme artwork (mark, wordmark, tagline); see [BrandLockup](brand-lockup.md) |
 | Copyright text | `text-muted-foreground` |
 | Social icon button border (resting) | `border-border` |
 | Social icon button background (resting) | `bg-background/40` |
@@ -119,7 +119,7 @@ export const CONTACT_EMAIL = "pramanik.huf@gmail.com" as const
   * Each nav column has an `aria-label` matching its heading, so screen readers announce the section purpose.
   * The social icon row has `aria-label="Social media"` to label the group.
   * Each social icon button carries `aria-label` and `title` matching its network name, so screen readers announce the link.
-  * The brand mark inside the footer is not wrapped in a link; it is a visual marker of context (already at the bottom).
+  * The brand lockup inside the footer is not wrapped in a link; it is a visual marker of context (already at the bottom). Its two images are decorative, with a single `sr-only` label; see [BrandLockup](brand-lockup.md).
   * All links are real text, readable by screen readers and searchable by engines.
   * The legal entity name is visible text in the copyright bar, not an image.
   * External links use `rel="noopener noreferrer"`, a security and privacy safeguard.

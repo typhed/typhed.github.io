@@ -6,17 +6,18 @@
 
 <div align = "justify">
 
-`BrandMark` is the TyPhed identity: a geometric SVG glyph paired with the "TyPhed" wordmark. The glyph reads as an upward
-node forming a "T", which carries the engineering and forward-motion idea. The glyph fills with the brand gradient, and the
-wordmark uses the display font set by the app theme.
+`BrandMark` is the TyPhed identity: the official brand mark paired with the "TyPhed" wordmark. The mark is the gradient
+glyph shipped as artwork in [apps/web/public/brand/mark](../../apps/web/public/brand/mark); it is a full-colour SVG that
+reads on both themes, so a single file serves light and dark. The wordmark uses the display font set by the app theme.
 
-It is a Server Component. The same shape ships as a standalone file at
-[apps/web/public/logo.svg](../../apps/web/public/logo.svg) for use cases that need a static asset (the manifest icon, for
-example).
+It is a Server Component. The mark is rendered as an `<img>` that references the canonical asset rather than being
+inlined, so the logo artwork lives in exactly one place and is never re-drawn by hand. For the full lockup (mark plus
+wordmark plus tagline) use [BrandLockup](brand-lockup.md) instead.
 
 ## Source And Import
 
   * **Source**: [packages/ui/components/brand-mark.tsx](../../packages/ui/components/brand-mark.tsx)
+  * **Asset**: [apps/web/public/brand/mark/typhed-mark.svg](../../apps/web/public/brand/mark/typhed-mark.svg)
 
 ```tsx
 import { BrandMark } from "@typhed/ui/components/brand-mark"
@@ -26,17 +27,17 @@ import { BrandMark } from "@typhed/ui/components/brand-mark"
 
 | Prop | Type | Default | Description |
 | :---: | :---: | :---: | --- |
-| `showWordmark` | `boolean` | `true` | Render the "TyPhed" wordmark next to the glyph. Set `false` for a glyph-only mark. |
+| `showWordmark` | `boolean` | `true` | Render the "TyPhed" wordmark next to the mark. Set `false` for a mark-only logo. |
 | `className` | `string` | `undefined` | Classes for the outer `inline-flex` wrapper. Use it for sizing and spacing. |
-| `glyphClassName` | `string` | `undefined` | Classes for the `svg` glyph only. Defaults to `h-9 w-9`; override to resize the glyph. |
+| `glyphClassName` | `string` | `undefined` | Classes for the mark `img` only. Defaults to `h-9 w-9`; override to resize the mark. |
+| `markSrc` | `string` | `/brand/mark/typhed-mark.svg` | Path to the mark asset. Override to point at a different served location. |
 
 ## Anatomy
 
 The root is an `inline-flex items-center gap-3` span.
 
-  1. **Glyph**: a `48x48` viewBox `svg` with `role="img"` and an `aria-label` of "TyPhed logo". It defines a diagonal
-     `linearGradient` (`#typhed-brand-gradient`) running from `--brand` to `--brand-2`, then draws a rounded square frame,
-     a horizontal and a vertical stroke forming the "T", and three node dots, all painted with that gradient.
+  1. **Mark**: an `<img>` referencing `markSrc` with an `alt` of "TyPhed logo", sized `h-9 w-9 object-contain` by default.
+     The artwork is the shipped brand mark, so its colours are baked into the file, not read from theme tokens.
   2. **Wordmark** (when `showWordmark` is true): a `font-display` span reading "Ty" in `text-foreground` and "Phed" in
      `text-brand`.
 
@@ -44,49 +45,49 @@ The root is an `inline-flex items-center gap-3` span.
 
 | Element | Token / Class |
 | :---: | :---: |
-| Glyph gradient start | `--brand` |
-| Glyph gradient end | `--brand-2` |
-| Frame stroke | brand gradient at `opacity 0.55` |
+| Mark artwork | Baked brand gradient inside the SVG asset (cyan to indigo family), not a token |
 | Wordmark "Ty" | `text-foreground` |
 | Wordmark "Phed" | `text-brand` |
 
-The gradient direction and stops mirror [logo.svg](../../apps/web/public/logo.svg). The SVG asset uses the hardcoded brand
-hex pair (`#22D3EE` and `#6366F1`) because static files cannot read CSS variables; see the `static_assets` block in
-[colors.yml](../design/colors.yml). Keep the two in sync on any rebrand.
+The mark file carries its own hardcoded brand gradient because a static asset cannot read CSS variables; see the
+`static_assets` block in [colors.yml](../design/colors.yml). Only the wordmark tracks the theme through tokens. Keep the
+mark artwork and the token palette in the same colour family on any rebrand.
 
 ## Examples
 
 ```tsx
-// Default: glyph plus wordmark, used in the header.
+// Default: mark plus wordmark, used in the header.
 <a href="/" aria-label="TyPhed home">
   <BrandMark />
 </a>
 ```
 
 ```tsx
-// Glyph only, resized for a compact slot.
+// Mark only, resized for a compact slot.
 <BrandMark showWordmark={false} glyphClassName="h-6 w-6" />
 ```
 
 ## Accessibility
 
-The glyph is a labelled image (`role="img"`, `aria-label="TyPhed logo"`), so it announces as the logo even when the
-wordmark is hidden. When you place it inside a link, label the link too, as the header does with `aria-label`. The wordmark
-is real text, which also helps search relevance for the brand name.
+The mark is a labelled image (`alt="TyPhed logo"`), so it announces as the logo even when the wordmark is hidden. When you
+place it inside a link, label the link too, as the header does with `aria-label`. The wordmark is real text, which also
+helps search relevance for the brand name.
 
 ## Usage Guidelines
 
-Use `BrandMark` for the brand identity wherever it appears in the app. Resize through `glyphClassName` and `className`
-rather than scaling transforms, so strokes stay crisp. For a favicon or an OG image, use the raster generators in
-[apps/web/app](../../apps/web/app) instead; this component is for in-app rendering.
+Use `BrandMark` for the compact brand identity wherever a mark plus wordmark fits, such as the header. Resize through
+`glyphClassName` and `className` rather than scaling transforms, so the artwork stays crisp. For the full lockup with the
+tagline use [BrandLockup](brand-lockup.md). For a favicon, use the shipped favicon set wired in
+[apps/web/app/layout.tsx](../../apps/web/app/layout.tsx); for the OG image use the raster generator in
+[apps/web/app](../../apps/web/app). This component is for in-app rendering.
 
 ## Do's And Don'ts
 
 | Do | Don't |
 | --- | --- |
-| Resize with `glyphClassName` / `className`. | Wrap it in a `scale-*` transform that blurs strokes. |
-| Keep the gradient on `--brand` to `--brand-2`. | Recolor the glyph with hardcoded hex. |
-| Label the wrapping link when you make it clickable. | Rely on the glyph alone for a link's accessible name. |
-| Sync changes with [logo.svg](../../apps/web/public/logo.svg). | Edit one mark and leave the other stale. |
+| Resize with `glyphClassName` / `className`. | Wrap it in a `scale-*` transform that blurs the artwork. |
+| Point `markSrc` at a served brand asset. | Inline or re-draw the mark by hand. |
+| Label the wrapping link when you make it clickable. | Rely on the mark alone for a link's accessible name. |
+| Keep the mark artwork in the brand colour family. | Recolor the shipped asset out of sync with the tokens. |
 
 </div>

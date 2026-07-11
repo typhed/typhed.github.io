@@ -20,7 +20,7 @@ import {
   type SocialLink,
 } from "../lib/constants"
 import { cn } from "../lib/utils"
-import { BrandMark } from "./brand-mark"
+import { BrandLockup } from "./brand-lockup"
 
 /**
  * Resolves the `icon` name stored on each `SOCIAL_LINKS` entry to its lucide
@@ -62,20 +62,9 @@ export function SiteFooter({ className }: { className?: string }) {
       <div className="container py-16">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
           <div className="sm:col-span-2 lg:col-span-2">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <BrandMark />
-              <span aria-hidden="true" className="text-muted-foreground">
-                —
-              </span>
-              {/* Matches the hero wordmark: "Engineering" in foreground,
-                  "Tomorrow" in the brand gradient. */}
-              <span className="font-display text-sm font-semibold tracking-tight">
-                <span className="text-foreground">Engineering </span>
-                <span className="bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent">
-                  Tomorrow
-                </span>
-              </span>
-            </div>
+            {/* The official lockup: mark + wordmark + "Engineering Tomorrow"
+                tagline, in the theme-matched artwork. */}
+            <BrandLockup className="w-48 sm:w-56" />
             <nav
               aria-label="Company"
               className="mt-6 flex flex-col gap-3"

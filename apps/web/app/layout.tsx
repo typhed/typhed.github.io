@@ -47,6 +47,28 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [
+      { url: "/brand/favicon/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/favicon/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/brand/favicon/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+    ],
+    shortcut: ["/brand/favicon/favicon.ico"],
+    apple: [
+      { url: "/brand/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/brand/favicon/safari-pinned-tab.svg",
+        color: "#6366f1",
+      },
+    ],
+  },
+  other: {
+    "msapplication-TileColor": "#0b1020",
+    "msapplication-config": "/brand/favicon/browserconfig.xml",
+  },
   openGraph: {
     type: "website",
     url: SITE.url,
@@ -92,7 +114,7 @@ const jsonLd = {
       legalName: SITE.legalEntity,
       alternateName: [SITE.legalEntity, "Debmalya Pramanik"],
       url: SITE.url,
-      logo: `${SITE.url}/logo.svg`,
+      logo: `${SITE.url}/brand/mark/typhed-mark-1024.png`,
       slogan: SITE.tagline,
       description: SITE.description,
     },

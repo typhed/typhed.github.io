@@ -32,11 +32,10 @@
 #  2) STATIC / RASTER ASSET COLORS  (hardcoded hex, NOT theme-aware)
 #     - These are baked at build time and cannot read CSS variables, so they
 #       carry their own literal hex codes that only APPROXIMATE the dark theme:
-#         apps/web/app/icon.tsx             (favicon, 32x32 PNG)
 #         apps/web/app/opengraph-image.tsx  (1200x630 social card)
 #         apps/web/app/manifest.ts          (PWA background_color / theme_color)
-#         apps/web/app/layout.tsx           (viewport.themeColor meta)
-#         apps/web/public/logo.svg          (standalone SVG logo)
+#         apps/web/app/layout.tsx           (viewport.themeColor + tile meta)
+#         apps/web/public/brand/            (mark, lockup, favicon artwork)
 #     - IMPORTANT: these do NOT equal the HSL token hexes exactly. They use the
 #       clean Tailwind palette hexes (#22D3EE, #6366F1) and a dedicated brand
 #       navy (#0B1020) that is distinct from the dark --background (#080C1C).
@@ -301,21 +300,21 @@ static_assets:
     to:   "#6366F1"           # indigo (Tailwind indigo-500) == light brand, nominal
     direction: "linear-gradient(135deg, ...)"
     used_in:
-      - "apps/web/app/icon.tsx (favicon background)"
       - "apps/web/app/opengraph-image.tsx (logo chip)"
-      - "apps/web/public/logo.svg (#typhed-logo-gradient stops)"
     note: >
       These two hexes are the 'pure' brand colors. The live site renders the
       HSL tokens instead (#20D3EE / #806EF7 in dark, #6467F2 / #11C3DF in
-      light), so the favicon/logo cyan is very slightly brighter than the
-      on-page cyan. Acceptable, but keep the family identical on rebrand.
+      light), so the OG-card cyan is very slightly brighter than the on-page
+      cyan. Acceptable, but keep the family identical on rebrand. The shipped
+      logo artwork in apps/web/public/brand (mark, lockup, favicon) is the
+      master brand identity and bakes a richer multi-stop gradient in the same
+      cyan->indigo family; keep it in that family on any rebrand.
 
   brand_navy:
     hex: "#0B1020"
     used_in:
       - "apps/web/app/manifest.ts (background_color, theme_color)"
-      - "apps/web/app/layout.tsx (viewport.themeColor dark)"
-      - "apps/web/app/icon.tsx (the 'T' glyph ink)"
+      - "apps/web/app/layout.tsx (viewport.themeColor dark, msapplication-TileColor)"
       - "apps/web/app/opengraph-image.tsx (canvas gradient start, logo ink)"
     note: >
       Dedicated 'brand navy'. NOTE it is NOT the dark --background token
@@ -355,10 +354,15 @@ usage:
     appears_in:
       - "'Tomorrow' headline (bg-clip-text text-transparent) - wip-landing.tsx"
       - "Launch progress bar fill - launch-progress.tsx"
-    glyph_variant:
-      description: "Diagonal 2-stop brand->brand-2 gradient inside the SVG logo."
-      defs: "linearGradient #typhed-brand-gradient: stop 0% hsl(var(--brand)) -> stop 100% hsl(var(--brand-2))"
-      file: "packages/ui/components/brand-mark.tsx"
+    mark_and_lockup_assets:
+      description: >
+        The header/footer logo is the shipped artwork, not an inline SVG.
+        BrandMark renders /brand/mark/typhed-mark.svg; BrandLockup renders the
+        per-theme /brand/lockup files. Their gradients are baked into the assets
+        (see static_assets); only the BrandMark wordmark uses tokens.
+      files:
+        - "packages/ui/components/brand-mark.tsx"
+        - "packages/ui/components/brand-lockup.tsx"
 
   abstract_background:
     file: "packages/ui/components/abstract-background.tsx"
@@ -417,14 +421,14 @@ usage:
 
   footer_surface:
     file: "packages/ui/components/site-footer.tsx"
-    description: "Footer grid with brand column (logo, inline tagline, company links), product and resources nav columns, and contact column."
+    description: "Footer grid with brand column (BrandLockup, company links), product and resources nav columns, and contact column."
     background: "bg-card with gradient-to-b from-brand/5 to-brand-2/5  (faint on-brand wash)"
     top_border: "border-border"
     bottom_bar_border: "border-border"
     column_headings: "text-foreground  (brand column, nav columns, contact, social connect)"
     nav_link_resting: "text-muted-foreground"
     nav_link_hover: "hover:text-brand"
-    tagline: "text-foreground for 'Engineering', bg-gradient-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent for 'Tomorrow'  (inline with logo, matches hero wordmark)"
+    brand_lockup: "BrandLockup - per-theme baked artwork (mark + wordmark + 'Engineering Tomorrow' tagline); see brand-lockup.tsx"
     secondary_text: "text-muted-foreground  (copyright, legal entity)"
     social_icon_button_resting: "border-border, bg-background/40, text-muted-foreground"
     social_icon_button_hover: "border-brand/50, text-brand"
@@ -464,11 +468,10 @@ change_guide:
     - "2. Map it under theme.extend.colors in packages/config-tailwind/tailwind.config.js as 'hsl(var(--token))'."
     - "3. Then use bg-token / text-token etc. in components."
   when_changing_brand_colors_also_update_static_assets:
-    - "apps/web/app/icon.tsx            (gradient #22D3EE/#6366F1, ink #0B1020)"
     - "apps/web/app/opengraph-image.tsx (all hardcoded hexes listed above)"
-    - "apps/web/public/logo.svg         (#typhed-logo-gradient stops)"
     - "apps/web/app/manifest.ts         (#0B1020 background/theme color)"
-    - "apps/web/app/layout.tsx          (viewport.themeColor light #F8FAFC / dark #0B1020)"
+    - "apps/web/app/layout.tsx          (viewport.themeColor light #F8FAFC / dark #0B1020, tile color)"
+    - "apps/web/public/brand/           (mark, lockup, favicon artwork - master brand files)"
     - "Reason: raster/SVG/meta colors can't read CSS vars; they drift silently."
   alpha_convention:
     - "Opacity is applied with the /NN suffix (e.g. bg-brand/20, border-border/60)."

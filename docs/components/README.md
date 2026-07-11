@@ -31,6 +31,7 @@ component runs as a React Server Component or ships a client bundle (`"use clien
 | :---: | --- | :---: | :---: |
 | AbstractBackground | [abstract-background.tsx](../../packages/ui/components/abstract-background.tsx) | Server | [abstract-background.md](abstract-background.md) |
 | BrandMark | [brand-mark.tsx](../../packages/ui/components/brand-mark.tsx) | Server | [brand-mark.md](brand-mark.md) |
+| BrandLockup | [brand-lockup.tsx](../../packages/ui/components/brand-lockup.tsx) | Server | [brand-lockup.md](brand-lockup.md) |
 | SiteHeader | [site-header.tsx](../../packages/ui/components/site-header.tsx) | Server | [site-header.md](site-header.md) |
 | SiteFooter | [site-footer.tsx](../../packages/ui/components/site-footer.tsx) | Server | [site-footer.md](site-footer.md) |
 | ScrollToTop | [scroll-to-top.tsx](../../packages/ui/components/scroll-to-top.tsx) | Client | [scroll-to-top.md](scroll-to-top.md) |
