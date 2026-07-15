@@ -1,0 +1,13 @@
+# Normalise line endings: LF in the repository for every text file, so the
+# Ubuntu CI runner, shell scripts, and YAML stay consistent across Windows.
+* text=auto eol=lf
+
+# Binary assets should never be normalised.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

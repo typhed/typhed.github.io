@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Images are exported unoptimised, so sharp's native build is not needed.
+allowBuilds:
+  sharp: false
