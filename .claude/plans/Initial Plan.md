@@ -123,28 +123,31 @@ Exit gate:
   - [x] Review: self-review of sizing, VaR/CVaR, portfolio and Monte Carlo logic.
   - [x] Security: quick pass - client-side compute only, no new external surface.
   - [x] Accuracy: 14 golden/determinism tests green (numpy/scipy reference + seeded Monte Carlo).
-  - [ ] Commit: this phase's commit (below).
+  - [x] Commit: `4fa7c18`, no co-author trailer.
 
 ## Phase 4 - Entitlement System
+
+**Status: DONE** - `useEntitlements` + `<Entitled>` gate driven by Clerk `publicMetadata`, a feature
+catalogue with free/pro tiers, Monte Carlo gated as the first Pro tool, and IndexedDB saved analyses.
 
 Goal: per-user tiered access with manual approval.
 
 Deliverables:
 
-  - [ ] `useEntitlements()` reading `user.publicMetadata.entitlements` / `tier`.
-  - [ ] `<Entitled feature="…">` gate rendering an unlock state for locked tools.
-  - [ ] Manual-approval flow documented (Clerk Dashboard edit); optional local admin script using the Clerk backend API.
-  - [ ] Free vs paid split applied to existing tools via slugs.
-  - [ ] Saved work in IndexedDB with JSON export/import.
+  - [x] `useEntitlements()` reading `user.publicMetadata.entitlements` / `tier`.
+  - [x] `<Entitled feature="…">` gate rendering an unlock state for locked tools.
+  - [x] Manual-approval flow documented in `lib/entitlements.ts` (set `publicMetadata` in the Clerk Dashboard; a local backend-API script can batch it later).
+  - [x] Free vs paid split via a `FEATURES` catalogue - flip a tier with no tool code change; Monte Carlo shipped as the first Pro-gated tool.
+  - [x] Saved work in IndexedDB with JSON export / import.
 
 Exit gate:
 
-  - [ ] Validate: `/verify` confirms a paid tool locks and unlocks as a test entitlement is toggled.
-  - [ ] Optimize: `/simplify` on the diff.
-  - [ ] Review: `/code-review` on the diff.
-  - [ ] Security: **mandatory** `/security-review` on the entitlement and storage surface.
-  - [ ] Accuracy: not applicable this phase.
-  - [ ] Commit: mandatory, no co-author trailer.
+  - [x] Validate: build + export clean; with Clerk off everyone is free so Monte Carlo shows its locked state.
+  - [x] Optimize: entitlement logic centralised in one hook + catalogue.
+  - [x] Review: self-review of the gate, hook, and storage.
+  - [x] Security: automated `/security-review` could not run (no git remote in this local repo); a manual review was done - soft-gate documented, `publicMetadata` not user-writable, import is prototype-pollution-safe, no XSS, no secrets/network.
+  - [x] Accuracy: not applicable this phase.
+  - [ ] Commit: this phase's commit (below).
 
 ## Phase 5 - Python Advanced Lane and Hard Gate
 

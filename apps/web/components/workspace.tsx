@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Save } from "lucide-react";
 import {
   aggregate,
   autoDetectMapping,
@@ -10,6 +10,7 @@ import {
   inferBaseIntervalSeconds,
   parseCsv,
   parseXlsx,
+  validateCandles,
   type ColumnMapping,
   type DatasetResult,
   type ParsedTable,
@@ -33,6 +34,13 @@ import { Segmented } from "@/components/tools/controls";
 import { PositionSizer } from "@/components/tools/position-sizer";
 import { RiskDashboard } from "@/components/tools/risk-dashboard";
 import { MonteCarlo } from "@/components/tools/monte-carlo";
+import { SavedAnalyses } from "@/components/tools/saved-analyses";
+import { Entitled } from "@/components/entitlement-gate";
+import {
+  saveAnalysis,
+  toSavedAnalysis,
+  type SavedAnalysis,
+} from "@/lib/storage";
 
 const SECONDS_PER_YEAR = 31557600; // 365.25 days
 
@@ -105,6 +113,24 @@ export function Workspace() {
     setError(null);
   }
 
+  function loadSaved(analysis: SavedAnalysis) {
+    const validated = validateCandles(analysis.candles);
+    setDataset({ ...validated, mappingIssues: [] });
+    setFileName(analysis.name);
+    setTimeframeId(baseTimeframe(inferBaseIntervalSeconds(validated.candles)).id);
+    setView("chart");
+    setStep("chart");
+  }
+
+  async function saveCurrent() {
+    if (!dataset) return;
+    const name = window.prompt("Name this analysis", fileName || "Untitled");
+    if (!name) return;
+    await saveAnalysis(
+      toSavedAnalysis(name, fileName, [...dataset.candles], dataset.stats.hasVolume),
+    );
+  }
+
   const base = React.useMemo(
     () =>
       dataset ? baseTimeframe(inferBaseIntervalSeconds(dataset.candles)) : null,
@@ -134,6 +160,7 @@ export function Workspace() {
       <div className="container py-16">
         <WorkspaceIntro />
         <UploadPanel onFile={handleFile} error={error} />
+        <SavedAnalyses onLoad={loadSaved} />
       </div>
     );
   }
@@ -164,6 +191,10 @@ export function Workspace() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={saveCurrent}>
+              <Save className="h-4 w-4" />
+              Save
+            </Button>
             <Button variant="outline" size="sm" onClick={reset}>
               <RefreshCw className="h-4 w-4" />
               New file
@@ -212,7 +243,11 @@ export function Workspace() {
 
         {view === "sizing" && <PositionSizer />}
 
-        {view === "montecarlo" && <MonteCarlo />}
+        {view === "montecarlo" && (
+          <Entitled feature="montecarlo">
+            <MonteCarlo />
+          </Entitled>
+        )}
       </div>
     );
   }
