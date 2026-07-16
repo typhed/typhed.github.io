@@ -16,6 +16,7 @@ import { IpoGmp } from "@/components/tools/ipo/ipo-gmp";
 import { IpoFinancials } from "@/components/tools/ipo/ipo-financials";
 import { IpoApplications } from "@/components/tools/ipo/ipo-applications";
 import { IpoEditPanel } from "@/components/tools/ipo/ipo-edit-panel";
+import { MembersOnly } from "@/components/tools/members-gate";
 
 export function IpoDashboard() {
   const [data, setData] = React.useState<IpoDataset>(DEFAULT_IPO_DATASET);
@@ -180,14 +181,19 @@ export function IpoDashboard() {
         />
       </div>
 
-      <IpoApplications
-        applications={data.applications}
-        subscription={data.subscription}
-        metrics={appMetrics}
-        lotSize={data.meta.lotSize}
-        onApplicationsChange={(applications) => setData((prev) => ({ ...prev, applications }))}
-        onSubscriptionChange={(subscription) => setData((prev) => ({ ...prev, subscription }))}
-      />
+      <MembersOnly
+        title="IPO Application Tracker"
+        description="Track applications and their contributors; allotment probability is estimated per SEBI rules."
+      >
+        <IpoApplications
+          applications={data.applications}
+          subscription={data.subscription}
+          metrics={appMetrics}
+          lotSize={data.meta.lotSize}
+          onApplicationsChange={(applications) => setData((prev) => ({ ...prev, applications }))}
+          onSubscriptionChange={(subscription) => setData((prev) => ({ ...prev, subscription }))}
+        />
+      </MembersOnly>
 
       <p className="text-xs text-muted-foreground">
         Your edits stay in this browser and in the JSON file you download - nothing is uploaded. GMP and
