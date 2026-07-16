@@ -10,6 +10,7 @@ export type FeatureId =
   | "sizer"
   | "risk-basic"
   | "montecarlo"
+  | "advanced"
   | "risk-parity";
 
 export type Tier = "free" | "pro";
@@ -31,6 +32,7 @@ export const FEATURES: Record<FeatureId, FeatureMeta> = {
   sizer: { id: "sizer", label: "Position sizer", tier: "free" },
   "risk-basic": { id: "risk-basic", label: "Risk summary", tier: "free" },
   montecarlo: { id: "montecarlo", label: "Monte Carlo", tier: "pro" },
+  advanced: { id: "advanced", label: "Advanced analytics", tier: "pro" },
   "risk-parity": { id: "risk-parity", label: "Risk parity", tier: "pro" },
 };
 

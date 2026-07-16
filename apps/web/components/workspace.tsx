@@ -34,6 +34,7 @@ import { Segmented } from "@/components/tools/controls";
 import { PositionSizer } from "@/components/tools/position-sizer";
 import { RiskDashboard } from "@/components/tools/risk-dashboard";
 import { MonteCarlo } from "@/components/tools/monte-carlo";
+import { AdvancedAnalytics } from "@/components/tools/advanced-analytics";
 import { SavedAnalyses } from "@/components/tools/saved-analyses";
 import { Entitled } from "@/components/entitlement-gate";
 import {
@@ -44,13 +45,14 @@ import {
 
 const SECONDS_PER_YEAR = 31557600; // 365.25 days
 
-type WorkspaceView = "chart" | "risk" | "sizing" | "montecarlo";
+type WorkspaceView = "chart" | "risk" | "sizing" | "montecarlo" | "advanced";
 
 const VIEW_OPTIONS: ReadonlyArray<{ value: WorkspaceView; label: string }> = [
   { value: "chart", label: "Chart" },
   { value: "risk", label: "Risk" },
   { value: "sizing", label: "Position sizer" },
   { value: "montecarlo", label: "Monte Carlo" },
+  { value: "advanced", label: "Advanced (Python)" },
 ];
 
 type Step = "upload" | "map" | "chart";
@@ -246,6 +248,12 @@ export function Workspace() {
         {view === "montecarlo" && (
           <Entitled feature="montecarlo">
             <MonteCarlo />
+          </Entitled>
+        )}
+
+        {view === "advanced" && (
+          <Entitled feature="advanced">
+            <AdvancedAnalytics candles={dataset.candles} />
           </Entitled>
         )}
       </div>

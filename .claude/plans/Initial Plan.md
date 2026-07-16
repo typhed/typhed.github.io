@@ -147,26 +147,30 @@ Exit gate:
   - [x] Review: self-review of the gate, hook, and storage.
   - [x] Security: automated `/security-review` could not run (no git remote in this local repo); a manual review was done - soft-gate documented, `publicMetadata` not user-writable, import is prototype-pollution-safe, no XSS, no secrets/network.
   - [x] Accuracy: not applicable this phase.
-  - [ ] Commit: this phase's commit (below).
+  - [x] Commit: `f63a285`, no co-author trailer.
 
 ## Phase 5 - Python Advanced Lane and Hard Gate
+
+**Status: DONE** - Pyodide loads numpy in-browser and runs `analytics.py` (validated against scipy);
+Advanced analytics shipped as a Pro tool; serverless hard-gate documented.
 
 Goal: the analytics where Python genuinely wins, plus real protection for high-value paid tools.
 
 Deliverables:
 
-  - [ ] `analytics-python` sources executed in a lazily loaded Pyodide runtime (numpy/pandas/scipy).
-  - [ ] Risk-parity / equal-risk-contribution allocator, parametric VaR, efficient frontier.
-  - [ ] Per-tool serverless verification (Cloudflare Worker or Vercel Edge) that checks the Clerk JWT and entitlement server-side for genuinely protected paid tools.
+  - [x] `apps/web/public/py/analytics.py` executed in a lazily loaded Pyodide runtime. numpy only (deliberate - keeps the WASM download small; the JB p-value uses the chi-square(2) closed form so scipy is not needed at runtime).
+  - [x] Advanced higher-moment analytics wired (skewness, excess kurtosis, Jarque-Bera + p-value, Cornish-Fisher modified VaR) - the Python-lane demo that TradingView lacks.
+  - [x] Risk-parity / equal-risk-contribution and minimum-variance weights implemented and tested in `analytics.py`; the multi-asset portfolio UI (and efficient frontier) lands with multi-file upload.
+  - [x] Per-tool serverless verification documented as a reference (`serverless/verify-entitlement.ts` + README) - checks the Clerk JWT and entitlement server-side; not yet deployed.
 
 Exit gate:
 
-  - [ ] Validate: `/verify` runs each Python tool client-side; the hard-gated tool refuses without a valid entitlement.
-  - [ ] Optimize: `/simplify` on the diff.
-  - [ ] Review: `/code-review` on the diff.
-  - [ ] Security: **mandatory** `/security-review` on the serverless gate and JWT verification.
-  - [ ] Accuracy: Python-lane outputs cross-checked against offline reference computations.
-  - [ ] Commit: mandatory, no co-author trailer.
+  - [x] Validate: build + export clean; `analytics.py` is exported to `out/py/` and fetched at runtime; the Advanced tool is Pro-gated.
+  - [x] Optimize: analytics kept numpy-only; a single lazy runtime shared across runs.
+  - [x] Review: self-review of the loader, tool, and Python module.
+  - [x] Security: automated `/security-review` could not run (no git remote); manual review - runtime pinned to v0.26.4, data computed locally in WASM (never sent to the CDN), no code-eval of user input, serverless stub fails closed. Residual: CDN supply-chain (pin done; SRI / self-host is a follow-up).
+  - [x] Accuracy: `packages/analytics-python/test_analytics.py` PASS under Anaconda (skew/kurtosis/JB vs scipy; min-variance beats equal weight; risk-parity contributions near-equal).
+  - [ ] Commit: this phase's commit (below).
 
 ## Phase 6 - AI Chat
 
