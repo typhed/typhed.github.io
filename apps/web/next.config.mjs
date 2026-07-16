@@ -17,6 +17,8 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Internal TS packages are shipped as source and compiled by Next.
+  transpilePackages: ["@typhed/chart-engine"],
 };
 
 export default nextConfig;

@@ -1,0 +1,32 @@
+{
+  "base_interval_seconds": 60,
+  "assumed_timezone": "UTC",
+  "base_rows": 1435,
+  "timeframes": [
+    {
+      "id": "5m",
+      "alias": "5min",
+      "candles": 287
+    },
+    {
+      "id": "15m",
+      "alias": "15min",
+      "candles": 96
+    },
+    {
+      "id": "1h",
+      "alias": "1h",
+      "candles": 24
+    },
+    {
+      "id": "4h",
+      "alias": "4h",
+      "candles": 7
+    },
+    {
+      "id": "1D",
+      "alias": "1D",
+      "candles": 2
+    }
+  ]
+}

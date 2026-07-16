@@ -3,5 +3,7 @@ packages:
   - "packages/*"
 
 # Images are exported unoptimised, so sharp's native build is not needed.
+# esbuild's install step links the platform binary that vitest/vite use.
 allowBuilds:
+  esbuild: true
   sharp: false
