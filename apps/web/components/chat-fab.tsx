@@ -4,11 +4,11 @@ import * as React from "react";
 import { MessageCircle, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { ChatPanel } from "@/components/chat/chat-panel";
 
 /**
- * Bottom-right floating chat launcher. Placeholder for now: AI features,
- * chatting, and prompts are developed in a later phase. The panel only shows a
- * "coming soon" note.
+ * Bottom-right floating chat launcher. Opens the assistant panel, which is a
+ * working chat UI shell wired for a future AI backend (see ChatPanel).
  */
 export function ChatFab() {
   const [open, setOpen] = React.useState(false);
@@ -16,16 +16,8 @@ export function ChatFab() {
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div
-          role="dialog"
-          aria-label="AI assistant"
-          className="w-72 animate-fade-up rounded-lg border border-border bg-card p-4 shadow-lg"
-        >
-          <p className="font-display text-sm font-semibold">TyPhed Assistant</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            AI-driven analysis and prompts are on the way. This panel will host
-            the assistant in a future release.
-          </p>
+        <div role="dialog" aria-label="AI assistant" className="animate-fade-up">
+          <ChatPanel />
         </div>
       )}
 
