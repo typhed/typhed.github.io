@@ -10,9 +10,21 @@
  * reads named fields and rebuilds a fresh dataset.
  */
 
-import type { IpoDataset, IpoMeta } from "./types";
-import { SCHEMA_VERSION } from "./types";
-import { makeFinancialRow, makeGmpRow, makeMilestone } from "./defaults";
+import type { ApplicationType, IpoDataset, IpoMeta, SubscriptionCategory } from "./types";
+import {
+  APPLICATION_CATEGORIES,
+  APPLICATION_TYPES,
+  SCHEMA_VERSION,
+  SUBSCRIPTION_CATEGORIES,
+} from "./types";
+import {
+  makeApplication,
+  makeContributor,
+  makeFinancialRow,
+  makeGmpRow,
+  makeMilestone,
+  makeSubscriptionRow,
+} from "./defaults";
 
 export type ParseResult =
   | { ok: true; data: IpoDataset }
@@ -23,6 +35,7 @@ export function serializeIpoDataset(data: IpoDataset): string {
   const clean = {
     meta: {
       companyName: data.meta.companyName,
+      applicationType: data.meta.applicationType,
       lotSize: data.meta.lotSize,
       priceBand: { min: data.meta.priceBand.min, max: data.meta.priceBand.max },
       currency: data.meta.currency,
@@ -38,6 +51,20 @@ export function serializeIpoDataset(data: IpoDataset): string {
       pat: f.pat,
     })),
     gmp: data.gmp.map((g) => ({ date: g.date, value: g.value })),
+    applications: data.applications.map((a) => ({
+      name: a.name,
+      category: a.category,
+      allotted: a.allotted,
+      allotment: {
+        quantityAllotted: a.allotment.quantityAllotted,
+        sellingPrice: a.allotment.sellingPrice,
+      },
+      contributors: a.contributors.map((c) => ({ name: c.name, units: c.units, price: c.price })),
+    })),
+    subscription: data.subscription.map((s) => ({
+      category: s.category,
+      timesSubscribed: s.timesSubscribed,
+    })),
   };
   return JSON.stringify(clean, null, 2);
 }
@@ -79,6 +106,13 @@ function num(value: unknown, fallback: number): number {
   return fallback;
 }
 
+/** Return `value` when it is one of `allowed`, else `fallback`. */
+function enumOr<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+  return typeof value === "string" && (allowed as readonly string[]).includes(value)
+    ? (value as T)
+    : fallback;
+}
+
 /** Accept ISO "yyyy-mm-dd" as-is; coerce "dd-mm-yyyy" / "dd/mm/yyyy"; else null. */
 function coerceIsoDate(value: unknown): string | null {
   if (typeof value !== "string") return null;
@@ -109,6 +143,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
 
   const meta: IpoMeta = {
     companyName: str(metaRaw.companyName, "Untitled IPO"),
+    applicationType: enumOr<ApplicationType>(metaRaw.applicationType, APPLICATION_TYPES, "MAINBOARD"),
     lotSize: Math.max(1, Math.round(num(metaRaw.lotSize, 1))),
     priceBand: { min: bandMin, max: bandMax },
     currency: str(metaRaw.currency, "INR"),
@@ -143,9 +178,52 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return [makeGmpRow({ date, value })];
   });
 
-  if (timeline.length === 0 && financials.length === 0 && gmp.length === 0) {
+  const applications = asArray(raw.applications).flatMap((entry) => {
+    if (!isObject(entry)) return [];
+    const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
+    const contributors = asArray(entry.contributors).flatMap((c) => {
+      if (!isObject(c)) return [];
+      const units = num(c.units, NaN);
+      const price = num(c.price, NaN);
+      if (!Number.isFinite(units) || !Number.isFinite(price)) return [];
+      return [
+        makeContributor({ name: str(c.name, "Contributor"), units: Math.max(0, units), price: Math.max(0, price) }),
+      ];
+    });
+    return [
+      makeApplication({
+        name: str(entry.name, "Application"),
+        category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
+        allotted: entry.allotted === true,
+        allotment: {
+          quantityAllotted: Math.max(0, num(allotmentRaw.quantityAllotted, 0)),
+          sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
+        },
+        contributors,
+      }),
+    ];
+  });
+
+  const subscription = asArray(raw.subscription).flatMap((entry) => {
+    if (!isObject(entry)) return [];
+    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(str(entry.category, ""))) return [];
+    return [
+      makeSubscriptionRow({
+        category: entry.category as SubscriptionCategory,
+        timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
+      }),
+    ];
+  });
+
+  if (
+    timeline.length === 0 &&
+    financials.length === 0 &&
+    gmp.length === 0 &&
+    applications.length === 0 &&
+    subscription.length === 0
+  ) {
     return { ok: false, error: "No usable IPO data found in this file." };
   }
 
-  return { ok: true, data: { meta, timeline, financials, gmp } };
+  return { ok: true, data: { meta, timeline, financials, gmp, applications, subscription } };
 }

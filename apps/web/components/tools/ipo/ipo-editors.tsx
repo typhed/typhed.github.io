@@ -6,7 +6,7 @@ import { fmtDisplayDate } from "@/lib/format";
 import type { FinancialRow, GmpRow, IpoMeta, Milestone } from "@/lib/ipo/types";
 import { sortedGmp, sortedTimeline } from "@/lib/ipo/analytics";
 import { makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
-import { NumberField, TextField } from "@/components/tools/controls";
+import { NumberField, Segmented, TextField } from "@/components/tools/controls";
 import {
   AddRowButton,
   DateCell,
@@ -32,6 +32,17 @@ export function MetaEditor({
           label="Company / issue name"
           value={meta.companyName}
           onChange={(companyName) => onChange({ companyName })}
+        />
+      </div>
+      <div className="sm:col-span-2">
+        <span className="mb-1 block text-sm font-medium">Application type</span>
+        <Segmented
+          options={[
+            { value: "MAINBOARD", label: "Mainboard" },
+            { value: "SME", label: "SME" },
+          ]}
+          value={meta.applicationType}
+          onChange={(applicationType) => onChange({ applicationType })}
         />
       </div>
       <NumberField

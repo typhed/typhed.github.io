@@ -7,12 +7,14 @@ import type { IpoDataset, IpoMeta } from "@/lib/ipo/types";
 import { IPO_STORAGE_KEY } from "@/lib/ipo/types";
 import { DEFAULT_IPO_DATASET, defaultIpoDataset } from "@/lib/ipo/defaults";
 import { deriveIpoMetrics } from "@/lib/ipo/analytics";
+import { deriveAllApplications, subscriptionByCategory } from "@/lib/ipo/applications";
 import { ipoFileName, safeParseIpoDataset, serializeIpoDataset } from "@/lib/ipo/io";
 import { Button } from "@/components/ui/button";
 import { IpoOverview } from "@/components/tools/ipo/ipo-overview";
 import { IpoTimeline } from "@/components/tools/ipo/ipo-timeline";
 import { IpoGmp } from "@/components/tools/ipo/ipo-gmp";
 import { IpoFinancials } from "@/components/tools/ipo/ipo-financials";
+import { IpoApplications } from "@/components/tools/ipo/ipo-applications";
 import { IpoEditPanel } from "@/components/tools/ipo/ipo-edit-panel";
 
 export function IpoDashboard() {
@@ -49,6 +51,17 @@ export function IpoDashboard() {
   }, [data, hydrated]);
 
   const metrics = React.useMemo(() => deriveIpoMetrics(data, today), [data, today]);
+
+  const appMetrics = React.useMemo(
+    () =>
+      deriveAllApplications(data, {
+        latestGmp: metrics.gmp.latest,
+        cutoffPrice: data.meta.priceBand.max,
+        lotSize: data.meta.lotSize,
+        subscriptionByCategory: subscriptionByCategory(data),
+      }),
+    [data, metrics.gmp.latest],
+  );
 
   const patchMeta = (patch: Partial<IpoMeta>) =>
     setData((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
@@ -160,6 +173,15 @@ export function IpoDashboard() {
           className="h-full min-w-0"
         />
       </div>
+
+      <IpoApplications
+        applications={data.applications}
+        subscription={data.subscription}
+        metrics={appMetrics}
+        lotSize={data.meta.lotSize}
+        onApplicationsChange={(applications) => setData((prev) => ({ ...prev, applications }))}
+        onSubscriptionChange={(subscription) => setData((prev) => ({ ...prev, subscription }))}
+      />
 
       <p className="text-xs text-muted-foreground">
         Your edits stay in this browser and in the JSON file you download - nothing is uploaded. GMP and

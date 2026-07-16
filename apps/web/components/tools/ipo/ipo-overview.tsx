@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { fmtInr, fmtNumber, fmtPercent } from "@/lib/format";
 import type { IpoMeta } from "@/lib/ipo/types";
 import type { IpoMetrics } from "@/lib/ipo/analytics";
@@ -22,9 +23,21 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
     <section className="rounded-lg border border-border bg-card p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
-            {meta.companyName || "Untitled IPO"}
-          </h2>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+              {meta.companyName || "Untitled IPO"}
+            </h2>
+            <span
+              className={cn(
+                "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+                meta.applicationType === "SME"
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                  : "border-brand/30 bg-brand/10 text-brand",
+              )}
+            >
+              {meta.applicationType}
+            </span>
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
             Price band {fmtInr(meta.priceBand.min, 0)} - {fmtInr(meta.priceBand.max, 0)} &middot; Lot{" "}
             {fmtNumber(meta.lotSize, 0)} shares &middot; Min investment {fmtInr(metrics.minInvestment, 0)}

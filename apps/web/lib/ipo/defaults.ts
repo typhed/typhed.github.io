@@ -7,7 +7,15 @@
  * rows rebuilt by the JSON parser.
  */
 
-import type { FinancialRow, GmpRow, IpoDataset, Milestone } from "./types";
+import type {
+  Application,
+  Contributor,
+  FinancialRow,
+  GmpRow,
+  IpoDataset,
+  Milestone,
+  SubscriptionRow,
+} from "./types";
 import { SCHEMA_VERSION } from "./types";
 
 /** Stable-enough unique id for a row; used only as a React key. */
@@ -30,11 +38,24 @@ export function makeGmpRow(init: Omit<GmpRow, "id">): GmpRow {
   return { id: newId(), ...init };
 }
 
+export function makeContributor(init: Omit<Contributor, "id">): Contributor {
+  return { id: newId(), ...init };
+}
+
+export function makeApplication(init: Omit<Application, "id">): Application {
+  return { id: newId(), ...init };
+}
+
+export function makeSubscriptionRow(init: Omit<SubscriptionRow, "id">): SubscriptionRow {
+  return { id: newId(), ...init };
+}
+
 /** The seed IPO - identical to the source spreadsheet screenshot. */
 export function defaultIpoDataset(): IpoDataset {
   return {
     meta: {
       companyName: "Sample IPO",
+      applicationType: "MAINBOARD",
       lotSize: 26,
       priceBand: { min: 545, max: 574 },
       currency: "INR",
@@ -68,6 +89,25 @@ export function defaultIpoDataset(): IpoDataset {
       makeGmpRow({ date: "2026-07-18", value: 101 }),
       makeGmpRow({ date: "2026-07-19", value: 130 }),
       makeGmpRow({ date: "2026-07-20", value: 120 }),
+    ],
+    applications: [
+      makeApplication({
+        name: "Debmalya Pramanik (ZERODHA)",
+        category: "RETAIL",
+        allotted: false,
+        allotment: { quantityAllotted: 0, sellingPrice: 0 },
+        contributors: [
+          makeContributor({ name: "Debmalya Pramanik", units: 13, price: 574 }),
+          makeContributor({ name: "Ankita Santra", units: 13, price: 574 }),
+        ],
+      }),
+    ],
+    subscription: [
+      makeSubscriptionRow({ category: "RETAIL", timesSubscribed: 5.2 }),
+      makeSubscriptionRow({ category: "sHNI", timesSubscribed: 8.1 }),
+      makeSubscriptionRow({ category: "bHNI", timesSubscribed: 12.3 }),
+      makeSubscriptionRow({ category: "SHAREHOLDER", timesSubscribed: 2.4 }),
+      makeSubscriptionRow({ category: "OVERALL", timesSubscribed: 4.5 }),
     ],
   };
 }

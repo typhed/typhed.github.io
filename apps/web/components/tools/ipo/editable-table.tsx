@@ -78,6 +78,34 @@ export function NumberCell({
   );
 }
 
+/** A bare select cell bound to one of a fixed set of options. */
+export function SelectCell<T extends string>({
+  value,
+  options,
+  onChange,
+  ariaLabel,
+}: {
+  value: T;
+  options: ReadonlyArray<{ value: T; label: string }>;
+  onChange: (value: T) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <select
+      aria-label={ariaLabel}
+      value={value}
+      onChange={(e) => onChange(e.target.value as T)}
+      className={cn(cellClass, "cursor-pointer")}
+    >
+      {options.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 /** A bare native date cell input, bound to an ISO "yyyy-mm-dd" string. */
 export function DateCell({
   value,
