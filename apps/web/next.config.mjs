@@ -18,7 +18,7 @@ const nextConfig = {
     unoptimized: true,
   },
   // Internal TS packages are shipped as source and compiled by Next.
-  transpilePackages: ["@typhed/chart-engine"],
+  transpilePackages: ["@typhed/chart-engine", "@typhed/risk-toolkit"],
 };
 
 export default nextConfig;

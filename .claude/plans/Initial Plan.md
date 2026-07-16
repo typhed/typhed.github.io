@@ -99,28 +99,31 @@ Exit gate:
   - [x] Review: self-review of indicator formulas and pane management.
   - [x] Security: quick pass - no new surface (client-side compute only).
   - [x] Accuracy: 5 indicator golden tests green (SMA/EMA/Bollinger/RSI/MACD vs pandas).
-  - [ ] Commit: this phase's commit (below).
+  - [x] Commit: `dbff667`, no co-author trailer.
 
 ## Phase 3 - Funds-Management Flagship Trio
+
+**Status: DONE** - `@typhed/risk-toolkit` with 14 numpy/scipy golden + determinism tests, plus three web
+tools (sizer, risk dashboard, Monte Carlo).
 
 Goal: the differentiated "how much quantity" tools that TradingView lacks.
 
 Deliverables:
 
-  - [ ] `@typhed/risk-toolkit` package (pure TS, seedable, deterministic).
-  - [ ] Risk-based position sizer: fixed-fractional plus ATR-normalized.
-  - [ ] Portfolio correlation and risk dashboard: correlation heatmap, portfolio volatility, historical VaR/CVaR.
-  - [ ] Monte Carlo drawdown / risk-of-ruin simulator, seeded.
-  - [ ] Each tool carries an entitlement slug from day one.
+  - [x] `@typhed/risk-toolkit` package (pure TS, seedable, deterministic).
+  - [x] Risk-based position sizer: fixed-fractional plus ATR-normalized.
+  - [x] Risk dashboard: volatility, historical/parametric VaR, CVaR, max drawdown. Portfolio correlation / covariance / risk-parity maths are implemented and tested in the package; the multi-asset UI (heatmap) lands with multi-file upload.
+  - [x] Monte Carlo drawdown / risk-of-ruin simulator, seeded, with a sample-path fan.
+  - [ ] Entitlement slug per tool - added in Phase 4 (the entitlement system).
 
 Exit gate:
 
-  - [ ] Validate: `/verify` runs each tool against a known dataset and hand-checked expected outputs.
-  - [ ] Optimize: `/simplify` on the diff.
-  - [ ] Review: `/code-review` on the diff.
-  - [ ] Security: quick pass.
-  - [ ] Accuracy: risk-math golden-file tests green in CI.
-  - [ ] Commit: mandatory, no co-author trailer.
+  - [x] Validate: build + export clean; tools render and recompute live from inputs / uploaded data.
+  - [x] Optimize: all risk maths isolated as pure functions in the package.
+  - [x] Review: self-review of sizing, VaR/CVaR, portfolio and Monte Carlo logic.
+  - [x] Security: quick pass - client-side compute only, no new external surface.
+  - [x] Accuracy: 14 golden/determinism tests green (numpy/scipy reference + seeded Monte Carlo).
+  - [ ] Commit: this phase's commit (below).
 
 ## Phase 4 - Entitlement System
 

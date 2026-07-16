@@ -14,6 +14,7 @@
     "@clerk/react": "^6.12.3",
     "@radix-ui/react-slot": "^1.1.1",
     "@typhed/chart-engine": "workspace:*",
+    "@typhed/risk-toolkit": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lightweight-charts": "^5.2.0",

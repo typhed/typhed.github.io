@@ -29,6 +29,21 @@ import { IndicatorPanel } from "@/components/chart/indicator-panel";
 import { DataIntegrityPanel } from "@/components/chart/data-integrity-panel";
 import { UploadPanel } from "@/components/upload/upload-panel";
 import { ColumnMapper } from "@/components/upload/column-mapper";
+import { Segmented } from "@/components/tools/controls";
+import { PositionSizer } from "@/components/tools/position-sizer";
+import { RiskDashboard } from "@/components/tools/risk-dashboard";
+import { MonteCarlo } from "@/components/tools/monte-carlo";
+
+const SECONDS_PER_YEAR = 31557600; // 365.25 days
+
+type WorkspaceView = "chart" | "risk" | "sizing" | "montecarlo";
+
+const VIEW_OPTIONS: ReadonlyArray<{ value: WorkspaceView; label: string }> = [
+  { value: "chart", label: "Chart" },
+  { value: "risk", label: "Risk" },
+  { value: "sizing", label: "Position sizer" },
+  { value: "montecarlo", label: "Monte Carlo" },
+];
 
 type Step = "upload" | "map" | "chart";
 
@@ -51,6 +66,7 @@ export function Workspace() {
   const [indicatorState, setIndicatorState] = React.useState<IndicatorState>(
     DEFAULT_INDICATOR_STATE,
   );
+  const [view, setView] = React.useState<WorkspaceView>("chart");
 
   function toggleIndicator(id: IndicatorId) {
     setIndicatorState((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -148,11 +164,6 @@ export function Workspace() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <TimeframeSelect
-              options={options}
-              value={selected.id}
-              onChange={setTimeframeId}
-            />
             <Button variant="outline" size="sm" onClick={reset}>
               <RefreshCw className="h-4 w-4" />
               New file
@@ -160,23 +171,48 @@ export function Workspace() {
           </div>
         </div>
 
-        <IndicatorPanel state={indicatorState} onToggle={toggleIndicator} />
+        <Segmented options={VIEW_OPTIONS} value={view} onChange={setView} />
 
-        <div className="rounded-lg border border-border bg-card p-2">
-          <div className="h-[560px] w-full">
-            <ChartView
-              candles={candles}
-              hasVolume={dataset.stats.hasVolume}
-              indicators={chartIndicators}
+        {view === "chart" && (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <IndicatorPanel state={indicatorState} onToggle={toggleIndicator} />
+              <TimeframeSelect
+                options={options}
+                value={selected.id}
+                onChange={setTimeframeId}
+              />
+            </div>
+
+            <div className="rounded-lg border border-border bg-card p-2">
+              <div className="h-[560px] w-full">
+                <ChartView
+                  candles={candles}
+                  hasVolume={dataset.stats.hasVolume}
+                  indicators={chartIndicators}
+                />
+              </div>
+            </div>
+
+            <DataIntegrityPanel
+              dataset={dataset}
+              baseIntervalLabel={base.label}
+              missingIntervals={missingIntervals}
             />
-          </div>
-        </div>
+          </>
+        )}
 
-        <DataIntegrityPanel
-          dataset={dataset}
-          baseIntervalLabel={base.label}
-          missingIntervals={missingIntervals}
-        />
+        {view === "risk" && (
+          <RiskDashboard
+            candles={dataset.candles}
+            periodsPerYear={SECONDS_PER_YEAR / base.seconds}
+            timeframeLabel={base.label}
+          />
+        )}
+
+        {view === "sizing" && <PositionSizer />}
+
+        {view === "montecarlo" && <MonteCarlo />}
       </div>
     );
   }
