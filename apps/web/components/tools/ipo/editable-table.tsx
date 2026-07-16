@@ -1,0 +1,119 @@
+"use client";
+
+/**
+ * Small, unstyled-cell building blocks shared by the timeline / GMP / financials
+ * editors. Each editor owns its own column grid; these primitives keep the input
+ * styling and the add / remove controls consistent without imposing a rigid
+ * column model. Cell inputs are label-less (the editor renders one header row).
+ */
+
+import * as React from "react";
+import { Plus, Trash2 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
+const cellClass =
+  "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+/** Immutably patch the row with the given id. */
+export function patchRow<T extends { id: string }>(rows: T[], id: string, patch: Partial<T>): T[] {
+  return rows.map((row) => (row.id === id ? { ...row, ...patch } : row));
+}
+
+/** Immutably drop the row with the given id. */
+export function dropRow<T extends { id: string }>(rows: T[], id: string): T[] {
+  return rows.filter((row) => row.id !== id);
+}
+
+/** A bare text cell input. */
+export function TextCell({
+  value,
+  onChange,
+  placeholder,
+  ariaLabel,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  ariaLabel: string;
+}) {
+  return (
+    <input
+      type="text"
+      aria-label={ariaLabel}
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className={cellClass}
+    />
+  );
+}
+
+/** A bare numeric cell input. */
+export function NumberCell({
+  value,
+  onChange,
+  step = "any",
+  min,
+  ariaLabel,
+}: {
+  value: number;
+  onChange: (value: number) => void;
+  step?: string | number;
+  min?: number;
+  ariaLabel: string;
+}) {
+  return (
+    <input
+      type="number"
+      inputMode="decimal"
+      aria-label={ariaLabel}
+      step={step}
+      min={min}
+      value={Number.isFinite(value) ? value : ""}
+      onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+      className={cn(cellClass, "tabular-nums")}
+    />
+  );
+}
+
+/** A bare native date cell input, bound to an ISO "yyyy-mm-dd" string. */
+export function DateCell({
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  ariaLabel: string;
+}) {
+  return (
+    <input
+      type="date"
+      aria-label={ariaLabel}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className={cn(cellClass, "[color-scheme:light] dark:[color-scheme:dark]")}
+    />
+  );
+}
+
+/** A ghost icon button that removes the row it sits in. */
+export function RemoveRowButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <Button variant="ghost" size="icon" aria-label={label} onClick={onClick} className="h-8 w-8 shrink-0">
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  );
+}
+
+/** An outline button that appends a new row. */
+export function AddRowButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <Button variant="outline" size="sm" onClick={onClick} className="mt-3">
+      <Plus className="h-4 w-4" />
+      {label}
+    </Button>
+  );
+}

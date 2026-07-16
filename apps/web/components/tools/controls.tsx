@@ -9,13 +9,15 @@ export function ToolCard({
   title,
   description,
   children,
+  className,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className={cn("rounded-lg border border-border bg-card p-6", className)}>
       <h2 className="font-display text-lg font-semibold">{title}</h2>
       {description && (
         <p className="mt-1 text-sm text-muted-foreground">{description}</p>
@@ -57,6 +59,59 @@ export function NumberField({
         {suffix && (
           <span className="px-3 text-xs text-muted-foreground">{suffix}</span>
         )}
+      </div>
+    </label>
+  );
+}
+
+/** A labelled free-text input bound to a string value. */
+export function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block text-sm">
+      <span className="mb-1 block font-medium">{label}</span>
+      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
+        <input
+          type="text"
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent px-3 py-2 text-sm outline-none"
+        />
+      </div>
+    </label>
+  );
+}
+
+/** A labelled native date input bound to an ISO "yyyy-mm-dd" string. */
+export function DateField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="block text-sm">
+      <span className="mb-1 block font-medium">{label}</span>
+      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
+        <input
+          type="date"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full bg-transparent px-3 py-2 text-sm outline-none [color-scheme:light] dark:[color-scheme:dark]"
+        />
       </div>
     </label>
   );
