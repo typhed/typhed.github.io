@@ -19,6 +19,26 @@ Pages, sharing the parent Clerk application and the indigo/cyan token system of 
 is no server at request time - the accuracy-critical core runs in TypeScript, and Python arrives later as
 a lazy-loaded in-browser Pyodide lane for advanced analytics only.
 
+## Progress
+
+All six phases are implemented and committed on `master` (each phase = one commit, no co-author trailer).
+The engine packages carry **45 passing tests** (31 chart-engine, 14 risk-toolkit) plus an Anaconda
+reference test for the Python lane; every phase's `pnpm --filter web build` produces a clean static export.
+
+| Phase | Commit | Summary |
+| :---: | :---: | --- |
+| 0 | `47d9c0e` | Monorepo scaffold, shell, Clerk gate, CI/CD |
+| 1 | `d54627e` | chart-engine pipeline + lightweight-charts price/volume |
+| 2 | `dbff667` | Indicators (SMA/EMA/Bollinger/RSI/MACD) + show/hide |
+| 3 | `4fa7c18` | risk-toolkit: sizing, VaR/CVaR, Monte Carlo |
+| 4 | `f63a285` | Entitlements + IndexedDB saved analyses |
+| 5 | `40d13b9` | Pyodide Python advanced lane + serverless gate stub |
+| 6 | `a1c2c34` | Chat FAB assistant UI shell |
+
+Remaining follow-ups (named in the phases): multi-asset upload for the correlation heatmap / risk-parity
+UI and efficient frontier; pinning SheetJS's patched build; deploying the serverless hard-gate when a paid
+tool needs it; and connecting a real model to the chat shell.
+
 ## How To Use This Plan
 
   * Phases run in order. A phase does not begin until the previous phase has cleared its exit gate.
@@ -191,6 +211,6 @@ Exit gate:
   - [x] Review: self-review of the chat shell.
   - [x] Security: no external calls or secrets yet (placeholder is local). When a real model is wired, `/security-review` on the API call, key handling, and prompt-injection surface is required.
   - [x] Accuracy: not applicable this phase.
-  - [ ] Commit: this phase's commit (below).
+  - [x] Commit: `a1c2c34`, no co-author trailer.
 
 </div>
