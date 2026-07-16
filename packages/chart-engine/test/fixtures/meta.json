@@ -28,5 +28,12 @@
       "alias": "1D",
       "candles": 2
     }
-  ]
+  ],
+  "indicators": {
+    "sma20": 1416,
+    "ema20": 1435,
+    "bollinger20": 1416,
+    "rsi14": 1421,
+    "macd": 1435
+  }
 }

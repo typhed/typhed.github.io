@@ -144,6 +144,126 @@ def aggregate_reference(frame : pd.DataFrame, alias : str) -> list:
     return candles
 
 
+def indicator_reference(frame : pd.DataFrame) -> dict:
+    """
+    Compute the reference indicator series on the base close price.
+
+    SMA, EMA, Bollinger and MACD use pandas ``rolling`` / ``ewm`` (independent
+    of the TypeScript code). RSI uses Wilder's method with an SMA seed, which
+    the engine mirrors, so the fixture guards the transcription of that formula.
+
+    :type  frame: pandas.DataFrame
+    :param frame: Base 1-minute frame indexed by a UTC ``DatetimeIndex``.
+
+    :rtype:   dict
+    :returns: Mapping of indicator id to a list of point dicts.
+    """
+
+    close = frame["close"]
+    times = [int(ts.timestamp()) for ts in frame.index]
+
+    def points(series : pd.Series) -> list:
+        out : list = []
+        for idx, value in enumerate(series.to_numpy()):
+            if np.isnan(value):
+                continue
+            out.append({"time" : times[idx], "value" : round(float(value), 8)})
+        return out
+
+    sma_20 = close.rolling(20).mean()
+    ema_20 = close.ewm(span = 20, adjust = False).mean()
+
+    middle = close.rolling(20).mean()
+    std = close.rolling(20).std(ddof = 0)
+    bollinger_20 : list = []
+    for idx in range(len(close)):
+        mid = middle.iloc[idx]
+        dev = std.iloc[idx]
+        if np.isnan(mid) or np.isnan(dev):
+            continue
+        bollinger_20.append(
+            {
+                "time" : times[idx],
+                "middle" : round(float(mid), 8),
+                "upper" : round(float(mid + 2 * dev), 8),
+                "lower" : round(float(mid - 2 * dev), 8),
+            }
+        )
+
+    rsi_14 = wilder_rsi(close, 14, times)
+
+    ema_fast = close.ewm(span = 12, adjust = False).mean()
+    ema_slow = close.ewm(span = 26, adjust = False).mean()
+    macd_line = ema_fast - ema_slow
+    signal_line = macd_line.ewm(span = 9, adjust = False).mean()
+    macd_points : list = []
+    for idx in range(len(close)):
+        macd_points.append(
+            {
+                "time" : times[idx],
+                "macd" : round(float(macd_line.iloc[idx]), 8),
+                "signal" : round(float(signal_line.iloc[idx]), 8),
+                "histogram" : round(
+                    float(macd_line.iloc[idx] - signal_line.iloc[idx]), 8
+                ),
+            }
+        )
+
+    return {
+        "sma20" : points(sma_20),
+        "ema20" : points(ema_20),
+        "bollinger20" : bollinger_20,
+        "rsi14" : rsi_14,
+        "macd" : macd_points,
+    }
+
+
+def wilder_rsi(close : pd.Series, period : int, times : list) -> list:
+    """
+    Wilder's RSI with an SMA seed for the first average gain and loss.
+
+    :type  close: pandas.Series
+    :param close: Close price series.
+
+    :type  period: int
+    :param period: Look-back period, e.g. 14.
+
+    :type  times: list
+    :param times: Epoch-second timestamps aligned to ``close`` by position.
+
+    :rtype:   list
+    :returns: List of ``{"time", "value"}`` points from index ``period`` on.
+    """
+
+    values = close.to_numpy()
+    changes = np.diff(values)
+
+    gains = np.where(changes > 0, changes, 0.0)
+    losses = np.where(changes < 0, -changes, 0.0)
+
+    avg_gain = float(gains[:period].mean())
+    avg_loss = float(losses[:period].mean())
+
+    out : list = []
+
+    def rsi_value(gain : float, loss : float) -> float:
+        if loss == 0:
+            return 50.0 if gain == 0 else 100.0
+        return 100.0 - 100.0 / (1.0 + gain / loss)
+
+    out.append({"time" : times[period], "value" : round(rsi_value(avg_gain, avg_loss), 8)})
+
+    for idx in range(period + 1, len(values)):
+        gain = gains[idx - 1]
+        loss = losses[idx - 1]
+        avg_gain = (avg_gain * (period - 1) + gain) / period
+        avg_loss = (avg_loss * (period - 1) + loss) / period
+        out.append(
+            {"time" : times[idx], "value" : round(rsi_value(avg_gain, avg_loss), 8)}
+        )
+    return out
+
+
 def main() -> None:
     """
     Generate the base CSV and one expected-JSON file per timeframe, plus a
@@ -165,11 +285,16 @@ def main() -> None:
             json.dump(candles, handle, indent = 2)
         written.append({"id" : tf_id, "alias" : alias, "candles" : len(candles)})
 
+    indicators = indicator_reference(frame)
+    with open(FIXTURE_DIR / "expected_indicators.json", "w", encoding = "utf-8") as handle:
+        json.dump(indicators, handle, indent = 2)
+
     meta = {
         "base_interval_seconds" : 60,
         "assumed_timezone" : "UTC",
         "base_rows" : int(len(frame)),
         "timeframes" : written,
+        "indicators" : {key : len(value) for key, value in indicators.items()},
     }
     with open(FIXTURE_DIR / "meta.json", "w", encoding = "utf-8") as handle:
         json.dump(meta, handle, indent = 2)

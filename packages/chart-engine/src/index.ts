@@ -38,6 +38,18 @@ export {
   countMissingIntervals,
 } from "./aggregate/interval";
 
+export {
+  sma,
+  ema,
+  emaSeries,
+  bollinger,
+  rsi,
+  macd,
+  type LinePoint,
+  type BandPoint,
+  type MacdPoint,
+} from "./indicators";
+
 import type { ColumnMapping, ParsedTable } from "./types";
 import { toCandles } from "./schema/mapping";
 import { validateCandles, type ValidationResult } from "./schema/validate";

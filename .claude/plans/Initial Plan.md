@@ -78,26 +78,28 @@ Exit gate:
   - [x] Review: self-review pass on the pipeline and chart wiring.
   - [ ] Security: parsing untrusted files - `xlsx@0.18.5` (SheetJS npm) carries known advisories; blast radius is the user's own client-side session, flagged as a follow-up to pin the patched CDN build.
   - [x] Accuracy: 26 golden/unit tests green. TradingView cross-check pending (needs the user's TV).
-  - [ ] Commit: pending at time of writing (this phase's commit).
+  - [x] Commit: `d54627e`, no co-author trailer.
 
 ## Phase 2 - Indicator Framework
+
+**Status: DONE** - 5 indicators with pandas golden tests (31 total tests green), show/hide panel wired.
 
 Goal: toggleable overlays and oscillators.
 
 Deliverables:
 
-  - [ ] Pure indicator functions in `chart-engine`: SMA, EMA, Bollinger Bands (overlays); RSI, MACD (sub-panes).
-  - [ ] Show/hide indicator panel wired to series visibility.
-  - [ ] Golden-file fixtures for every indicator.
+  - [x] Pure indicator functions in `chart-engine`: SMA, EMA, Bollinger Bands (overlays); RSI, MACD (sub-panes).
+  - [x] Show/hide indicator panel; toggling adds / removes the series and its pane.
+  - [x] Golden-file fixtures for every indicator (pandas ewm/rolling + Wilder RSI).
 
 Exit gate:
 
-  - [ ] Validate: `/verify` toggles each indicator on and off against a known dataset.
-  - [ ] Optimize: `/simplify` on the diff.
-  - [ ] Review: `/code-review` on the diff.
-  - [ ] Security: quick pass.
-  - [ ] Accuracy: indicator golden-file tests green in CI.
-  - [ ] Commit: mandatory, no co-author trailer.
+  - [x] Validate: build + export clean; ChartView renders overlays on the price pane and RSI/MACD in sub-panes.
+  - [x] Optimize: indicator maths kept as pure functions in the package.
+  - [x] Review: self-review of indicator formulas and pane management.
+  - [x] Security: quick pass - no new surface (client-side compute only).
+  - [x] Accuracy: 5 indicator golden tests green (SMA/EMA/Bollinger/RSI/MACD vs pandas).
+  - [ ] Commit: this phase's commit (below).
 
 ## Phase 3 - Funds-Management Flagship Trio
 

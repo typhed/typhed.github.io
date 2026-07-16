@@ -16,9 +16,16 @@ import {
 } from "@typhed/chart-engine";
 
 import { baseTimeframe, timeframeOptions } from "@/lib/timeframe-options";
+import {
+  computeIndicators,
+  DEFAULT_INDICATOR_STATE,
+  type IndicatorId,
+  type IndicatorState,
+} from "@/lib/indicators";
 import { Button } from "@/components/ui/button";
 import { ChartView } from "@/components/chart/chart-view";
 import { TimeframeSelect } from "@/components/chart/timeframe-select";
+import { IndicatorPanel } from "@/components/chart/indicator-panel";
 import { DataIntegrityPanel } from "@/components/chart/data-integrity-panel";
 import { UploadPanel } from "@/components/upload/upload-panel";
 import { ColumnMapper } from "@/components/upload/column-mapper";
@@ -41,6 +48,13 @@ export function Workspace() {
   const [mapping, setMapping] = React.useState<ColumnMapping | null>(null);
   const [dataset, setDataset] = React.useState<DatasetResult | null>(null);
   const [timeframeId, setTimeframeId] = React.useState("");
+  const [indicatorState, setIndicatorState] = React.useState<IndicatorState>(
+    DEFAULT_INDICATOR_STATE,
+  );
+
+  function toggleIndicator(id: IndicatorId) {
+    setIndicatorState((prev) => ({ ...prev, [id]: !prev[id] }));
+  }
 
   async function handleFile(file: File) {
     setError(null);
@@ -88,6 +102,11 @@ export function Workspace() {
     if (selected.seconds <= base.seconds) return dataset.candles;
     return aggregate(dataset.candles, selected);
   }, [dataset, base, selected]);
+
+  const chartIndicators = React.useMemo(
+    () => computeIndicators(candles, indicatorState),
+    [candles, indicatorState],
+  );
 
   const missingIntervals = React.useMemo(
     () => (dataset ? countMissingIntervals(dataset.candles) : 0),
@@ -141,9 +160,15 @@ export function Workspace() {
           </div>
         </div>
 
+        <IndicatorPanel state={indicatorState} onToggle={toggleIndicator} />
+
         <div className="rounded-lg border border-border bg-card p-2">
-          <div className="h-[520px] w-full">
-            <ChartView candles={candles} hasVolume={dataset.stats.hasVolume} />
+          <div className="h-[560px] w-full">
+            <ChartView
+              candles={candles}
+              hasVolume={dataset.stats.hasVolume}
+              indicators={chartIndicators}
+            />
           </div>
         </div>
 
