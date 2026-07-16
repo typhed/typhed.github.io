@@ -91,4 +91,8 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  p {
+    text-align: justify;
+  }
 }

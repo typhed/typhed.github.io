@@ -7,7 +7,7 @@
  */
 
 /** Bumped whenever the on-disk JSON shape changes; drives `safeParseIpoDataset` migration. */
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /**
  * The localStorage key holding the last-edited dataset for this browser. Bumped
@@ -113,11 +113,17 @@ export interface GmpRow {
 export interface Contributor {
   id: string;
   name: string;
-  /** Shares this person funds (>= 0). */
+  /** Shares this person funds (>= 0) - used in the application's "detailed" mode. */
   units: number;
-  /** INR per share they put in (normally the cut-off / issue price). */
+  /** INR per share they put in (normally the cut-off / issue price) - "detailed" mode. */
   price: number;
+  /** Corpus in INR, entered directly - used in the application's "total" mode. */
+  amount: number;
 }
+
+/** How an application's corpus is entered, per contributor row. */
+export const CONTRIBUTION_MODES = ["total", "detailed"] as const;
+export type ContributionMode = (typeof CONTRIBUTION_MODES)[number];
 
 /** How an allotment outcome is entered. */
 export const ALLOTMENT_MODES = ["total", "detailed"] as const;
@@ -144,6 +150,12 @@ export interface Application {
   /** Identifier - PAN or name recommended, e.g. "Debmalya Pramanik (ZERODHA)". */
   name: string;
   category: ApplicationCategory;
+  /**
+   * How each contributor's corpus is entered. "total" (default for new
+   * applications): a single INR amount per contributor. "detailed": units x
+   * price. Either way the corpus and every downstream figure are the same.
+   */
+  contributionMode: ContributionMode;
   allotted: boolean;
   allotment: AllotmentResult;
   contributors: Contributor[];

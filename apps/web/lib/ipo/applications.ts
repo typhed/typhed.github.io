@@ -16,7 +16,7 @@
  * quantity, so `P = 1`. When the subscription is unknown, `P = null`.
  */
 
-import type { Application, ApplicationCategory, IpoDataset } from "./types";
+import type { Application, ApplicationCategory, Contributor, IpoDataset } from "./types";
 import { APPLICATION_CATEGORIES } from "./types";
 
 /** Estimated probability of allotment for a category at `timesSubscribed`. */
@@ -36,7 +36,7 @@ export interface ContributorMetrics {
   name: string;
   units: number;
   price: number;
-  /** units * price. */
+  /** This contributor's corpus in INR (units x price, or the entered amount in "total" mode). */
   contribution: number;
   /** contribution / applicationTotal (0 when the application has no corpus). */
   sharePct: number;
@@ -107,19 +107,39 @@ export function deriveApplicationMetrics(
   const { latestGmp, cutoffPrice, lotSize, subscriptionByCategory: subs } = params;
   const flags: string[] = [];
 
-  const appliedUnits = app.contributors.reduce((sum, c) => sum + (Number.isFinite(c.units) ? c.units : 0), 0);
-  const applicationTotal = app.contributors.reduce(
-    (sum, c) => sum + (Number.isFinite(c.units) && Number.isFinite(c.price) ? c.units * c.price : 0),
-    0,
-  );
-  if (applicationTotal <= 0) flags.push("Application has no corpus yet");
+  // "detailed": corpus is units x price and shares are the entered units.
+  // "total": the user enters the rupee corpus directly and the share count is
+  // implied by the cut-off price (amount / cutoff). Everything downstream - the
+  // corpus total, share splits and profit tiers - is computed the same way.
+  const detailed = app.contributionMode !== "total";
+  const contribOf = (c: Contributor): number =>
+    detailed
+      ? Number.isFinite(c.units) && Number.isFinite(c.price)
+        ? c.units * c.price
+        : 0
+      : Number.isFinite(c.amount)
+        ? c.amount
+        : 0;
+  const unitsOf = (c: Contributor): number => {
+    if (detailed) return Number.isFinite(c.units) ? c.units : 0;
+    const amount = Number.isFinite(c.amount) ? c.amount : 0;
+    return cutoffPrice > 0 ? amount / cutoffPrice : 0;
+  };
+
+  const appliedUnits = app.contributors.reduce((sum, c) => sum + unitsOf(c), 0);
+  const applicationTotal = app.contributors.reduce((sum, c) => sum + contribOf(c), 0);
+  if (applicationTotal <= 0) flags.push("Undefined Corpus");
 
   const lots = lotSize > 0 ? appliedUnits / lotSize : NaN;
-  if (lotSize > 0 && appliedUnits % lotSize !== 0) flags.push("Applied units are not a whole number of lots");
+  // Only meaningful when units are entered directly; "total" mode derives a
+  // fractional share count that is never a whole number of lots.
+  if (detailed && lotSize > 0 && appliedUnits % lotSize !== 0) {
+    flags.push("QTY Mismatch with Lot Size");
+  }
 
   const times = subs[app.category];
   const probabilityOfWinning = probabilityOfAllotment(app.category, times);
-  if (probabilityOfWinning === null) flags.push("Subscription for this category is not set");
+  if (probabilityOfWinning === null) flags.push("Undefined Category Subscription");
 
   const likelyAllottedUnits = likelyUnits(app.category, appliedUnits, lotSize, times);
   const bestCaseProfit = appliedUnits * latestGmp;
@@ -134,27 +154,27 @@ export function deriveApplicationMetrics(
       let allottedQty = app.allotment.quantityAllotted;
       if (allottedQty > appliedUnits) {
         allottedQty = appliedUnits;
-        flags.push("Allotted quantity exceeds applied - clamped");
+        flags.push("Mismatch Alloted Quantity [CLAMPED]");
       }
-      if (allottedQty <= 0) flags.push("Marked allotted but quantity is zero");
-      else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("Allotted quantity is not a whole number of lots");
+      if (allottedQty <= 0) flags.push("Alloted Quantity is Zero");
+      else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("QTY Mismatch with Alloted Quantity Lot Size");
       rawActual = allottedQty * (app.allotment.sellingPrice - cutoffPrice);
     } else {
       rawActual = Number.isFinite(app.allotment.totalAmount) ? app.allotment.totalAmount : 0;
-      if (rawActual === 0) flags.push("Marked allotted but total amount is zero");
+      if (rawActual === 0) flags.push("Total Amount Undefined for Alloted");
     }
   }
   // Normalise negative zero (0 * negative) so the UI shows "₹0", not "-₹0".
   const actualProfit = rawActual === 0 ? 0 : rawActual;
 
   const contributors: ContributorMetrics[] = app.contributors.map((c) => {
-    const contribution = Number.isFinite(c.units) && Number.isFinite(c.price) ? c.units * c.price : 0;
+    const contribution = contribOf(c);
     const sharePct = applicationTotal > 0 ? contribution / applicationTotal : 0;
     return {
       id: c.id,
       name: c.name,
-      units: c.units,
-      price: c.price,
+      units: unitsOf(c),
+      price: detailed ? (Number.isFinite(c.price) ? c.price : 0) : cutoffPrice,
       contribution,
       sharePct,
       bestCaseProfit: sharePct * bestCaseProfit,
@@ -163,10 +183,14 @@ export function deriveApplicationMetrics(
     };
   });
 
-  const anyPriceMismatch = app.contributors.some(
-    (c) => Number.isFinite(c.price) && cutoffPrice > 0 && Math.abs(c.price - cutoffPrice) > 0.005,
-  );
-  if (anyPriceMismatch) flags.push("A contributor price differs from the cut-off price");
+  // A price mismatch is only knowable when a price is actually entered; "total"
+  // mode applies at the cut-off by construction, so there is nothing to warn on.
+  const anyPriceMismatch =
+    detailed &&
+    app.contributors.some(
+      (c) => Number.isFinite(c.price) && cutoffPrice > 0 && Math.abs(c.price - cutoffPrice) > 0.005,
+    );
+  if (anyPriceMismatch) flags.push("Invalid Contributor Price from Cutt-Off Value");
 
   return {
     id: app.id,

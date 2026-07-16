@@ -8,6 +8,7 @@ import { fmtInr, fmtPercent } from "@/lib/format";
 import type {
   Application,
   ApplicationCategory,
+  ContributionMode,
   SubscriptionCategory,
   SubscriptionRow,
 } from "@/lib/ipo/types";
@@ -90,14 +91,19 @@ export function IpoApplications({
   return (
     <ToolCard
       title="IPO Application Tracker"
-      description="Track applications and their contributors; allotment probability is estimated per SEBI rules."
+      description="Track your IPO Application, Expected & Actual Profit (on allotment); Allotment Probability is as per SEBI Rules."
     >
       <div className="grid gap-6 lg:grid-cols-[70fr_30fr]">
         {/* LEFT - applications */}
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
             <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-              No applications yet. Add one to start tracking.
+              No applications yet. Add one to start tracking. We have created a custom application form,
+              where you can create and track multiple applications and also set n-contributors for each of the
+              application (for example, you have applied a ₹ 50L from one account under "BIG HNI" category, and
+              this involves two person contributing). Based on the settings, and if alloted, the function
+              calculates the take home profit for each contributor/application. We've also added the option to
+              calculate the "Net Profit" considering an user falls under the 30% tax bracket (default).
             </p>
           )}
           {applications.map((app) => {
@@ -110,6 +116,7 @@ export function IpoApplications({
                 lotSize={lotSize}
                 onNameChange={(name) => updateApp(app.id, { name })}
                 onCategoryChange={(category) => updateApp(app.id, { category })}
+                onContributionModeChange={(contributionMode) => updateApp(app.id, { contributionMode })}
                 onAllottedChange={(allotted) => updateApp(app.id, { allotted })}
                 onAllotmentChange={(allotment) => updateApp(app.id, { allotment })}
                 onContributorsChange={(next) => updateContributors(app.id, next)}
@@ -123,11 +130,12 @@ export function IpoApplications({
               onApplicationsChange([
                 ...applications,
                 makeApplication({
-                  name: "New application",
+                  name: "New Application",
                   category: "RETAIL",
+                  contributionMode: "total",
                   allotted: false,
                   allotment: { mode: "total", quantityAllotted: 0, sellingPrice: 0, totalAmount: 0 },
-                  contributors: [makeContributor({ name: "Contributor", units: 0, price: 0 })],
+                  contributors: [makeContributor({ name: "Contributor Name", units: 0, price: 0, amount: 0 })],
                 }),
               ])
             }
@@ -150,6 +158,7 @@ function ApplicationCard({
   lotSize,
   onNameChange,
   onCategoryChange,
+  onContributionModeChange,
   onAllottedChange,
   onAllotmentChange,
   onContributorsChange,
@@ -160,12 +169,14 @@ function ApplicationCard({
   lotSize: number;
   onNameChange: (name: string) => void;
   onCategoryChange: (category: ApplicationCategory) => void;
+  onContributionModeChange: (mode: ContributionMode) => void;
   onAllottedChange: (allotted: boolean) => void;
   onAllotmentChange: (allotment: Application["allotment"]) => void;
   onContributorsChange: (next: Application["contributors"]) => void;
   onRemove: () => void;
 }) {
   const contributors = app.contributors;
+  const isTotalMode = app.contributionMode === "total";
   const contribMetricsById = new Map((metrics?.contributors ?? []).map((c) => [c.id, c]));
   const applicationTotal = metrics?.applicationTotal ?? 0;
   const probText = metrics ? formatProbability(app.category, metrics.probabilityOfWinning) : "-";
@@ -176,11 +187,11 @@ function ApplicationCard({
       {/* header */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-[10rem] flex-1">
-          <TextCell ariaLabel="Application name" value={app.name} onChange={onNameChange} />
+          <TextCell ariaLabel="Application Name" value={app.name} onChange={onNameChange} />
         </div>
         <div className="w-36">
           <SelectCell
-            ariaLabel="Application category"
+            ariaLabel="Application Category"
             value={app.category}
             options={CATEGORY_OPTIONS}
             onChange={onCategoryChange}
@@ -194,14 +205,14 @@ function ApplicationCard({
             className="h-4 w-4 rounded border-input"
             style={{ accentColor: "hsl(var(--brand))" }}
           />
-          Allotted
+          ALLOTED
         </label>
         <RemoveRowButton label={`Remove ${app.name}`} onClick={onRemove} />
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
         <span className="rounded-full border border-brand/30 bg-brand/10 px-2 py-0.5 font-medium text-brand">
-          Win probability: {probText}
+          Win Probability: {probText}
         </span>
         {(metrics?.flags ?? []).map((flag) => (
           <span key={flag} className="inline-flex items-center gap-1 text-amber-500">
@@ -211,11 +222,26 @@ function ApplicationCard({
         ))}
       </div>
 
+      {/* corpus input mode */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Corpus Input
+        </p>
+        <Segmented
+          options={[
+            { value: "total", label: "Total Amount" },
+            { value: "detailed", label: "Quantity & Price" },
+          ]}
+          value={app.contributionMode}
+          onChange={onContributionModeChange}
+        />
+      </div>
+
       {/* contributor table */}
-      <div className="mt-4">
+      <div className="mt-3">
         <div className="hidden items-center gap-2 px-1 pb-1 text-[11px] font-medium text-muted-foreground sm:flex">
           <span className="w-6" />
-          <span className="min-w-[8rem] flex-1">Contributor</span>
+          <span className="min-w-[8rem] flex-1">Contributor(s) Details</span>
           <span className="w-16 text-right">QTY</span>
           <span className="w-20 text-right">PRICE</span>
           <span className="w-24 text-right">TOTAL</span>
@@ -230,30 +256,43 @@ function ApplicationCard({
                 <span className="w-6 text-xs tabular-nums text-muted-foreground">#{i + 1}</span>
                 <div className="min-w-[8rem] flex-1">
                   <TextCell
-                    ariaLabel="Contributor name"
+                    ariaLabel="Contributor Name"
                     value={c.name}
                     onChange={(name) => onContributorsChange(patchRow(contributors, c.id, { name }))}
                   />
                 </div>
                 <div className="w-16">
                   <NumberCell
-                    ariaLabel="Units"
+                    ariaLabel="# Units"
                     value={c.units}
                     min={0}
+                    disabled={isTotalMode}
                     onChange={(units) => onContributorsChange(patchRow(contributors, c.id, { units }))}
                   />
                 </div>
                 <div className="w-20">
                   <NumberCell
-                    ariaLabel="Price per share"
+                    ariaLabel="Price/Share"
                     value={c.price}
                     min={0}
+                    disabled={isTotalMode}
                     onChange={(price) => onContributorsChange(patchRow(contributors, c.id, { price }))}
                   />
                 </div>
-                <span className="w-24 text-right text-sm tabular-nums">
-                  {fmtInr(cm?.contribution ?? c.units * c.price, 0)}
-                </span>
+                {isTotalMode ? (
+                  <div className="w-24">
+                    <NumberCell
+                      ariaLabel="Total Amount"
+                      value={c.amount}
+                      min={0}
+                      onChange={(amount) => onContributorsChange(patchRow(contributors, c.id, { amount }))}
+                    />
+                  </div>
+                ) : (
+                  <span className="w-24 text-right text-sm tabular-nums">
+                    {fmtInr(cm?.contribution ?? c.units * c.price, 0)}
+                  </span>
+                )}
                 <span className="w-16 text-right text-sm tabular-nums text-muted-foreground">
                   {fmtPercent(cm?.sharePct ?? 0, 1)}
                 </span>
@@ -269,7 +308,7 @@ function ApplicationCard({
         {/* totals row */}
         <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2">
           <span className="w-6" />
-          <span className="min-w-[8rem] flex-1 text-sm font-medium">Total corpus</span>
+          <span className="min-w-[8rem] flex-1 text-sm font-medium">Total Corpus</span>
           <span className="w-16" />
           <span className="w-20" />
           <span className="w-24 text-right text-sm font-semibold tabular-nums">
@@ -282,7 +321,10 @@ function ApplicationCard({
         <AddRowButton
           label="Add Contributor"
           onClick={() =>
-            onContributorsChange([...contributors, makeContributor({ name: "Contributor", units: 0, price: 0 })])
+            onContributorsChange([
+              ...contributors,
+              makeContributor({ name: "Contributor", units: 0, price: 0, amount: 0 }),
+            ])
           }
         />
       </div>
@@ -290,22 +332,20 @@ function ApplicationCard({
       {/* profit tiles */}
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <StatTile
-          label="Best-case profit"
+          label="Best-Case Profit"
           value={fmtInr(metrics?.bestCaseProfit ?? 0, 0)}
-          note="if fully allotted"
         />
         <StatTile
-          label="Expected profit"
+          label="Expected Profit"
           value={metrics && Number.isFinite(metrics.expectedProfit) ? fmtInr(metrics.expectedProfit, 0) : "-"}
           tone="brand"
           note="probability-weighted"
         />
         {app.allotted && (
           <StatTile
-            label="Actual profit"
+            label="Actual Profit"
             value={fmtInr(metrics?.actualProfit ?? 0, 0)}
             tone={actualTone}
-            note="on realised sale"
           />
         )}
       </div>
@@ -319,8 +359,8 @@ function ApplicationCard({
             </p>
             <Segmented
               options={[
-                { value: "total", label: "Total amount" },
-                { value: "detailed", label: "Quantity & price" },
+                { value: "total", label: "Total Amount" },
+                { value: "detailed", label: "Quantity & Price" },
               ]}
               value={app.allotment.mode}
               onChange={(mode) => onAllotmentChange({ ...app.allotment, mode })}
@@ -329,7 +369,7 @@ function ApplicationCard({
           {app.allotment.mode === "detailed" ? (
             <div className="grid gap-3 sm:grid-cols-2">
               <NumberField
-                label="Quantity allotted"
+                label="Quantity Allotted"
                 value={app.allotment.quantityAllotted}
                 min={0}
                 step={lotSize}
@@ -338,7 +378,7 @@ function ApplicationCard({
                 }
               />
               <NumberField
-                label="Selling price"
+                label="Selling Price"
                 value={app.allotment.sellingPrice}
                 min={0}
                 suffix="₹"
@@ -347,7 +387,7 @@ function ApplicationCard({
             </div>
           ) : (
             <NumberField
-              label="Total amount"
+              label="Total Amount"
               value={app.allotment.totalAmount}
               suffix="₹"
               onChange={(totalAmount) => onAllotmentChange({ ...app.allotment, totalAmount })}
@@ -467,25 +507,16 @@ function SubscriptionPanel({
     <div className="min-w-0">
       <div className="rounded-lg border border-border bg-background p-4">
         <h3 className="font-display text-sm font-semibold">Subscription Status</h3>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Latest oversubscription (times). Fixed categories drive allotment probability; add custom
-          rows (e.g. Employee) for anything else.
-        </p>
 
         <div className="mt-4 space-y-3">
           {leadingRows.map((row) => renderRow(row, row.category === "CUSTOM"))}
         </div>
 
-        <AddRowButton label="Add custom category" onClick={addCustom} />
+        <AddRowButton label="Add Custom Category" onClick={addCustom} />
 
         {overallRow && (
           <div className="mt-3 border-t border-border pt-3">{renderRow(overallRow, false)}</div>
         )}
-
-        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Estimate per SEBI draw-of-lots (P = 1/times). Real sHNI/bHNI odds run higher than 1/times;
-          undersubscribed categories allot in full.
-        </p>
       </div>
     </div>
   );

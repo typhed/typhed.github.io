@@ -50,19 +50,21 @@ export function TextCell({
   );
 }
 
-/** A bare numeric cell input. */
+/** A bare numeric cell input. `disabled` greys it out and blocks edits. */
 export function NumberCell({
   value,
   onChange,
   step = "any",
   min,
   ariaLabel,
+  disabled = false,
 }: {
   value: number;
   onChange: (value: number) => void;
   step?: string | number;
   min?: number;
   ariaLabel: string;
+  disabled?: boolean;
 }) {
   return (
     <input
@@ -71,9 +73,14 @@ export function NumberCell({
       aria-label={ariaLabel}
       step={step}
       min={min}
+      disabled={disabled}
       value={Number.isFinite(value) ? value : ""}
       onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
-      className={cn(cellClass, "tabular-nums")}
+      className={cn(
+        cellClass,
+        "tabular-nums",
+        disabled && "cursor-not-allowed bg-muted text-muted-foreground opacity-60",
+      )}
     />
   );
 }

@@ -10,11 +10,19 @@
  * reads named fields and rebuilds a fresh dataset.
  */
 
-import type { AllotmentMode, ApplicationType, IpoDataset, IpoMeta, SubscriptionCategory } from "./types";
+import type {
+  AllotmentMode,
+  ApplicationType,
+  ContributionMode,
+  IpoDataset,
+  IpoMeta,
+  SubscriptionCategory,
+} from "./types";
 import {
   ALLOTMENT_MODES,
   APPLICATION_CATEGORIES,
   APPLICATION_TYPES,
+  CONTRIBUTION_MODES,
   SCHEMA_VERSION,
   SUBSCRIPTION_CATEGORIES,
 } from "./types";
@@ -56,6 +64,7 @@ export function serializeIpoDataset(data: IpoDataset): string {
     applications: data.applications.map((a) => ({
       name: a.name,
       category: a.category,
+      contributionMode: a.contributionMode,
       allotted: a.allotted,
       allotment: {
         mode: a.allotment.mode,
@@ -63,7 +72,12 @@ export function serializeIpoDataset(data: IpoDataset): string {
         sellingPrice: a.allotment.sellingPrice,
         totalAmount: a.allotment.totalAmount,
       },
-      contributors: a.contributors.map((c) => ({ name: c.name, units: c.units, price: c.price })),
+      contributors: a.contributors.map((c) => ({
+        name: c.name,
+        units: c.units,
+        price: c.price,
+        amount: c.amount,
+      })),
     })),
     subscription: data.subscription.map((s) => ({
       category: s.category,
@@ -189,17 +203,28 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
     const contributors = asArray(entry.contributors).flatMap((c) => {
       if (!isObject(c)) return [];
-      const units = num(c.units, NaN);
-      const price = num(c.price, NaN);
-      if (!Number.isFinite(units) || !Number.isFinite(price)) return [];
-      return [
-        makeContributor({ name: str(c.name, "Contributor"), units: Math.max(0, units), price: Math.max(0, price) }),
-      ];
+      const unitsRaw = num(c.units, NaN);
+      const priceRaw = num(c.price, NaN);
+      const amountRaw = num(c.amount, NaN);
+      // Accept a row that carries EITHER units+price ("detailed") or a direct
+      // amount ("total"); drop only rows with no usable numeric field at all.
+      const hasDetailed = Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
+      const hasTotal = Number.isFinite(amountRaw);
+      if (!hasDetailed && !hasTotal) return [];
+      const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0);
+      const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0);
+      // Fall back to units*price so a legacy row keeps its corpus if the user
+      // later switches the application to "total" mode.
+      const amount = Math.max(0, Number.isFinite(amountRaw) ? amountRaw : units * price);
+      return [makeContributor({ name: str(c.name, "Contributor"), units, price, amount })];
     });
     return [
       makeApplication({
         name: str(entry.name, "Application"),
         category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
+        // Legacy exports (no mode) carry units+price, so default to "detailed"
+        // to preserve them; new exports set the mode explicitly.
+        contributionMode: enumOr<ContributionMode>(entry.contributionMode, CONTRIBUTION_MODES, "detailed"),
         allotted: entry.allotted === true,
         allotment: {
           mode: enumOr<AllotmentMode>(allotmentRaw.mode, ALLOTMENT_MODES, "total"),
