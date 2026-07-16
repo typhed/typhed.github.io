@@ -54,7 +54,8 @@ export function makeSubscriptionRow(init: Omit<SubscriptionRow, "id">): Subscrip
 export function defaultIpoDataset(): IpoDataset {
   return {
     meta: {
-      companyName: "Sample IPO",
+      companyName: "SBI Funds Management",
+      nseSymbol: "SBIFUNDS",
       applicationType: "MAINBOARD",
       lotSize: 26,
       priceBand: { min: 545, max: 574 },
@@ -78,36 +79,25 @@ export function defaultIpoDataset(): IpoDataset {
       makeFinancialRow({ period: "Mar'26", totalAssets: 6420.45, grossRevenue: 4976.11, pat: 3067.38 }),
     ],
     gmp: [
-      makeGmpRow({ date: "2026-07-10", value: 103 }),
-      makeGmpRow({ date: "2026-07-11", value: 144 }),
-      makeGmpRow({ date: "2026-07-12", value: 102 }),
-      makeGmpRow({ date: "2026-07-13", value: 128 }),
-      makeGmpRow({ date: "2026-07-14", value: 123 }),
-      makeGmpRow({ date: "2026-07-15", value: 138 }),
-      makeGmpRow({ date: "2026-07-16", value: 100 }),
-      makeGmpRow({ date: "2026-07-17", value: 127 }),
-      makeGmpRow({ date: "2026-07-18", value: 101 }),
-      makeGmpRow({ date: "2026-07-19", value: 130 }),
-      makeGmpRow({ date: "2026-07-20", value: 120 }),
+      makeGmpRow({ date: "2026-07-09", value: 84 }),
+      makeGmpRow({ date: "2026-07-10", value: 110 }),
+      makeGmpRow({ date: "2026-07-11", value: 88 }),
+      makeGmpRow({ date: "2026-07-12", value: 89 }),
+      makeGmpRow({ date: "2026-07-13", value: 100 }),
+      makeGmpRow({ date: "2026-07-14", value: 88 }),
+      makeGmpRow({ date: "2026-07-15", value: 92 }),
+      makeGmpRow({ date: "2026-07-16", value: 96 }),
     ],
-    applications: [
-      makeApplication({
-        name: "Debmalya Pramanik (ZERODHA)",
-        category: "RETAIL",
-        allotted: false,
-        allotment: { quantityAllotted: 0, sellingPrice: 0 },
-        contributors: [
-          makeContributor({ name: "Debmalya Pramanik", units: 13, price: 574 }),
-          makeContributor({ name: "Ankita Santra", units: 13, price: 574 }),
-        ],
-      }),
-    ],
+    // No applications by default - the user creates their own from a blank tracker.
+    applications: [],
     subscription: [
-      makeSubscriptionRow({ category: "RETAIL", timesSubscribed: 5.2 }),
-      makeSubscriptionRow({ category: "sHNI", timesSubscribed: 8.1 }),
-      makeSubscriptionRow({ category: "bHNI", timesSubscribed: 12.3 }),
-      makeSubscriptionRow({ category: "SHAREHOLDER", timesSubscribed: 2.4 }),
-      makeSubscriptionRow({ category: "OVERALL", timesSubscribed: 4.5 }),
+      makeSubscriptionRow({ category: "QIB", timesSubscribed: 140.11 }),
+      makeSubscriptionRow({ category: "bHNI", timesSubscribed: 26.01 }),
+      makeSubscriptionRow({ category: "sHNI", timesSubscribed: 15.51 }),
+      makeSubscriptionRow({ category: "RETAIL", timesSubscribed: 3.76 }),
+      makeSubscriptionRow({ category: "CUSTOM", label: "EMPLOYEE", timesSubscribed: 4.65 }),
+      makeSubscriptionRow({ category: "SHAREHOLDER", timesSubscribed: 9.52 }),
+      makeSubscriptionRow({ category: "OVERALL", timesSubscribed: 41.73 }),
     ],
   };
 }

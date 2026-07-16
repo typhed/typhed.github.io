@@ -17,12 +17,33 @@ export interface GmpStats {
   count: number;
   latest: number;
   first: number;
+  /** Second-to-last reading; NaN when fewer than two readings exist. */
+  prev: number;
   min: number;
   max: number;
   avg: number;
-  /** latest - first, in INR. */
+  /** latest - first, in INR (change since the first reading). */
   trend: number;
+  /** latest - prev, in INR (change since the previous reading); NaN when count < 2. */
+  deltaPrev: number;
   direction: Direction;
+}
+
+/** A simple ordinary-least-squares projection of GMP onto the listing day. */
+export interface GmpForecast {
+  /** False when fewer than two readings make a fit impossible. */
+  ok: boolean;
+  /** Least-squares slope, INR of GMP per day. */
+  slope: number;
+  intercept: number;
+  /** Coefficient of determination in [0, 1]; 0 when GMP is pure noise. */
+  rSquared: number;
+  /** Day offset (from the first reading) the projection is evaluated at. */
+  horizonDays: number;
+  /** Projected GMP at the horizon. */
+  predictedGmp: number;
+  /** cutoffPrice + predictedGmp, floored at 0. */
+  predictedListingPrice: number;
 }
 
 export interface FinancialDerived extends FinancialRow {
@@ -43,6 +64,8 @@ export interface IpoMetrics {
   listingGainPct: number;
   profitPerLot: number;
   gmp: GmpStats;
+  /** Linear-regression projection of GMP onto the listing day. */
+  gmpForecast: GmpForecast;
   /** Financials sorted oldest -> newest with growth/margin attached. */
   financials: FinancialDerived[];
   latestFinancial: FinancialDerived | null;
@@ -71,16 +94,89 @@ export function gmpStats(rows: GmpRow[]): GmpStats {
   const values = sortedGmp(rows).map((row) => row.value);
   const count = values.length;
   if (count === 0) {
-    return { count: 0, latest: NaN, first: NaN, min: NaN, max: NaN, avg: NaN, trend: NaN, direction: "flat" };
+    return {
+      count: 0,
+      latest: NaN,
+      first: NaN,
+      prev: NaN,
+      min: NaN,
+      max: NaN,
+      avg: NaN,
+      trend: NaN,
+      deltaPrev: NaN,
+      direction: "flat",
+    };
   }
   const first = values[0]!;
   const latest = values[count - 1]!;
+  const prev = count > 1 ? values[count - 2]! : NaN;
   const min = Math.min(...values);
   const max = Math.max(...values);
   const avg = values.reduce((sum, v) => sum + v, 0) / count;
   const trend = latest - first;
+  const deltaPrev = count > 1 ? latest - prev : NaN;
   const direction: Direction = trend > 0 ? "up" : trend < 0 ? "down" : "flat";
-  return { count, latest, first, min, max, avg, trend, direction };
+  return { count, latest, first, prev, min, max, avg, trend, deltaPrev, direction };
+}
+
+/**
+ * Fit an ordinary-least-squares line to (day-offset, GMP) and project it onto
+ * the listing day. `x` is each reading's whole-day offset from the first
+ * reading, so extrapolating to the listing date is a natural horizon; when no
+ * future listing date is known it projects one day past the last reading.
+ */
+export function gmpForecast(
+  rows: GmpRow[],
+  options: { cutoffPrice: number; listingDate?: string | null },
+): GmpForecast {
+  const none: GmpForecast = {
+    ok: false,
+    slope: NaN,
+    intercept: NaN,
+    rSquared: NaN,
+    horizonDays: NaN,
+    predictedGmp: NaN,
+    predictedListingPrice: NaN,
+  };
+
+  const sorted = sortedGmp(rows);
+  const n = sorted.length;
+  if (n < 2) return none;
+
+  const firstDate = sorted[0]!.date;
+  const xs = sorted.map((row) => daysBetween(firstDate, row.date));
+  const ys = sorted.map((row) => row.value);
+  if (xs.some((x) => !Number.isFinite(x)) || ys.some((y) => !Number.isFinite(y))) return none;
+
+  const meanX = xs.reduce((sum, x) => sum + x, 0) / n;
+  const meanY = ys.reduce((sum, y) => sum + y, 0) / n;
+  let sxx = 0;
+  let sxy = 0;
+  let syy = 0;
+  for (let i = 0; i < n; i += 1) {
+    const dx = xs[i]! - meanX;
+    const dy = ys[i]! - meanY;
+    sxx += dx * dx;
+    sxy += dx * dy;
+    syy += dy * dy;
+  }
+
+  const lastX = xs[n - 1]!;
+  const listingOffset = options.listingDate ? daysBetween(firstDate, options.listingDate) : NaN;
+  const horizonDays = Number.isFinite(listingOffset) && listingOffset > lastX ? listingOffset : lastX + 1;
+
+  // All readings share one date: no slope is defined - project the flat mean.
+  if (sxx <= 0) {
+    const predictedListingPrice = Math.max(0, options.cutoffPrice + meanY);
+    return { ok: true, slope: 0, intercept: meanY, rSquared: 0, horizonDays, predictedGmp: meanY, predictedListingPrice };
+  }
+
+  const slope = sxy / sxx;
+  const intercept = meanY - slope * meanX;
+  const rSquared = syy > 0 ? Math.max(0, Math.min(1, (slope * sxy) / syy)) : 1;
+  const predictedGmp = slope * horizonDays + intercept;
+  const predictedListingPrice = Math.max(0, options.cutoffPrice + predictedGmp);
+  return { ok: true, slope, intercept, rSquared, horizonDays, predictedGmp, predictedListingPrice };
 }
 
 /** Attach YoY growth and PAT margin to each financial row, sorted oldest -> newest. */
@@ -133,6 +229,7 @@ export function deriveIpoMetrics(data: IpoDataset, today: string): IpoMetrics {
     listingGainPct,
     profitPerLot: latestGmp * lotSize,
     gmp,
+    gmpForecast: gmpForecast(data.gmp, { cutoffPrice: priceBand.max, listingDate }),
     financials,
     latestFinancial,
     listingDate,

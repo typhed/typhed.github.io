@@ -27,6 +27,11 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
             <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
               {meta.companyName || "Untitled IPO"}
             </h2>
+            {meta.nseSymbol && (
+              <span className="rounded-full border border-border bg-muted px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                NSE: {meta.nseSymbol}
+              </span>
+            )}
             <span
               className={cn(
                 "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",

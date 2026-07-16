@@ -11,11 +11,11 @@ import type {
   SubscriptionCategory,
   SubscriptionRow,
 } from "@/lib/ipo/types";
-import { APPLICATION_CATEGORIES, DEFAULT_SUBSCRIPTION_CATEGORIES, SUBSCRIPTION_CATEGORIES } from "@/lib/ipo/types";
+import { APPLICATION_CATEGORIES } from "@/lib/ipo/types";
 import type { ApplicationMetrics } from "@/lib/ipo/applications";
 import { probabilityOfAllotment } from "@/lib/ipo/applications";
 import { makeApplication, makeContributor, makeSubscriptionRow } from "@/lib/ipo/defaults";
-import { NumberField, StatTile, ToolCard } from "@/components/tools/controls";
+import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls";
 import {
   AddRowButton,
   dropRow,
@@ -28,17 +28,17 @@ import {
 
 const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }));
 
+// Fixed-category display labels: uppercase throughout except sHNI / bHNI.
 const SUB_LABEL: Record<SubscriptionCategory, string> = {
-  RETAIL: "Retail",
+  RETAIL: "RETAIL",
   sHNI: "sHNI",
   bHNI: "bHNI",
-  SHAREHOLDER: "Shareholder",
+  SHAREHOLDER: "SHAREHOLDER",
   QIB: "QIB",
-  EMPLOYEE: "Employee",
-  OVERALL: "Overall",
+  EMPLOYEE: "EMPLOYEE",
+  OVERALL: "OVERALL",
+  CUSTOM: "CUSTOM",
 };
-
-const SUB_OPTIONS = SUBSCRIPTION_CATEGORIES.map((c) => ({ value: c, label: SUB_LABEL[c] }));
 
 function isApplicationCategory(c: SubscriptionCategory): c is ApplicationCategory {
   return (APPLICATION_CATEGORIES as readonly string[]).includes(c);
@@ -92,7 +92,7 @@ export function IpoApplications({
       title="IPO Application Tracker"
       description="Track applications and their contributors; allotment probability is estimated per SEBI rules."
     >
-      <div className="grid gap-6 lg:grid-cols-[75fr_25fr]">
+      <div className="grid gap-6 lg:grid-cols-[70fr_30fr]">
         {/* LEFT - applications */}
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
@@ -126,7 +126,7 @@ export function IpoApplications({
                   name: "New application",
                   category: "RETAIL",
                   allotted: false,
-                  allotment: { quantityAllotted: 0, sellingPrice: 0 },
+                  allotment: { mode: "total", quantityAllotted: 0, sellingPrice: 0, totalAmount: 0 },
                   contributors: [makeContributor({ name: "Contributor", units: 0, price: 0 })],
                 }),
               ])
@@ -313,27 +313,46 @@ function ApplicationCard({
       {/* allotment panel */}
       {app.allotted && (
         <div className="mt-4 rounded-md border border-border bg-card p-3">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            Allotment
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <NumberField
-              label="Quantity allotted"
-              value={app.allotment.quantityAllotted}
-              min={0}
-              step={lotSize}
-              onChange={(quantityAllotted) =>
-                onAllotmentChange({ ...app.allotment, quantityAllotted })
-              }
-            />
-            <NumberField
-              label="Selling price"
-              value={app.allotment.sellingPrice}
-              min={0}
-              suffix="₹"
-              onChange={(sellingPrice) => onAllotmentChange({ ...app.allotment, sellingPrice })}
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Allotment
+            </p>
+            <Segmented
+              options={[
+                { value: "total", label: "Total amount" },
+                { value: "detailed", label: "Quantity & price" },
+              ]}
+              value={app.allotment.mode}
+              onChange={(mode) => onAllotmentChange({ ...app.allotment, mode })}
             />
           </div>
+          {app.allotment.mode === "detailed" ? (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <NumberField
+                label="Quantity allotted"
+                value={app.allotment.quantityAllotted}
+                min={0}
+                step={lotSize}
+                onChange={(quantityAllotted) =>
+                  onAllotmentChange({ ...app.allotment, quantityAllotted })
+                }
+              />
+              <NumberField
+                label="Selling price"
+                value={app.allotment.sellingPrice}
+                min={0}
+                suffix="₹"
+                onChange={(sellingPrice) => onAllotmentChange({ ...app.allotment, sellingPrice })}
+              />
+            </div>
+          ) : (
+            <NumberField
+              label="Total amount"
+              value={app.allotment.totalAmount}
+              suffix="₹"
+              onChange={(totalAmount) => onAllotmentChange({ ...app.allotment, totalAmount })}
+            />
+          )}
           <div className="mt-3">
             <p className="mb-1 text-xs text-muted-foreground">Profit share per contributor</p>
             <ul className="space-y-1 text-sm">
@@ -371,69 +390,96 @@ function SubscriptionPanel({
   subscription: SubscriptionRow[];
   onChange: (next: SubscriptionRow[]) => void;
 }) {
-  const maxTimes = Math.max(1, ...subscription.map((r) => (Number.isFinite(r.timesSubscribed) ? r.timesSubscribed : 0)));
-  const missing = DEFAULT_SUBSCRIPTION_CATEGORIES.filter(
-    (c) => !subscription.some((r) => r.category === c),
+  const maxTimes = Math.max(
+    1,
+    ...subscription.map((r) => (Number.isFinite(r.timesSubscribed) ? r.timesSubscribed : 0)),
   );
+
+  // OVERALL is always pinned last; user-added CUSTOM rows sit above it.
+  const overallRow = subscription.find((r) => r.category === "OVERALL");
+  const leadingRows = subscription.filter((r) => r.category !== "OVERALL");
+
+  const addCustom = () => {
+    const custom = makeSubscriptionRow({ category: "CUSTOM", label: "NEW CATEGORY", timesSubscribed: 0 });
+    const overallIdx = subscription.findIndex((r) => r.category === "OVERALL");
+    const next =
+      overallIdx === -1
+        ? [...subscription, custom]
+        : [...subscription.slice(0, overallIdx), custom, ...subscription.slice(overallIdx)];
+    onChange(next);
+  };
+
+  const renderRow = (row: SubscriptionRow, removable: boolean) => {
+    const isCustom = row.category === "CUSTOM";
+    const isApp = isApplicationCategory(row.category);
+    const p = isApplicationCategory(row.category)
+      ? probabilityOfAllotment(row.category, row.timesSubscribed)
+      : null;
+    const barPct = Math.min(100, (row.timesSubscribed / maxTimes) * 100);
+    const label = isCustom ? row.label ?? "" : SUB_LABEL[row.category];
+
+    return (
+      <div key={row.id}>
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            {isCustom ? (
+              <TextCell
+                ariaLabel="Custom category name"
+                value={row.label ?? ""}
+                onChange={(next) => onChange(patchRow(subscription, row.id, { label: next }))}
+              />
+            ) : (
+              <span className="block truncate px-1 py-1.5 text-sm font-medium">{label}</span>
+            )}
+          </div>
+          <div className="w-24">
+            <NumberCell
+              ariaLabel={`${label || "Custom"} times subscribed`}
+              value={row.timesSubscribed}
+              min={0}
+              onChange={(timesSubscribed) =>
+                onChange(patchRow(subscription, row.id, { timesSubscribed }))
+              }
+            />
+          </div>
+          {removable ? (
+            <RemoveRowButton
+              label={`Remove ${label || "custom category"}`}
+              onClick={() => onChange(dropRow(subscription, row.id))}
+            />
+          ) : (
+            <span className="h-8 w-8 shrink-0" aria-hidden />
+          )}
+        </div>
+        <div className="mt-1.5 flex items-center gap-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-brand" style={{ width: `${barPct}%` }} />
+          </div>
+          <span className="w-16 text-right text-[11px] tabular-nums text-muted-foreground">
+            {isApp ? `P ${formatPercentShort(p)}` : `${row.timesSubscribed}x`}
+          </span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-w-0">
       <div className="rounded-lg border border-border bg-background p-4">
         <h3 className="font-display text-sm font-semibold">Subscription Status</h3>
         <p className="mt-1 text-xs text-muted-foreground">
-          Latest oversubscription (times). Drives allotment probability per category.
+          Latest oversubscription (times). Fixed categories drive allotment probability; add custom
+          rows (e.g. Employee) for anything else.
         </p>
 
         <div className="mt-4 space-y-3">
-          {subscription.map((row) => {
-            const p = isApplicationCategory(row.category)
-              ? probabilityOfAllotment(row.category, row.timesSubscribed)
-              : null;
-            const barPct = Math.min(100, (row.timesSubscribed / maxTimes) * 100);
-            return (
-              <div key={row.id}>
-                <div className="flex items-center gap-2">
-                  <div className="min-w-0 flex-1">
-                    <SelectCell
-                      ariaLabel="Subscription category"
-                      value={row.category}
-                      options={SUB_OPTIONS}
-                      onChange={(category) => onChange(patchRow(subscription, row.id, { category }))}
-                    />
-                  </div>
-                  <div className="w-16">
-                    <NumberCell
-                      ariaLabel="Times subscribed"
-                      value={row.timesSubscribed}
-                      min={0}
-                      onChange={(timesSubscribed) =>
-                        onChange(patchRow(subscription, row.id, { timesSubscribed }))
-                      }
-                    />
-                  </div>
-                  <RemoveRowButton
-                    label={`Remove ${row.category}`}
-                    onClick={() => onChange(dropRow(subscription, row.id))}
-                  />
-                </div>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                    <div className="h-full rounded-full bg-brand" style={{ width: `${barPct}%` }} />
-                  </div>
-                  <span className="w-16 text-right text-[11px] tabular-nums text-muted-foreground">
-                    {isApplicationCategory(row.category) ? `P ${formatPercentShort(p)}` : `${row.timesSubscribed}x`}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+          {leadingRows.map((row) => renderRow(row, row.category === "CUSTOM"))}
         </div>
 
-        {missing.length > 0 && (
-          <AddRowButton
-            label={`Add ${SUB_LABEL[missing[0]!]}`}
-            onClick={() => onChange([...subscription, makeSubscriptionRow({ category: missing[0]!, timesSubscribed: 0 })])}
-          />
+        <AddRowButton label="Add custom category" onClick={addCustom} />
+
+        {overallRow && (
+          <div className="mt-3 border-t border-border pt-3">{renderRow(overallRow, false)}</div>
         )}
 
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">

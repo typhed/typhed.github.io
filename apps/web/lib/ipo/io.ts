@@ -10,8 +10,9 @@
  * reads named fields and rebuilds a fresh dataset.
  */
 
-import type { ApplicationType, IpoDataset, IpoMeta, SubscriptionCategory } from "./types";
+import type { AllotmentMode, ApplicationType, IpoDataset, IpoMeta, SubscriptionCategory } from "./types";
 import {
+  ALLOTMENT_MODES,
   APPLICATION_CATEGORIES,
   APPLICATION_TYPES,
   SCHEMA_VERSION,
@@ -35,6 +36,7 @@ export function serializeIpoDataset(data: IpoDataset): string {
   const clean = {
     meta: {
       companyName: data.meta.companyName,
+      nseSymbol: data.meta.nseSymbol,
       applicationType: data.meta.applicationType,
       lotSize: data.meta.lotSize,
       priceBand: { min: data.meta.priceBand.min, max: data.meta.priceBand.max },
@@ -56,13 +58,16 @@ export function serializeIpoDataset(data: IpoDataset): string {
       category: a.category,
       allotted: a.allotted,
       allotment: {
+        mode: a.allotment.mode,
         quantityAllotted: a.allotment.quantityAllotted,
         sellingPrice: a.allotment.sellingPrice,
+        totalAmount: a.allotment.totalAmount,
       },
       contributors: a.contributors.map((c) => ({ name: c.name, units: c.units, price: c.price })),
     })),
     subscription: data.subscription.map((s) => ({
       category: s.category,
+      ...(s.category === "CUSTOM" ? { label: s.label ?? "" } : {}),
       timesSubscribed: s.timesSubscribed,
     })),
   };
@@ -143,6 +148,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
 
   const meta: IpoMeta = {
     companyName: str(metaRaw.companyName, "Untitled IPO"),
+    nseSymbol: str(metaRaw.nseSymbol, ""),
     applicationType: enumOr<ApplicationType>(metaRaw.applicationType, APPLICATION_TYPES, "MAINBOARD"),
     lotSize: Math.max(1, Math.round(num(metaRaw.lotSize, 1))),
     priceBand: { min: bandMin, max: bandMax },
@@ -196,8 +202,10 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
         category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
         allotted: entry.allotted === true,
         allotment: {
+          mode: enumOr<AllotmentMode>(allotmentRaw.mode, ALLOTMENT_MODES, "total"),
           quantityAllotted: Math.max(0, num(allotmentRaw.quantityAllotted, 0)),
           sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
+          totalAmount: num(allotmentRaw.totalAmount, 0),
         },
         contributors,
       }),
@@ -206,10 +214,12 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
 
   const subscription = asArray(raw.subscription).flatMap((entry) => {
     if (!isObject(entry)) return [];
-    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(str(entry.category, ""))) return [];
+    const category = str(entry.category, "");
+    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category)) return [];
     return [
       makeSubscriptionRow({
-        category: entry.category as SubscriptionCategory,
+        category: category as SubscriptionCategory,
+        ...(category === "CUSTOM" ? { label: str(entry.label, "Custom") } : {}),
         timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
       }),
     ];

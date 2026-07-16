@@ -166,7 +166,13 @@ export function IpoDashboard() {
       <IpoTimeline milestones={data.timeline} today={today} />
 
       <div className="grid items-stretch gap-6 lg:grid-cols-[45fr_55fr]">
-        <IpoGmp rows={data.gmp} stats={metrics.gmp} className="h-full min-w-0" />
+        <IpoGmp
+          rows={data.gmp}
+          stats={metrics.gmp}
+          forecast={metrics.gmpForecast}
+          listingDate={metrics.listingDate}
+          className="h-full min-w-0"
+        />
         <IpoFinancials
           derived={metrics.financials}
           unitLabel={data.meta.unitLabel}

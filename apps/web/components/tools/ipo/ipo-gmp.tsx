@@ -4,26 +4,46 @@ import * as React from "react";
 
 import { fmtDayMonth, fmtDisplayDate, fmtInr } from "@/lib/format";
 import type { GmpRow } from "@/lib/ipo/types";
-import { niceScale, sortedGmp, type GmpStats } from "@/lib/ipo/analytics";
+import { niceScale, sortedGmp, type GmpForecast, type GmpStats } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
 import { StatTile, ToolCard } from "@/components/tools/controls";
 
+/** Signed INR delta, e.g. "+₹12" / "-₹4" / "-" when not finite. */
+function fmtDelta(value: number): string {
+  if (!Number.isFinite(value)) return "-";
+  return `${value >= 0 ? "+" : ""}${fmtInr(value, 0)}`;
+}
+
+/** Tone for a signed delta: green when up, red when down. */
+function deltaTone(value: number): "positive" | "negative" | "default" {
+  if (!Number.isFinite(value) || value === 0) return "default";
+  return value > 0 ? "positive" : "negative";
+}
+
 const HEIGHT = 300;
-const PAD = { top: 16, right: 18, bottom: 28, left: 52 };
+// Right padding leaves a gutter for the latest-GMP value label at the line end.
+const PAD = { top: 16, right: 46, bottom: 28, left: 52 };
 
 export function IpoGmp({
   rows,
   stats,
+  forecast,
+  listingDate,
   currencyLabel = "₹",
   className,
 }: {
   rows: GmpRow[];
   stats: GmpStats;
+  forecast: GmpForecast;
+  listingDate?: string | null;
   currencyLabel?: string;
   className?: string;
 }) {
   const sorted = React.useMemo(() => sortedGmp(rows), [rows]);
-  const trendTone = stats.direction === "up" ? "positive" : stats.direction === "down" ? "negative" : "default";
+
+  const predictedNote = forecast.ok
+    ? `Simple linear regression of GMP${listingDate ? ` to ${fmtDisplayDate(listingDate)}` : ""} · projected GMP ${fmtInr(forecast.predictedGmp, 0)}`
+    : "Needs at least two GMP readings";
 
   return (
     <ToolCard
@@ -33,17 +53,33 @@ export function IpoGmp({
     >
       <GmpChart rows={sorted} currencyLabel={currencyLabel} />
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
         <StatTile label="Latest GMP" value={fmtInr(stats.latest, 0)} tone="brand" />
-        <StatTile label="Average" value={fmtInr(stats.avg, 0)} />
         <StatTile label="High" value={fmtInr(stats.max, 0)} tone="positive" />
         <StatTile label="Low" value={fmtInr(stats.min, 0)} tone="negative" />
+
+        <StatTile label="Average" value={fmtInr(stats.avg, 0)} />
         <StatTile
-          label="Trend"
-          value={`${stats.trend >= 0 ? "+" : ""}${fmtInr(stats.trend, 0)}`}
-          tone={trendTone}
+          label="Δ First Date"
+          value={fmtDelta(stats.trend)}
+          tone={deltaTone(stats.trend)}
           note="since first reading"
         />
+        <StatTile
+          label="Δ Previous Date"
+          value={fmtDelta(stats.deltaPrev)}
+          tone={deltaTone(stats.deltaPrev)}
+          note="since previous reading"
+        />
+
+        <div className="sm:col-span-3">
+          <StatTile
+            label="Predicted Expected Listing"
+            value={forecast.ok ? fmtInr(forecast.predictedListingPrice, 0) : "-"}
+            tone="brand"
+            note={predictedNote}
+          />
+        </div>
       </div>
     </ToolCard>
   );
@@ -206,11 +242,12 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
             ))}
 
           <text
-            x={Math.min(x(lastIdx), width - PAD.right - 2)}
-            y={y(rows[lastIdx]!.value) - 12}
-            textAnchor="end"
+            x={x(lastIdx) + 9}
+            y={y(rows[lastIdx]!.value)}
+            dy="0.32em"
+            textAnchor="start"
             fill="currentColor"
-            className="text-[11px] font-semibold tabular-nums text-foreground"
+            className="text-[13px] font-semibold tabular-nums text-foreground"
           >
             {currencyLabel}
             {rows[lastIdx]!.value}

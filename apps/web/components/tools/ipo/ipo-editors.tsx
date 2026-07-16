@@ -35,6 +35,14 @@ export function MetaEditor({
         />
       </div>
       <div className="sm:col-span-2">
+        <TextField
+          label="NSE symbol"
+          value={meta.nseSymbol}
+          placeholder="SBIFUNDS"
+          onChange={(nseSymbol) => onChange({ nseSymbol: nseSymbol.toUpperCase() })}
+        />
+      </div>
+      <div className="sm:col-span-2">
         <span className="mb-1 block text-sm font-medium">Application type</span>
         <Segmented
           options={[

@@ -126,17 +126,24 @@ export function deriveApplicationMetrics(
   const expectedProfit =
     probabilityOfWinning === null ? NaN : probabilityOfWinning * likelyAllottedUnits * latestGmp;
 
-  // Allotment (actual) profit.
-  let allottedQty = app.allotted ? app.allotment.quantityAllotted : 0;
+  // Allotment (actual) profit. In "total" mode the realised profit is entered
+  // directly; in "detailed" mode it is derived from quantity and selling price.
+  let rawActual = 0;
   if (app.allotted) {
-    if (allottedQty > appliedUnits) {
-      allottedQty = appliedUnits;
-      flags.push("Allotted quantity exceeds applied - clamped");
+    if (app.allotment.mode === "detailed") {
+      let allottedQty = app.allotment.quantityAllotted;
+      if (allottedQty > appliedUnits) {
+        allottedQty = appliedUnits;
+        flags.push("Allotted quantity exceeds applied - clamped");
+      }
+      if (allottedQty <= 0) flags.push("Marked allotted but quantity is zero");
+      else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("Allotted quantity is not a whole number of lots");
+      rawActual = allottedQty * (app.allotment.sellingPrice - cutoffPrice);
+    } else {
+      rawActual = Number.isFinite(app.allotment.totalAmount) ? app.allotment.totalAmount : 0;
+      if (rawActual === 0) flags.push("Marked allotted but total amount is zero");
     }
-    if (allottedQty <= 0) flags.push("Marked allotted but quantity is zero");
-    else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("Allotted quantity is not a whole number of lots");
   }
-  const rawActual = app.allotted ? allottedQty * (app.allotment.sellingPrice - cutoffPrice) : 0;
   // Normalise negative zero (0 * negative) so the UI shows "₹0", not "-₹0".
   const actualProfit = rawActual === 0 ? 0 : rawActual;
 
