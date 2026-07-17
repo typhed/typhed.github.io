@@ -4,8 +4,9 @@ import * as React from "react";
 
 import { fmtDisplayDate } from "@/lib/format";
 import type { FinancialRow, GmpRow, IpoMeta, Milestone } from "@/lib/ipo/types";
-import { sortedGmp, sortedTimeline } from "@/lib/ipo/analytics";
-import { makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
+import { FIXED_MILESTONE_LABELS, isFixedMilestone } from "@/lib/ipo/types";
+import { sortedGmp } from "@/lib/ipo/analytics";
+import { blankFixedMilestones, makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
 import { NumberField, Segmented, TextField } from "@/components/tools/controls";
 import {
   AddRowButton,
@@ -14,6 +15,8 @@ import {
   NumberCell,
   patchRow,
   RemoveRowButton,
+  ReorderButtons,
+  ResetButton,
   TextCell,
 } from "@/components/tools/ipo/editable-table";
 
@@ -84,7 +87,12 @@ export function MetaEditor({
   );
 }
 
-/** IPO timeline milestones. */
+/**
+ * IPO timeline milestones. The fixed lifecycle milestones are shown as
+ * read-only, date-only rows (no rename, no delete); user-added milestones sit
+ * below them and are fully editable, removable and re-orderable. "Reset
+ * timeline" drops the custom milestones and clears every date.
+ */
 export function TimelineEditor({
   milestones,
   today,
@@ -94,16 +102,57 @@ export function TimelineEditor({
   today: string;
   onChange: (next: Milestone[]) => void;
 }) {
-  const ordered = sortedTimeline(milestones);
+  const fixedLabels = FIXED_MILESTONE_LABELS as readonly string[];
+  const fixed = [...milestones.filter((m) => isFixedMilestone(m.label))].sort(
+    (a, b) => fixedLabels.indexOf(a.label) - fixedLabels.indexOf(b.label),
+  );
+  const custom = milestones.filter((m) => !isFixedMilestone(m.label));
+
+  const moveCustom = (id: string, direction: -1 | 1) => {
+    const idx = custom.findIndex((m) => m.id === id);
+    const target = idx + direction;
+    if (idx < 0 || target < 0 || target >= custom.length) return;
+    const next = [...custom];
+    [next[idx], next[target]] = [next[target]!, next[idx]!];
+    onChange([...fixed, ...next]);
+  };
+
+  const handleReset = () => {
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        "Reset the IPO Timeline?\n\nThis clears every milestone date and removes any milestones you added. The fixed milestones stay so you can fill their dates in again.",
+      );
+    if (confirmed) onChange(blankFixedMilestones());
+  };
+
   return (
     <div>
       <div className="space-y-2">
         <div className="hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Milestone</span>
           <span>Date</span>
-          <span className="sr-only">Remove</span>
+          <span className="sr-only">Actions</span>
         </div>
-        {ordered.map((milestone) => (
+
+        {fixed.map((milestone) => (
+          <div
+            key={milestone.id}
+            className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
+          >
+            <div className="flex items-center rounded-md border border-input bg-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground">
+              {milestone.label}
+            </div>
+            <DateCell
+              ariaLabel={`${milestone.label} date`}
+              value={milestone.date}
+              onChange={(date) => onChange(patchRow(milestones, milestone.id, { date }))}
+            />
+            <span aria-hidden className="hidden sm:block" />
+          </div>
+        ))}
+
+        {custom.map((milestone, idx) => (
           <div
             key={milestone.id}
             className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
@@ -118,19 +167,32 @@ export function TimelineEditor({
               value={milestone.date}
               onChange={(date) => onChange(patchRow(milestones, milestone.id, { date }))}
             />
-            <RemoveRowButton
-              label={`Remove ${milestone.label}`}
-              onClick={() => onChange(dropRow(milestones, milestone.id))}
-            />
+            <div className="flex items-center">
+              <ReorderButtons
+                label={milestone.label || "milestone"}
+                canMoveUp={idx > 0}
+                canMoveDown={idx < custom.length - 1}
+                onMoveUp={() => moveCustom(milestone.id, -1)}
+                onMoveDown={() => moveCustom(milestone.id, 1)}
+              />
+              <RemoveRowButton
+                label={`Remove ${milestone.label || "milestone"}`}
+                onClick={() => onChange(dropRow(milestones, milestone.id))}
+              />
+            </div>
           </div>
         ))}
       </div>
-      <AddRowButton
-        label="Add milestone"
-        onClick={() =>
-          onChange([...milestones, makeMilestone({ label: "New milestone", date: today || "2026-01-01" })])
-        }
-      />
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <AddRowButton
+          label="Add milestone"
+          onClick={() =>
+            onChange([...milestones, makeMilestone({ label: "New milestone", date: today || "2026-01-01" })])
+          }
+        />
+        <ResetButton label="Reset timeline" onClick={handleReset} />
+      </div>
     </div>
   );
 }

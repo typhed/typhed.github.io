@@ -16,7 +16,7 @@ import type {
   Milestone,
   SubscriptionRow,
 } from "./types";
-import { SCHEMA_VERSION } from "./types";
+import { FIXED_MILESTONE_LABELS, SCHEMA_VERSION } from "./types";
 
 /** Stable-enough unique id for a row; used only as a React key. */
 export function newId(): string {
@@ -28,6 +28,15 @@ export function newId(): string {
 
 export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
   return { id: newId(), ...init };
+}
+
+/**
+ * The fixed lifecycle milestones with cleared dates, in canonical order. Used
+ * by the timeline reset: it drops any custom milestones and blanks every date
+ * while keeping the fixed rows so they can be filled in again.
+ */
+export function blankFixedMilestones(): Milestone[] {
+  return FIXED_MILESTONE_LABELS.map((label) => makeMilestone({ label, date: "" }));
 }
 
 export function makeFinancialRow(init: Omit<FinancialRow, "id">): FinancialRow {

@@ -40,7 +40,18 @@ function statusOf(date: string, today: string): Status {
 }
 
 export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; today: string }) {
-  const ordered = sortedTimeline(milestones);
+  // Milestones without a date are skipped - a fixed milestone can be left blank.
+  const ordered = sortedTimeline(milestones).filter((milestone) => milestone.date);
+
+  if (ordered.length === 0) {
+    return (
+      <ToolCard title="IPO Timeline" description="Key dates in the offer lifecycle.">
+        <p className="text-sm text-muted-foreground">
+          No timeline dates set yet - add them from &ldquo;Edit data&rdquo;.
+        </p>
+      </ToolCard>
+    );
+  }
 
   return (
     <ToolCard title="IPO Timeline" description="Key dates in the offer lifecycle.">

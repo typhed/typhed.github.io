@@ -86,8 +86,33 @@ export interface Milestone {
   /** Ephemeral React key; stripped from exported JSON, regenerated on load. */
   id: string;
   label: string;
-  /** ISO date, "yyyy-mm-dd". */
+  /** ISO date, "yyyy-mm-dd"; may be empty for a fixed milestone with no date set. */
   date: string;
+}
+
+/**
+ * The canonical IPO-lifecycle milestones, in chronological order. These labels
+ * are fixed: the editor renders them as read-only, date-only rows (no rename, no
+ * delete) and they are always present so a cleared date can be filled in later.
+ * Any milestone whose label is NOT in this set is a user-added ("custom") one -
+ * fully editable, removable and re-orderable. A blank-dated milestone is hidden
+ * from the rendered timeline until a date is supplied.
+ */
+export const FIXED_MILESTONE_LABELS = [
+  "Offer Start",
+  "Offer End",
+  "Allotment Date",
+  "Refund Initiation",
+  "DEMAT Transfer",
+  "Listing Date",
+  "Mandate End",
+] as const;
+
+const FIXED_MILESTONE_SET: ReadonlySet<string> = new Set(FIXED_MILESTONE_LABELS);
+
+/** Whether `label` names one of the fixed lifecycle milestones. */
+export function isFixedMilestone(label: string): boolean {
+  return FIXED_MILESTONE_SET.has(label);
 }
 
 /** One fiscal year of reported financials. */

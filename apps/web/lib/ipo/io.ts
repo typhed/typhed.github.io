@@ -23,6 +23,7 @@ import {
   APPLICATION_CATEGORIES,
   APPLICATION_TYPES,
   CONTRIBUTION_MODES,
+  isFixedMilestone,
   SCHEMA_VERSION,
   SUBSCRIPTION_CATEGORIES,
 } from "./types";
@@ -174,9 +175,14 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
 
   const timeline = asArray(raw.timeline).flatMap((entry) => {
     if (!isObject(entry)) return [];
+    const label = str(entry.label, "Milestone");
     const date = coerceIsoDate(entry.date);
-    if (date === null) return [];
-    return [makeMilestone({ label: str(entry.label, "Milestone"), date })];
+    if (date === null) {
+      // Fixed lifecycle milestones persist even without a date (hidden from the
+      // timeline until filled in); a custom milestone needs a valid date.
+      return isFixedMilestone(label) ? [makeMilestone({ label, date: "" })] : [];
+    }
+    return [makeMilestone({ label, date })];
   });
 
   const financials = asArray(raw.financials).flatMap((entry) => {
