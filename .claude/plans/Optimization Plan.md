@@ -134,11 +134,13 @@ Goal: the design agent's confirmed findings closed without altering the visual l
 
 Goal: prove the branch behaves like the reference except where a fix intentionally changed it.
 
-  - [ ] Full gate: all test suites, typecheck, build, `pnpm audit`.
-  - [ ] Route-size comparison against the baseline export (279 kB `/`, 161 kB `/tools/ipo` first-load).
-  - [ ] HTML diff of the built export against the reference snapshot - only intended copy/ARIA/token
-    changes may appear.
-  - [ ] Final report: scores, residual risks, deliberate non-fixes.
+  - [x] Full gate: 73 tests green (37 chart-engine, 14 risk-toolkit, 22 web), typecheck clean in all
+    packages, static export builds, `pnpm audit` reports zero known vulnerabilities.
+  - [x] Route sizes: `/` 292 kB and `/tools/ipo` 162 kB first-load (was 279 kB / 161 kB) - the
+    growth is the patched SheetJS 0.20.3, which is larger than the vulnerable 0.18.5.
+  - [x] HTML text diff against the reference snapshot: the workspace page is identical; the IPO page
+    differs only in the intended empty-state copy rewrite. No unintended visual or text change.
+  - [x] Final report delivered: scores, residual risks, deliberate non-fixes.
 
 ## Deliberate Non-Fixes (Reported, Not Changed)
 
