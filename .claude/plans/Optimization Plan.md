@@ -50,6 +50,11 @@ Goal: every surviving Part-1 math finding fixed, with regression tests.
   - [x] HNI expected profit double-discounts (`lib/ipo/applications.ts`): oversubscribed sHNI/bHNI
     multiplied the win-probability lower bound by the already-proportionate quantity, understating the
     expectation by roughly the subscription factor. Expected units become `applied / t` directly.
+    SUPERSEDED by the owner's product rule (post-review): applied quantity is whole lots only
+    (`floor(corpus / cutoff / lotSize) x lotSize` in "total" mode - partial-lot allotment does not
+    exist in India, non-multiples are floored and flagged), and Expected Profit shows the same
+    full-allotment figure as Best-Case until the allotment outcome is recorded; the win-probability
+    badge alone carries the odds. Pinned by the owner's ₹12,23,768 / 574 / 26 = 82-lot example.
   - [x] Year-over-year growth on a non-positive base (`lib/ipo/analytics.ts`): a loss-to-profit swing
     rendered as negative growth. Non-positive bases now yield NaN ("not meaningful"), shown as `-`.
   - [x] NaN tone bugs: `NaN >= 0` picked the negative/positive tone for missing values in

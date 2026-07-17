@@ -40,36 +40,59 @@ describe("probabilityOfAllotment", () => {
   });
 });
 
-describe("expected profit", () => {
-  it("retail: one-lot lottery, expectation = lotSize x GMP / t", () => {
-    const m = deriveApplicationMetrics(detailedApp("RETAIL", LOT), params({ RETAIL: 4 }));
-    expect(m.probabilityOfWinning).toBeCloseTo(0.25);
-    expect(m.likelyAllottedUnits).toBe(LOT);
-    expect(m.expectedProfit).toBeCloseTo((LOT * GMP) / 4);
+function totalModeApp(category: ApplicationCategory, amounts: number[]): Application {
+  return makeApplication({
+    name: "Total",
+    category,
+    contributionMode: "total",
+    allotted: false,
+    allotment: { mode: "total", quantityAllotted: 0, sellingPrice: 0, totalAmount: 0 },
+    contributors: amounts.map((amount, i) =>
+      makeContributor({ name: `C${i + 1}`, units: 0, price: 0, amount }),
+    ),
+  });
+}
+
+describe("profit tiers (full-allotment product rule)", () => {
+  it("expected profit equals best-case until allotment, for every category", () => {
+    const retail = deriveApplicationMetrics(detailedApp("RETAIL", LOT), params({ RETAIL: 4 }));
+    expect(retail.probabilityOfWinning).toBeCloseTo(0.25); // badge keeps the odds
+    expect(retail.bestCaseProfit).toBeCloseTo(LOT * GMP);
+    expect(retail.expectedProfit).toBe(retail.bestCaseProfit);
+
+    const hni = deriveApplicationMetrics(detailedApp("bHNI", 100 * LOT), params({ bHNI: 20 }));
+    expect(hni.probabilityOfWinning).toBeCloseTo(1 / 20);
+    expect(hni.expectedProfit).toBe(hni.bestCaseProfit);
   });
 
-  it("HNI: proportionate expectation applied/t x GMP - NOT discounted by P again", () => {
-    const applied = 100 * LOT;
-    const t = 20;
-    const m = deriveApplicationMetrics(detailedApp("bHNI", applied), params({ bHNI: t }));
-    // The win-probability column stays the conservative lower bound...
-    expect(m.probabilityOfWinning).toBeCloseTo(1 / t);
-    // ...but the expectation obeys share conservation: applied/t units.
-    expect(m.likelyAllottedUnits).toBeCloseTo(applied / t);
-    expect(m.expectedProfit).toBeCloseTo((applied / t) * GMP);
+  it("total mode floors the corpus to whole lots (owner's ZERODHA example)", () => {
+    // Corpus 12,23,768 at cut-off 574 x lot 26 (lot amount 14,924) = exactly 82
+    // lots = 2,132 shares. No flooring flag on an exact multiple.
+    const m = deriveApplicationMetrics(
+      totalModeApp("bHNI", [423_768, 400_000, 400_000]),
+      params({ bHNI: 26.01 }),
+    );
+    expect(m.applicationTotal).toBe(1_223_768);
+    expect(m.appliedUnits).toBe(2132);
+    expect(m.lots).toBe(82);
+    expect(m.bestCaseProfit).toBeCloseTo(2132 * GMP);
+    expect(m.expectedProfit).toBeCloseTo(2132 * GMP);
+    expect(m.flags.some((f) => f.includes("FLOORED"))).toBe(false);
   });
 
-  it("undersubscribed: full quantity expected", () => {
-    const m = deriveApplicationMetrics(detailedApp("sHNI", 5 * LOT), params({ sHNI: 0.6 }));
-    expect(m.probabilityOfWinning).toBe(1);
-    expect(m.expectedProfit).toBeCloseTo(5 * LOT * GMP);
+  it("total mode flags and floors a corpus that is not a whole-lot multiple", () => {
+    // 12,30,000 / 14,924 = 82.41 lots -> floors to 82 lots = 2,132 shares.
+    const m = deriveApplicationMetrics(totalModeApp("bHNI", [1_230_000]), params({ bHNI: 20 }));
+    expect(m.appliedUnits).toBe(2132);
+    expect(m.flags).toContain("Corpus Not a Whole-Lot Multiple [FLOORED]");
+    expect(m.bestCaseProfit).toBeCloseTo(2132 * GMP);
   });
 
-  it("unknown subscription: NaN expectation and a flag", () => {
+  it("unknown subscription: probability is null and flagged, tiers still computable", () => {
     const m = deriveApplicationMetrics(detailedApp("RETAIL", LOT), params({}));
     expect(m.probabilityOfWinning).toBeNull();
-    expect(Number.isNaN(m.expectedProfit)).toBe(true);
     expect(m.flags).toContain("Undefined Category Subscription");
+    expect(m.expectedProfit).toBeCloseTo(LOT * GMP);
   });
 });
 

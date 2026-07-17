@@ -337,9 +337,9 @@ function ApplicationCard({
         />
         <StatTile
           label="Expected Profit"
-          value={metrics && Number.isFinite(metrics.expectedProfit) ? fmtInr(metrics.expectedProfit, 0) : "-"}
+          value={fmtInr(metrics?.expectedProfit ?? 0, 0)}
           tone="brand"
-          note="probability-weighted"
+          note="assumes full allotment"
         />
         {app.allotted && (
           <StatTile
