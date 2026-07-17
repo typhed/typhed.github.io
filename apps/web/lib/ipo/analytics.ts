@@ -62,7 +62,6 @@ export interface FinancialDerived extends FinancialRow {
 
 export interface IpoMetrics {
   minInvestment: number;
-  minInvestmentLower: number;
   latestGmp: number;
   estListingPrice: number;
   /** latestGmp / priceBand.max, as a fraction. */
@@ -102,6 +101,14 @@ export function sortedGmp(rows: GmpRow[]): GmpRow[] {
 /** Milestones sorted chronologically. */
 export function sortedTimeline(rows: Milestone[]): Milestone[] {
   return [...rows].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Whether a milestone label names the listing event. The single definition for
+ * every listing check (headline metrics, timeline emphasis and icon).
+ */
+export function isListingMilestone(label: string): boolean {
+  return /listing/i.test(label);
 }
 
 /** Best-effort fiscal-year sort key from a period label (first run of digits). */
@@ -237,7 +244,7 @@ export function deriveIpoMetrics(data: IpoDataset, today: string): IpoMetrics {
   const financials = financialsWithGrowth(data.financials);
   const latestFinancial = financials.length > 0 ? financials[financials.length - 1]! : null;
 
-  const listing = sortedTimeline(data.timeline).find((m) => /listing/i.test(m.label)) ?? null;
+  const listing = sortedTimeline(data.timeline).find((m) => isListingMilestone(m.label)) ?? null;
   const listingDate = listing ? listing.date : null;
 
   const minInvestment = lotSize * priceBand.max;
@@ -246,7 +253,6 @@ export function deriveIpoMetrics(data: IpoDataset, today: string): IpoMetrics {
 
   return {
     minInvestment,
-    minInvestmentLower: lotSize * priceBand.min,
     latestGmp,
     estListingPrice,
     listingGainPct,

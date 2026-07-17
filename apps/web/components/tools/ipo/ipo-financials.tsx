@@ -4,10 +4,10 @@ import * as React from "react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { fmtNumber, fmtPercent, signTone } from "@/lib/format";
+import { fmtCompact, fmtNumber, fmtPercent, signTone } from "@/lib/format";
 import { niceScale, valueRange, type FinancialDerived } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
-import { StatTile, ToolCard } from "@/components/tools/controls";
+import { ChartEmptyState, StatTile, ToolCard } from "@/components/tools/controls";
 
 type MetricKey = "totalAssets" | "grossRevenue" | "pat";
 type GrowthKey = "assetGrowth" | "revenueGrowth" | "patGrowth";
@@ -30,12 +30,6 @@ const PAD = { top: 16, right: 16, bottom: 40, left: 52 };
 function rampOpacity(index: number, count: number): number {
   if (count <= 1) return 1;
   return 0.6 + 0.4 * (index / (count - 1));
-}
-
-function fmtCompact(value: number): string {
-  const abs = Math.abs(value);
-  if (abs >= 1000) return `${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}K`;
-  return value.toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
 export function IpoFinancials({
@@ -157,11 +151,7 @@ function FinancialsChart({ derived }: { derived: FinancialDerived[] }) {
   }, [derived]);
 
   if (nYears === 0) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
-        No financial rows yet.
-      </div>
-    );
+    return <ChartEmptyState message="No financial rows yet." />;
   }
 
   const iw = Math.max(0, width - PAD.left - PAD.right);

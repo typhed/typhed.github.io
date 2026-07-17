@@ -46,19 +46,6 @@ export const SUBSCRIPTION_CATEGORIES = [
 ] as const;
 export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
 
-/**
- * Fixed-label rows seeded by default, in display order. Their names are not
- * editable (only the times value is); user-added CUSTOM rows sit before OVERALL.
- */
-export const DEFAULT_SUBSCRIPTION_CATEGORIES: readonly SubscriptionCategory[] = [
-  "QIB",
-  "bHNI",
-  "sHNI",
-  "RETAIL",
-  "SHAREHOLDER",
-  "OVERALL",
-];
-
 export interface PriceBand {
   /** Lower price band, INR per share. */
   min: number;

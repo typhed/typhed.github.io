@@ -1,4 +1,4 @@
-import { TIMEFRAMES, type Timeframe } from "@typhed/chart-engine";
+import { canAggregate, TIMEFRAMES, type Timeframe } from "@typhed/chart-engine";
 
 function formatInterval(seconds: number): string {
   if (seconds % 86400 === 0) return `${seconds / 86400}D`;
@@ -43,9 +43,7 @@ export function timeframeOptions(base: Timeframe): Timeframe[] {
   const options: Timeframe[] = [base];
   for (const tf of TIMEFRAMES) {
     if (tf.id === base.id) continue;
-    if (tf.seconds > base.seconds && tf.seconds % base.seconds === 0) {
-      options.push(tf);
-    }
+    if (canAggregate(base, tf)) options.push(tf);
   }
   return options.sort((a, b) => a.seconds - b.seconds);
 }

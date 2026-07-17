@@ -47,6 +47,13 @@ export function fmtInr(value: number, digits = 2): string {
   }).format(value);
 }
 
+/** Compact axis label: thousands collapse to "1.5K", smaller values round to integers. */
+export function fmtCompact(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1000) return `${(value / 1000).toLocaleString(LOCALE, { maximumFractionDigits: 1 })}K`;
+  return value.toLocaleString(LOCALE, { maximumFractionDigits: 0 });
+}
+
 /** Render an ISO "yyyy-mm-dd" date as "dd-mm-yyyy" (matching the source sheet). */
 export function fmtDisplayDate(iso: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);

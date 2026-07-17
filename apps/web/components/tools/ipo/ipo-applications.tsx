@@ -29,6 +29,12 @@ import {
 
 const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }));
 
+// Shared by the corpus-input and allotment segmented controls.
+const ENTRY_MODE_OPTIONS = [
+  { value: "total", label: "Total Amount" },
+  { value: "detailed", label: "Quantity & Price" },
+] as const;
+
 // Fixed-category display labels: uppercase throughout except sHNI / bHNI.
 const SUB_LABEL: Record<SubscriptionCategory, string> = {
   RETAIL: "RETAIL",
@@ -45,21 +51,20 @@ function isApplicationCategory(c: SubscriptionCategory): c is ApplicationCategor
   return (APPLICATION_CATEGORIES as readonly string[]).includes(c);
 }
 
-/** Long, badge-friendly probability label for the application header. */
-function formatProbability(category: ApplicationCategory, p: number | null): string {
-  if (p === null) return "-";
-  if (p >= 1) return "100%";
-  const pct = `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
-  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`;
-  if (category === "SHAREHOLDER") return pct;
-  return `>= ${pct}`;
-}
-
 /** Compact probability for the narrow subscription panel. */
 function formatPercentShort(p: number | null): string {
   if (p === null) return "-";
   if (p >= 1) return "100%";
   return `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
+}
+
+/** Long, badge-friendly probability label for the application header. */
+function formatProbability(category: ApplicationCategory, p: number | null): string {
+  if (p === null || p >= 1) return formatPercentShort(p);
+  const pct = formatPercentShort(p);
+  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`;
+  if (category === "SHAREHOLDER") return pct;
+  return `>= ${pct}`;
 }
 
 export function IpoApplications({
@@ -228,10 +233,7 @@ function ApplicationCard({
           Corpus Input
         </p>
         <Segmented
-          options={[
-            { value: "total", label: "Total Amount" },
-            { value: "detailed", label: "Quantity & Price" },
-          ]}
+          options={ENTRY_MODE_OPTIONS}
           value={app.contributionMode}
           onChange={onContributionModeChange}
         />
@@ -358,10 +360,7 @@ function ApplicationCard({
               Allotment
             </p>
             <Segmented
-              options={[
-                { value: "total", label: "Total Amount" },
-                { value: "detailed", label: "Quantity & Price" },
-              ]}
+              options={ENTRY_MODE_OPTIONS}
               value={app.allotment.mode}
               onChange={(mode) => onAllotmentChange({ ...app.allotment, mode })}
             />

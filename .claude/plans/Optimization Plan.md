@@ -99,17 +99,20 @@ Goal: the security agent's confirmed findings closed.
 Goal: repeated logic collapsed and dead weight removed with zero behaviour change (fixtures and
 rendered output identical).
 
-  - [ ] `ema` delegates to `emaSeries` (identical recursion duplicated in `chart-engine`).
-  - [ ] `formatProbability` reuses `formatPercentShort`; segmented-mode options hoisted.
-  - [ ] Shared `downloadJson` helper (IPO dashboard + saved analyses duplicate the Blob dance).
-  - [ ] Shared `newId` (duplicated UUID fallback in `ipo/defaults` and `storage`).
-  - [ ] `timeframeOptions` reuses the exported `canAggregate` instead of re-implementing it.
-  - [ ] One `isListingMilestone` helper for the three scattered listing-label tests.
-  - [ ] `fmtCompact` moves to `lib/format.ts`; shared SVG empty-state extracted for the two IPO charts.
-  - [ ] Dead code removed: `DEFAULT_SUBSCRIPTION_CATEGORIES`, `minInvestmentLower`, unused
+  - [x] `ema` delegates to `emaSeries` (identical recursion duplicated in `chart-engine`); the
+    pandas golden-fixture tests confirm bit-identical output.
+  - [x] `formatProbability` reuses `formatPercentShort`; segmented-mode options hoisted
+    (`ENTRY_MODE_OPTIONS`); `FALLBACK_ISO_DATE` hoisted in the editors.
+  - [x] Shared `downloadJson` helper (IPO dashboard + saved analyses duplicated the Blob dance).
+  - [x] Shared `newId` in `lib/id.ts` (duplicated UUID fallback in `ipo/defaults` and `storage`).
+  - [x] `timeframeOptions` reuses the exported `canAggregate` instead of re-implementing it.
+  - [x] One `isListingMilestone` helper for the three scattered listing-label tests.
+  - [x] `fmtCompact` moved to `lib/format.ts` (now also locale-pinned); shared `ChartEmptyState`
+    extracted for the two IPO charts.
+  - [x] Dead code removed: `DEFAULT_SUBSCRIPTION_CATEGORIES`, `minInvestmentLower`, unused
     `IndicatorMeta.placement`. Library API of `@typhed/risk-toolkit` (`logReturns`, `equityCurve`,
     `normalSampler`) is deliberately kept - documented as public surface.
-  - [ ] Commit (no co-author trailer).
+  - [x] Commit (no co-author trailer).
 
 ## Phase E - Design, Accessibility and Copy
 

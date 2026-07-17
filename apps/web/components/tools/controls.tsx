@@ -150,6 +150,15 @@ export function StatTile({
   );
 }
 
+/** Dashed empty-state placeholder shown where a chart would render. */
+export function ChartEmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
+      {message}
+    </div>
+  );
+}
+
 /** A small segmented control for mutually exclusive options. */
 export function Segmented<T extends string>({
   options,

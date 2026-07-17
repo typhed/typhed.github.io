@@ -20,6 +20,9 @@ import {
   TextCell,
 } from "@/components/tools/ipo/editable-table";
 
+/** Seed date for a new dated row when "today" is not known yet (pre-hydration). */
+const FALLBACK_ISO_DATE = "2026-01-01";
+
 /** Issue details: name, lot size, price band, unit. */
 export function MetaEditor({
   meta,
@@ -181,7 +184,7 @@ export function TimelineEditor({
         <AddRowButton
           label="Add milestone"
           onClick={() =>
-            onChange([...milestones, makeMilestone({ label: "New milestone", date: today || "2026-01-01" })])
+            onChange([...milestones, makeMilestone({ label: "New milestone", date: today || FALLBACK_ISO_DATE })])
           }
         />
         <ResetButton label="Reset timeline" onClick={handleReset} />
@@ -230,7 +233,7 @@ export function GmpEditor({
         label="Add reading"
         onClick={() => {
           const last = ordered[ordered.length - 1];
-          onChange([...rows, makeGmpRow({ date: last?.date ?? "2026-01-01", value: last?.value ?? 0 })]);
+          onChange([...rows, makeGmpRow({ date: last?.date ?? FALLBACK_ISO_DATE, value: last?.value ?? 0 })]);
         }}
       />
     </div>

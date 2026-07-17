@@ -11,6 +11,7 @@ import {
   toSavedAnalysis,
   type SavedAnalysis,
 } from "@/lib/storage";
+import { downloadJson } from "@/lib/download";
 import { Button } from "@/components/ui/button";
 
 /** Hard ceiling on imported bars - beyond any real dataset, below crash territory. */
@@ -60,15 +61,7 @@ export function SavedAnalyses({
   }
 
   function handleExport(analysis: SavedAnalysis) {
-    const blob = new Blob([JSON.stringify(analysis, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `${analysis.name || "analysis"}.json`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadJson(`${analysis.name || "analysis"}.json`, JSON.stringify(analysis, null, 2));
   }
 
   async function handleImport(file: File) {

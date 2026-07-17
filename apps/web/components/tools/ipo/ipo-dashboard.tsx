@@ -9,6 +9,7 @@ import { DEFAULT_IPO_DATASET, defaultIpoDataset } from "@/lib/ipo/defaults";
 import { deriveIpoMetrics } from "@/lib/ipo/analytics";
 import { deriveAllApplications, subscriptionByCategory } from "@/lib/ipo/applications";
 import { ipoFileName, safeParseIpoDataset, serializeIpoDataset } from "@/lib/ipo/io";
+import { downloadJson } from "@/lib/download";
 import { Button } from "@/components/ui/button";
 import { IpoOverview } from "@/components/tools/ipo/ipo-overview";
 import { IpoTimeline } from "@/components/tools/ipo/ipo-timeline";
@@ -89,13 +90,7 @@ export function IpoDashboard() {
     applyEdit((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
 
   function handleDownload() {
-    const blob = new Blob([serializeIpoDataset(data)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = ipoFileName(data, today);
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadJson(ipoFileName(data, today), serializeIpoDataset(data));
   }
 
   async function handleImportFile(file: File) {
