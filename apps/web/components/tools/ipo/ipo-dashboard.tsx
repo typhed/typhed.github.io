@@ -18,6 +18,15 @@ import { IpoApplications } from "@/components/tools/ipo/ipo-applications";
 import { IpoEditPanel } from "@/components/tools/ipo/ipo-edit-panel";
 import { MembersOnly } from "@/components/tools/members-gate";
 
+/** Local calendar date as ISO "yyyy-mm-dd" - NOT the UTC date, which is a day
+ * behind for IST users between midnight and 05:30. */
+function localIsoDate(): string {
+  const now = new Date();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${mm}-${dd}`;
+}
+
 export function IpoDashboard() {
   const [data, setData] = React.useState<IpoDataset>(DEFAULT_IPO_DATASET);
   const [panelOpen, setPanelOpen] = React.useState(false);
@@ -25,10 +34,14 @@ export function IpoDashboard() {
   const [hydrated, setHydrated] = React.useState(false);
   const [importError, setImportError] = React.useState<string | null>(null);
   const importRef = React.useRef<HTMLInputElement>(null);
+  // Only a real edit/import should persist: writing the untouched seed on first
+  // visit would mask every future seed update behind a stale cache, and would
+  // instantly undo Reset's removeItem.
+  const dirtyRef = React.useRef(false);
 
   // Client-only: set today and restore the last-edited dataset from this browser.
   React.useEffect(() => {
-    setToday(new Date().toISOString().slice(0, 10));
+    setToday(localIsoDate());
     try {
       const raw = window.localStorage.getItem(IPO_STORAGE_KEY);
       if (raw) {
@@ -43,13 +56,21 @@ export function IpoDashboard() {
 
   // Persist every edit to this browser (the JSON file remains the portable copy).
   React.useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !dirtyRef.current) return;
     try {
       window.localStorage.setItem(IPO_STORAGE_KEY, serializeIpoDataset(data));
     } catch {
       // Storage may be full or blocked; edits still live in memory.
     }
   }, [data, hydrated]);
+
+  /** Route every user mutation through here so persistence sees it as an edit. */
+  const applyEdit = React.useCallback((updater: (prev: IpoDataset) => IpoDataset) => {
+    dirtyRef.current = true;
+    setData(updater);
+  }, []);
+
+  const closePanel = React.useCallback(() => setPanelOpen(false), []);
 
   const metrics = React.useMemo(() => deriveIpoMetrics(data, today), [data, today]);
 
@@ -65,7 +86,7 @@ export function IpoDashboard() {
   );
 
   const patchMeta = (patch: Partial<IpoMeta>) =>
-    setData((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
+    applyEdit((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
 
   function handleDownload() {
     const blob = new Blob([serializeIpoDataset(data)], { type: "application/json" });
@@ -81,7 +102,7 @@ export function IpoDashboard() {
     try {
       const parsed = safeParseIpoDataset(JSON.parse(await file.text()));
       if (parsed.ok) {
-        setData(parsed.data);
+        applyEdit(() => parsed.data);
         setImportError(null);
       } else {
         setImportError(parsed.error);
@@ -92,6 +113,9 @@ export function IpoDashboard() {
   }
 
   function handleReset() {
+    // Back to the pristine seed: clear the cache and stop persisting until the
+    // next real edit, otherwise the persist effect would re-write the seed.
+    dirtyRef.current = false;
     setData(defaultIpoDataset());
     setImportError(null);
     try {
@@ -190,8 +214,8 @@ export function IpoDashboard() {
           subscription={data.subscription}
           metrics={appMetrics}
           lotSize={data.meta.lotSize}
-          onApplicationsChange={(applications) => setData((prev) => ({ ...prev, applications }))}
-          onSubscriptionChange={(subscription) => setData((prev) => ({ ...prev, subscription }))}
+          onApplicationsChange={(applications) => applyEdit((prev) => ({ ...prev, applications }))}
+          onSubscriptionChange={(subscription) => applyEdit((prev) => ({ ...prev, subscription }))}
         />
       </MembersOnly>
 
@@ -202,13 +226,13 @@ export function IpoDashboard() {
 
       <IpoEditPanel
         open={panelOpen}
-        onClose={() => setPanelOpen(false)}
+        onClose={closePanel}
         data={data}
         today={today}
         onMetaChange={patchMeta}
-        onTimelineChange={(timeline) => setData((prev) => ({ ...prev, timeline }))}
-        onGmpChange={(gmp) => setData((prev) => ({ ...prev, gmp }))}
-        onFinancialsChange={(financials) => setData((prev) => ({ ...prev, financials }))}
+        onTimelineChange={(timeline) => applyEdit((prev) => ({ ...prev, timeline }))}
+        onGmpChange={(gmp) => applyEdit((prev) => ({ ...prev, gmp }))}
+        onFinancialsChange={(financials) => applyEdit((prev) => ({ ...prev, financials }))}
       />
     </div>
   );

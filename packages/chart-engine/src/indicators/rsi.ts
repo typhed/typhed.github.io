@@ -5,7 +5,8 @@ import type { LinePoint } from "./types";
  * Wilder's Relative Strength Index over `period` bars. The first average gain
  * and loss are simple means of the first `period` changes (the SMA seed used
  * by TradingView), then smoothed with Wilder's running average
- * (alpha = 1 / period). A zero average loss yields RSI 100.
+ * (alpha = 1 / period). A zero average loss yields RSI 100, except on a flat
+ * series (zero gain AND zero loss) which yields the neutral 50.
  */
 export function rsi(candles: readonly Candle[], period = 14): LinePoint[] {
   if (period < 1 || candles.length <= period) return [];

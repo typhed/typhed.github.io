@@ -44,10 +44,19 @@ export function IpoEditPanel({
 }) {
   const closeRef = React.useRef<HTMLButtonElement>(null);
 
+  // Read the latest onClose through a ref so the mount effect depends only on
+  // `open`. With onClose in the deps, a parent passing an inline callback would
+  // re-run the effect on every keystroke and steal focus back to the Close
+  // button after each character typed in an editor field.
+  const onCloseRef = React.useRef(onClose);
+  React.useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", onKey);
     const previousOverflow = document.body.style.overflow;
@@ -57,7 +66,7 @@ export function IpoEditPanel({
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

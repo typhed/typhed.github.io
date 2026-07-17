@@ -1,8 +1,16 @@
-/** Shared number formatters for the tools UI. */
+/**
+ * Shared number formatters for the tools UI. Every formatter pins the `en-IN`
+ * locale: the IPO page is prerendered at build time, so a runtime-locale
+ * formatter would bake the build machine's grouping into the static HTML and
+ * mismatch at hydration on any other locale - and mixed lakh/crore vs western
+ * grouping across one page reads as a defect in a numbers product.
+ */
+
+const LOCALE = "en-IN";
 
 export function fmtMoney(value: number, digits = 2): string {
   if (!Number.isFinite(value)) return "-";
-  return value.toLocaleString(undefined, {
+  return value.toLocaleString(LOCALE, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   });
@@ -15,7 +23,17 @@ export function fmtPercent(fraction: number, digits = 2): string {
 
 export function fmtNumber(value: number, digits = 2): string {
   if (!Number.isFinite(value)) return "-";
-  return value.toLocaleString(undefined, { maximumFractionDigits: digits });
+  return value.toLocaleString(LOCALE, { maximumFractionDigits: digits });
+}
+
+/**
+ * NaN-safe sign tone for stat tiles: positive for `>= 0`, negative below zero,
+ * default when the value is missing (`NaN >= 0` is false, so a bare ternary
+ * would paint missing values red).
+ */
+export function signTone(value: number): "positive" | "negative" | "default" {
+  if (!Number.isFinite(value)) return "default";
+  return value >= 0 ? "positive" : "negative";
 }
 
 /** Indian-rupee currency with lakh/crore grouping, e.g. `₹14,924.00`. */

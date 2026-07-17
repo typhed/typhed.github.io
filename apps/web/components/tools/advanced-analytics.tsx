@@ -27,7 +27,14 @@ export function AdvancedAnalytics({ candles }: { candles: readonly Candle[] }) {
     try {
       const returns = simpleReturns(candles.map((c) => c.close));
       if (returns.length < 3) throw new Error("Not enough bars to analyse.");
-      setResult(await runAdvancedStats(returns, 0.95, setStatus));
+      const stats = await runAdvancedStats(returns, 0.95, setStatus);
+      // analytics.py signals a degenerate series (e.g. constant prices) with an
+      // `error` sentinel instead of the statistics - surface it, don't render
+      // blank tiles with a bogus "Normality rejected" verdict.
+      if (stats.error) {
+        throw new Error("The return series has no variation to analyse.");
+      }
+      setResult(stats);
     } catch (e) {
       setError(e instanceof Error ? e.message : "The Python analysis failed.");
     } finally {

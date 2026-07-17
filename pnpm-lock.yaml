@@ -101,6 +101,9 @@ importers:
       typescript:
         specifier: ^5.7.3
         version: 5.9.3
+      vitest:
+        specifier: ^3.2.6
+        version: 3.2.7(@types/node@22.20.1)(jiti@1.21.7)
 
   packages/chart-engine:
     dependencies:

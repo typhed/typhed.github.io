@@ -4,7 +4,7 @@ import * as React from "react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { fmtNumber, fmtPercent } from "@/lib/format";
+import { fmtNumber, fmtPercent, signTone } from "@/lib/format";
 import { niceScale, type FinancialDerived } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
 import { StatTile, ToolCard } from "@/components/tools/controls";
@@ -132,13 +132,13 @@ export function IpoFinancials({
           />
           <StatTile
             label="Revenue growth (YoY)"
-            value={Number.isFinite(latest.revenueGrowth) ? fmtPercent(latest.revenueGrowth, 1) : "-"}
-            tone={latest.revenueGrowth >= 0 ? "positive" : "negative"}
+            value={fmtPercent(latest.revenueGrowth, 1)}
+            tone={signTone(latest.revenueGrowth)}
           />
           <StatTile
             label="PAT growth (YoY)"
-            value={Number.isFinite(latest.patGrowth) ? fmtPercent(latest.patGrowth, 1) : "-"}
-            tone={latest.patGrowth >= 0 ? "positive" : "negative"}
+            value={fmtPercent(latest.patGrowth, 1)}
+            tone={signTone(latest.patGrowth)}
           />
         </div>
       )}

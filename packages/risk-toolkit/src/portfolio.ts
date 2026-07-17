@@ -2,7 +2,9 @@ import { mean } from "./stats";
 
 /**
  * Covariance matrix of several assets' return series. Each inner array is one
- * asset's returns; all must be the same length and time-aligned.
+ * asset's returns; all must be the same length and time-aligned. Entries are
+ * NaN when there are not enough observations for the requested `ddof`,
+ * matching `variance`.
  */
 export function covarianceMatrix(
   assetReturns: readonly (readonly number[])[],
@@ -11,6 +13,7 @@ export function covarianceMatrix(
   const k = assetReturns.length;
   const means = assetReturns.map((r) => mean(r));
   const n = k > 0 ? assetReturns[0]!.length : 0;
+  const denom = n - ddof;
 
   const cov: number[][] = Array.from({ length: k }, () => new Array(k).fill(0));
   for (let i = 0; i < k; i += 1) {
@@ -20,7 +23,7 @@ export function covarianceMatrix(
         sum +=
           (assetReturns[i]![t]! - means[i]!) * (assetReturns[j]![t]! - means[j]!);
       }
-      const value = sum / (n - ddof);
+      const value = denom > 0 ? sum / denom : Number.NaN;
       cov[i]![j] = value;
       cov[j]![i] = value;
     }

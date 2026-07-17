@@ -36,7 +36,12 @@ function loadScript(src: string): Promise<void> {
     script.async = true;
     script.dataset.pyodide = "true";
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load the Python runtime."));
+    script.onerror = () => {
+      // Drop the failed tag, otherwise every retry would find it, resolve
+      // immediately without loading anything, and fail forever.
+      script.remove();
+      reject(new Error("Failed to load the Python runtime."));
+    };
     document.head.appendChild(script);
   });
 }
@@ -84,6 +89,8 @@ export interface AdvancedStats {
   historical_var: number;
   gaussian_var: number;
   cornish_fisher_var: number;
+  /** Set (1.0) by analytics.py when the series is degenerate (n < 3 or zero variance). */
+  error?: number;
 }
 
 /** Run the browser-side Python advanced statistics on a return series. */

@@ -111,5 +111,6 @@ export function defaultIpoDataset(): IpoDataset {
   };
 }
 
-/** A ready-made instance for initial React state / SSR (deterministic ids at import). */
+/** A ready-made instance for initial React state / SSR. Ids are minted once at
+ * module load; they are only React keys and are never rendered or persisted. */
 export const DEFAULT_IPO_DATASET: IpoDataset = defaultIpoDataset();

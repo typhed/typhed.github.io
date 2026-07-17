@@ -6,13 +6,18 @@
  * and browser localStorage. Keep it JSON-serialisable and free of React types.
  */
 
-/** Bumped whenever the on-disk JSON shape changes; drives `safeParseIpoDataset` migration. */
+/**
+ * Bumped whenever the on-disk JSON shape changes. Stamped into every export for
+ * provenance; the parser itself is defensive field-by-field and accepts any
+ * older shape, so no per-version migration code exists (yet).
+ */
 export const SCHEMA_VERSION = 5;
 
 /**
- * The localStorage key holding the last-edited dataset for this browser. Bumped
- * to `v2` alongside SCHEMA_VERSION 3 so a stale `v1` cache does not mask the new
- * seed dataset; the portable JSON file remains importable regardless.
+ * The localStorage key holding the last-edited dataset for this browser. Bump
+ * the suffix when a seed change must not be masked by a stale cache (last done
+ * for the SCHEMA_VERSION 3 seed overhaul); the portable JSON file remains
+ * importable regardless.
  */
 export const IPO_STORAGE_KEY = "typhed:ipo:v2";
 

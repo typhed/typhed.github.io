@@ -47,32 +47,34 @@ Goal: a green typecheck everywhere and zero known-vulnerable dependencies before
 
 Goal: every surviving Part-1 math finding fixed, with regression tests.
 
-  - [ ] HNI expected profit double-discounts (`lib/ipo/applications.ts`): oversubscribed sHNI/bHNI
+  - [x] HNI expected profit double-discounts (`lib/ipo/applications.ts`): oversubscribed sHNI/bHNI
     multiplied the win-probability lower bound by the already-proportionate quantity, understating the
     expectation by roughly the subscription factor. Expected units become `applied / t` directly.
-  - [ ] Year-over-year growth on a non-positive base (`lib/ipo/analytics.ts`): a loss-to-profit swing
+  - [x] Year-over-year growth on a non-positive base (`lib/ipo/analytics.ts`): a loss-to-profit swing
     rendered as negative growth. Non-positive bases now yield NaN ("not meaningful"), shown as `-`.
-  - [ ] NaN tone bugs: `NaN >= 0` picked the negative/positive tone for missing values in
+  - [x] NaN tone bugs: `NaN >= 0` picked the negative/positive tone for missing values in
     `ipo-overview` and `ipo-financials` - a shared NaN-safe tone helper fixes all sites.
-  - [ ] `fmtMoney` / `fmtNumber` used the runtime locale (hydration mismatch risk against prerendered
+  - [x] `fmtMoney` / `fmtNumber` used the runtime locale (hydration mismatch risk against prerendered
     HTML; inconsistent grouping) - pin `en-IN` to match `fmtInr`.
-  - [ ] "Today" was the UTC date (`toISOString().slice`), off by one for IST users before 05:30 -
+  - [x] "Today" was the UTC date (`toISOString().slice`), off by one for IST users before 05:30 -
     compute the local calendar date.
-  - [ ] Edit-panel focus steal: an inline `onClose` prop re-ran the mount effect on every keystroke,
-    yanking focus to the Close button - memoize the callback and focus only on the open transition.
-  - [ ] Pyodide retry dead-end: a failed CDN script load left the tag in the DOM so every retry
+  - [x] Edit-panel focus steal: an inline `onClose` prop re-ran the mount effect on every keystroke,
+    yanking focus to the Close button - callback ref plus a memoized caller; the effect depends on
+    `open` alone.
+  - [x] Pyodide retry dead-end: a failed CDN script load left the tag in the DOM so every retry
     short-circuited - remove the tag on error.
-  - [ ] Python error sentinel ignored: a constant series returned `{"error": 1}` that the UI cast
+  - [x] Python error sentinel ignored: a constant series returned `{"error": 1}` that the UI cast
     blindly, rendering "Normality rejected" - surface it as an error message.
-  - [ ] `covarianceMatrix` missing the `n - ddof <= 0` guard that `variance` has.
-  - [ ] `validateCandles` never checked `time` for finiteness - add the check plus test.
-  - [ ] IPO dashboard persisted the untouched seed on first visit and instantly undid Reset - persist
-    only after a real edit.
-  - [ ] Documentation corrections: RSI flat-series comment, schema-version migration claim,
+  - [x] `covarianceMatrix` missing the `n - ddof <= 0` guard that `variance` has.
+  - [x] `validateCandles` never checked `time` for finiteness - add the check plus test.
+  - [x] IPO dashboard persisted the untouched seed on first visit and instantly undid Reset - persist
+    only after a real edit (`dirtyRef` gating), plus `max` clamps on the percent inputs.
+  - [x] Documentation corrections: RSI flat-series comment, schema-version migration claim,
     `DEFAULT_IPO_DATASET` "deterministic ids" comment, auto-timestamp heuristic ranges.
-  - [ ] New web test lane (`vitest`) covering applications, analytics growth, and format helpers;
-    extended chart-engine validation tests. All suites green.
-  - [ ] Commit (no co-author trailer).
+  - [x] New web test lane (`vitest`): 22 tests covering applications (retail lottery, HNI
+    proportionate expectation, clamping, -0, contributor splits), analytics growth/forecast, and
+    format helpers; chart-engine validation gains the non-finite-time test. 72 tests green overall.
+  - [x] Commit (no co-author trailer).
 
 ## Phase C - Security Hardening
 

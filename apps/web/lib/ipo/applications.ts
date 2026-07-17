@@ -14,6 +14,14 @@
  * each NII application spans many lots) - the UI surfaces that caveat. When a
  * category is undersubscribed (`t <= 1`) the applicant expects the full applied
  * quantity, so `P = 1`. When the subscription is unknown, `P = null`.
+ *
+ * Expected profit uses the category's allotment model, not `P` alone. Retail is
+ * a one-lot lottery: expectation = `P x lotSize x GMP` = `lotSize x GMP / t`.
+ * Non-retail categories (sHNI / bHNI / shareholder) allot proportionately under
+ * share conservation - every applicant's expected quantity is `applied / t` -
+ * so the expectation is `(applied / t) x GMP` directly. Multiplying that
+ * proportionate quantity by the lottery lower bound `1 / t` again (the previous
+ * formula) double-discounted HNI expectations by roughly the factor `t`.
  */
 
 import type { Application, ApplicationCategory, Contributor, IpoDataset } from "./types";
@@ -53,11 +61,15 @@ export interface ApplicationMetrics {
   /** appliedUnits / lotSize (may be fractional - flagged). */
   lots: number;
   probabilityOfWinning: number | null;
-  /** Realistic quantity received IF the application wins. */
+  /**
+   * Expected allotment quantity under the category's model: retail wins one
+   * lot with probability `1 / t`; other categories expect the proportionate
+   * `applied / t`.
+   */
   likelyAllottedUnits: number;
   /** appliedUnits * gmp - the full-allotment ceiling. */
   bestCaseProfit: number;
-  /** P * likelyAllottedUnits * gmp; NaN when probability is unknown. */
+  /** Expected units x gmp (see module doc); NaN when the subscription is unknown. */
   expectedProfit: number;
   /** quantityAllotted * (sellingPrice - cutoffPrice) when allotted, else 0. */
   actualProfit: number;
@@ -88,6 +100,12 @@ export function subscriptionByCategory(
   return map;
 }
 
+/**
+ * Quantity used by the expected-profit calculation. Retail: the single lot the
+ * draw can award (capped at what was applied). Non-retail: the proportionate
+ * expectation `applied / t`, which already embodies the odds of the draw, so it
+ * must NOT be multiplied by the win probability again.
+ */
 function likelyUnits(
   category: ApplicationCategory,
   appliedUnits: number,
@@ -143,8 +161,13 @@ export function deriveApplicationMetrics(
 
   const likelyAllottedUnits = likelyUnits(app.category, appliedUnits, lotSize, times);
   const bestCaseProfit = appliedUnits * latestGmp;
-  const expectedProfit =
-    probabilityOfWinning === null ? NaN : probabilityOfWinning * likelyAllottedUnits * latestGmp;
+  // Retail is a lottery (P x one lot); non-retail expectation `applied / t` is
+  // already probability-weighted by share conservation, so P is not re-applied.
+  const expectedUnits =
+    app.category === "RETAIL"
+      ? (probabilityOfWinning ?? NaN) * likelyAllottedUnits
+      : likelyAllottedUnits;
+  const expectedProfit = probabilityOfWinning === null ? NaN : expectedUnits * latestGmp;
 
   // Allotment (actual) profit. In "total" mode the realised profit is entered
   // directly; in "detailed" mode it is derived from quantity and selling price.

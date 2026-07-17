@@ -34,6 +34,7 @@ export function NumberField({
   onChange,
   step = "any",
   min,
+  max,
   suffix,
 }: {
   label: string;
@@ -41,6 +42,7 @@ export function NumberField({
   onChange: (value: number) => void;
   step?: string | number;
   min?: number;
+  max?: number;
   suffix?: string;
 }) {
   return (
@@ -52,6 +54,7 @@ export function NumberField({
           inputMode="decimal"
           step={step}
           min={min}
+          max={max}
           value={Number.isFinite(value) ? value : ""}
           onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
           className="w-full bg-transparent px-3 py-2 text-sm outline-none"

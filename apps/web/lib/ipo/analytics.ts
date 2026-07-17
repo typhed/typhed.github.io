@@ -49,7 +49,12 @@ export interface GmpForecast {
 export interface FinancialDerived extends FinancialRow {
   /** pat / grossRevenue, as a fraction (NaN if revenue is 0). */
   patMargin: number;
-  /** Year-over-year change vs the previous period, as a fraction (NaN for the first row). */
+  /**
+   * Year-over-year change vs the previous period, as a fraction. NaN for the
+   * first row and whenever the base is not a positive number - percentage
+   * growth from a zero or negative base (e.g. a loss year) is not meaningful
+   * and would flip the sign of a genuine improvement.
+   */
   revenueGrowth: number;
   patGrowth: number;
   assetGrowth: number;
@@ -184,8 +189,12 @@ export function financialsWithGrowth(rows: FinancialRow[]): FinancialDerived[] {
   const sorted = [...rows].sort((a, b) => fiscalKey(a.period) - fiscalKey(b.period));
   return sorted.map((row, idx) => {
     const prev = idx > 0 ? sorted[idx - 1]! : null;
+    // Growth is only meaningful from a positive base: dividing by a negative
+    // base (a loss year) inverts the sign of a real improvement.
     const growth = (curr: number, before: number | undefined) =>
-      prev && Number.isFinite(before) && before !== 0 ? (curr - (before as number)) / (before as number) : NaN;
+      prev && Number.isFinite(before) && (before as number) > 0
+        ? (curr - (before as number)) / (before as number)
+        : NaN;
     return {
       ...row,
       patMargin: row.grossRevenue !== 0 ? row.pat / row.grossRevenue : NaN,
