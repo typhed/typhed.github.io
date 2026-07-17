@@ -36,7 +36,7 @@ export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
  * while keeping the fixed rows so they can be filled in again.
  */
 export function blankFixedMilestones(): Milestone[] {
-  return FIXED_MILESTONE_LABELS.map((label) => makeMilestone({ label, date: "" }));
+  return FIXED_MILESTONE_LABELS.map((label) => makeMilestone({ label, date: "", fixed: true }));
 }
 
 export function makeFinancialRow(init: Omit<FinancialRow, "id">): FinancialRow {
@@ -74,13 +74,13 @@ export function defaultIpoDataset(): IpoDataset {
       savedAt: "",
     },
     timeline: [
-      makeMilestone({ label: "Offer Start", date: "2026-07-14" }),
-      makeMilestone({ label: "Offer End", date: "2026-07-16" }),
-      makeMilestone({ label: "Allotment Date", date: "2026-07-17" }),
-      makeMilestone({ label: "Refund Initiation", date: "2026-07-20" }),
-      makeMilestone({ label: "DEMAT Transfer", date: "2026-07-20" }),
-      makeMilestone({ label: "Listing Date", date: "2026-07-21" }),
-      makeMilestone({ label: "Mandate End", date: "2026-07-31" }),
+      makeMilestone({ label: "Offer Start", date: "2026-07-14", fixed: true }),
+      makeMilestone({ label: "Offer End", date: "2026-07-16", fixed: true }),
+      makeMilestone({ label: "Allotment Date", date: "2026-07-17", fixed: true }),
+      makeMilestone({ label: "Refund Initiation", date: "2026-07-20", fixed: true }),
+      makeMilestone({ label: "DEMAT Transfer", date: "2026-07-20", fixed: true }),
+      makeMilestone({ label: "Listing Date", date: "2026-07-21", fixed: true }),
+      makeMilestone({ label: "Mandate End", date: "2026-07-31", fixed: true }),
     ],
     financials: [
       makeFinancialRow({ period: "Mar'24", totalAssets: 7106.93, grossRevenue: 3426.08, pat: 2072.79 }),

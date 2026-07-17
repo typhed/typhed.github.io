@@ -7,7 +7,7 @@
  */
 
 /** Bumped whenever the on-disk JSON shape changes; drives `safeParseIpoDataset` migration. */
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 /**
  * The localStorage key holding the last-edited dataset for this browser. Bumped
@@ -88,15 +88,20 @@ export interface Milestone {
   label: string;
   /** ISO date, "yyyy-mm-dd"; may be empty for a fixed milestone with no date set. */
   date: string;
+  /**
+   * True for the canonical lifecycle milestones: the editor renders them as
+   * read-only, date-only rows (no rename, no delete) and keeps them even with a
+   * blank date. Absent / false for user-added ("custom") milestones, which are
+   * fully editable, removable and re-orderable.
+   */
+  fixed?: boolean;
 }
 
 /**
- * The canonical IPO-lifecycle milestones, in chronological order. These labels
- * are fixed: the editor renders them as read-only, date-only rows (no rename, no
- * delete) and they are always present so a cleared date can be filled in later.
- * Any milestone whose label is NOT in this set is a user-added ("custom") one -
- * fully editable, removable and re-orderable. A blank-dated milestone is hidden
- * from the rendered timeline until a date is supplied.
+ * The canonical IPO-lifecycle milestone labels, in chronological order. Used to
+ * seed the fixed rows and to recognise fixed milestones in legacy payloads that
+ * predate the explicit `fixed` flag. A blank-dated milestone is hidden from the
+ * rendered timeline until a date is supplied.
  */
 export const FIXED_MILESTONE_LABELS = [
   "Offer Start",
@@ -110,9 +115,18 @@ export const FIXED_MILESTONE_LABELS = [
 
 const FIXED_MILESTONE_SET: ReadonlySet<string> = new Set(FIXED_MILESTONE_LABELS);
 
-/** Whether `label` names one of the fixed lifecycle milestones. */
+/** Whether `label` names one of the canonical fixed lifecycle milestones. */
 export function isFixedMilestone(label: string): boolean {
   return FIXED_MILESTONE_SET.has(label);
+}
+
+/**
+ * Whether a milestone is a fixed lifecycle row. Prefers the explicit `fixed`
+ * flag and falls back to the canonical label set so payloads written before the
+ * flag existed are still classified correctly.
+ */
+export function isMilestoneFixed(milestone: { fixed?: boolean; label: string }): boolean {
+  return milestone.fixed === true || isFixedMilestone(milestone.label);
 }
 
 /** One fiscal year of reported financials. */

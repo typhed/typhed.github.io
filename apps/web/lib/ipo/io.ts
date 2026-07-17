@@ -24,6 +24,7 @@ import {
   APPLICATION_TYPES,
   CONTRIBUTION_MODES,
   isFixedMilestone,
+  isMilestoneFixed,
   SCHEMA_VERSION,
   SUBSCRIPTION_CATEGORIES,
 } from "./types";
@@ -54,7 +55,11 @@ export function serializeIpoDataset(data: IpoDataset): string {
       schemaVersion: SCHEMA_VERSION,
       savedAt: new Date().toISOString(),
     },
-    timeline: data.timeline.map((m) => ({ label: m.label, date: m.date })),
+    timeline: data.timeline.map((m) => ({
+      label: m.label,
+      date: m.date,
+      ...(isMilestoneFixed(m) ? { fixed: true } : {}),
+    })),
     financials: data.financials.map((f) => ({
       period: f.period,
       totalAssets: f.totalAssets,
@@ -176,13 +181,15 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
   const timeline = asArray(raw.timeline).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const label = str(entry.label, "Milestone");
+    // Prefer the explicit flag; fall back to the label set for legacy payloads.
+    const fixed = entry.fixed === true || isFixedMilestone(label);
     const date = coerceIsoDate(entry.date);
     if (date === null) {
       // Fixed lifecycle milestones persist even without a date (hidden from the
       // timeline until filled in); a custom milestone needs a valid date.
-      return isFixedMilestone(label) ? [makeMilestone({ label, date: "" })] : [];
+      return fixed ? [makeMilestone({ label, date: "", fixed: true })] : [];
     }
-    return [makeMilestone({ label, date })];
+    return [makeMilestone({ label, date, ...(fixed ? { fixed: true } : {}) })];
   });
 
   const financials = asArray(raw.financials).flatMap((entry) => {
