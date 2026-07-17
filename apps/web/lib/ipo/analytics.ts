@@ -79,6 +79,21 @@ export interface IpoMetrics {
   daysToListing: number;
 }
 
+/**
+ * Loop-based min/max. `Math.min(...values)` spreads the array into call
+ * arguments and throws a RangeError past the engine argument limit, so a large
+ * imported dataset could crash the page; a loop has no such ceiling.
+ */
+export function valueRange(values: readonly number[]): { min: number; max: number } {
+  let min = Infinity;
+  let max = -Infinity;
+  for (const v of values) {
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  return { min, max };
+}
+
 /** GMP rows sorted chronologically (ISO dates sort lexicographically). */
 export function sortedGmp(rows: GmpRow[]): GmpRow[] {
   return [...rows].sort((a, b) => a.date.localeCompare(b.date));
@@ -115,8 +130,7 @@ export function gmpStats(rows: GmpRow[]): GmpStats {
   const first = values[0]!;
   const latest = values[count - 1]!;
   const prev = count > 1 ? values[count - 2]! : NaN;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const { min, max } = valueRange(values);
   const avg = values.reduce((sum, v) => sum + v, 0) / count;
   const trend = latest - first;
   const deltaPrev = count > 1 ? latest - prev : NaN;

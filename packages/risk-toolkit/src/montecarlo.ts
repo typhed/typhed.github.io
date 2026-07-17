@@ -97,7 +97,9 @@ export function monteCarloDrawdown(input: MonteCarloInput): MonteCarloResult {
     maxDrawdown: {
       median: quantile(maxDrawdowns, 0.5),
       p95: quantile(maxDrawdowns, 0.95),
-      worst: Math.max(...maxDrawdowns),
+      // Loop, not Math.max(...): spreading tens of thousands of trials into
+      // call arguments risks the engine argument limit.
+      worst: maxDrawdowns.reduce((worst, dd) => (dd > worst ? dd : worst), 0),
     },
     ruinProbability: ruined / trials,
     paths,

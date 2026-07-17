@@ -17,6 +17,12 @@ describe("parseCsv", () => {
     expect(table.headers).toEqual(["time", "close"]);
     expect(table.rows).toHaveLength(1);
   });
+
+  it("keeps duplicate headers apart (papaparse renames them natively)", () => {
+    const table = parseCsv("time,close,close\n2024-01-01,10,11\n");
+    expect(table.headers).toEqual(["time", "close", "close_1"]);
+    expect(table.rows[0]).toMatchObject({ close: "10", close_1: "11" });
+  });
 });
 
 describe("parseXlsx (SheetJS round-trip)", () => {

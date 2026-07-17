@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { fmtNumber, fmtPercent, signTone } from "@/lib/format";
-import { niceScale, type FinancialDerived } from "@/lib/ipo/analytics";
+import { niceScale, valueRange, type FinancialDerived } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
 import { StatTile, ToolCard } from "@/components/tools/controls";
 
@@ -151,14 +151,10 @@ function FinancialsChart({ derived }: { derived: FinancialDerived[] }) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const nYears = derived.length;
 
-  const all = React.useMemo(
-    () => METRICS.flatMap((m) => derived.map((row) => row[m.key])),
-    [derived],
-  );
-  const scale = React.useMemo(
-    () => niceScale(Math.min(...all), Math.max(...all), { includeZero: true, maxTicks: 4 }),
-    [all],
-  );
+  const scale = React.useMemo(() => {
+    const { min, max } = valueRange(METRICS.flatMap((m) => derived.map((row) => row[m.key])));
+    return niceScale(min, max, { includeZero: true, maxTicks: 4 });
+  }, [derived]);
 
   if (nYears === 0) {
     return (

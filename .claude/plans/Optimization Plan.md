@@ -80,18 +80,19 @@ Goal: every surviving Part-1 math finding fixed, with regression tests.
 
 Goal: the security agent's confirmed findings closed.
 
-  - [ ] Cap row counts in `safeParseIpoDataset` (a crafted import with a huge array crashed the tab).
-  - [ ] Replace spread-based `Math.min(...)` / `Math.max(...)` over user-sized arrays with loops
-    (`gmpStats`, GMP chart, financials chart, Monte Carlo worst-drawdown).
-  - [ ] Validate saved-analysis imports (shape-check every candle, cap length, surface failures
+  - [x] Cap row counts in `safeParseIpoDataset` (a crafted import with a huge array crashed the tab).
+  - [x] Replace spread-based `Math.min(...)` / `Math.max(...)` over user-sized arrays with loops
+    (`gmpStats`, GMP chart, financials chart, Monte Carlo worst-drawdown) via a shared `valueRange`.
+  - [x] Validate saved-analysis imports (shape-check every candle, cap length, surface failures
     instead of a silent `catch`).
-  - [ ] Subresource integrity + `crossorigin` on the Pyodide CDN script (hash precomputed from the
+  - [x] Subresource integrity + `crossorigin` on the Pyodide CDN script (hash precomputed from the
     pinned 0.26.4 artefact).
-  - [ ] React error boundaries (`app/error.tsx`, `app/global-error.tsx`) so a render crash no longer
+  - [x] React error boundaries (`app/error.tsx`, `app/global-error.tsx`) so a render crash no longer
     white-screens the page.
-  - [ ] Upload race guard and an unhandled-rejection fix for Save in the workspace; de-duplicate CSV
-    headers at parse.
-  - [ ] Commit (no co-author trailer).
+  - [x] Upload race guard and an unhandled-rejection fix for Save in the workspace.
+  - [x] Duplicate CSV headers: the reported defect was disproved by experiment - papaparse 5.5
+    renames duplicates natively (`close_1`) - so the behaviour is pinned by a test instead of code.
+  - [x] Commit (no co-author trailer).
 
 ## Phase D - Deduplication and Dead Code
 

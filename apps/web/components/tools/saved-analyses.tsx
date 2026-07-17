@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Download, FolderOpen, Trash2, Upload } from "lucide-react";
+import type { Candle } from "@typhed/chart-engine";
 
 import {
   deleteAnalysis,
@@ -11,6 +12,23 @@ import {
   type SavedAnalysis,
 } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
+
+/** Hard ceiling on imported bars - beyond any real dataset, below crash territory. */
+const MAX_IMPORT_CANDLES = 2_000_000;
+
+/** Shape-check one untrusted candle: numeric fields, volume number-or-null. */
+function isCandleLike(value: unknown): value is Candle {
+  if (typeof value !== "object" || value === null) return false;
+  const c = value as Record<string, unknown>;
+  return (
+    typeof c.time === "number" &&
+    typeof c.open === "number" &&
+    typeof c.high === "number" &&
+    typeof c.low === "number" &&
+    typeof c.close === "number" &&
+    (c.volume === null || typeof c.volume === "number")
+  );
+}
 
 /**
  * Saved analyses stored in this browser (IndexedDB). Load, delete, export a
@@ -24,6 +42,7 @@ export function SavedAnalyses({
 }) {
   const [items, setItems] = React.useState<SavedAnalysis[]>([]);
   const [ready, setReady] = React.useState(false);
+  const [importError, setImportError] = React.useState<string | null>(null);
   const importRef = React.useRef<HTMLInputElement>(null);
 
   const refresh = React.useCallback(async () => {
@@ -55,8 +74,16 @@ export function SavedAnalyses({
   async function handleImport(file: File) {
     try {
       const parsed = JSON.parse(await file.text());
-      if (!Array.isArray(parsed?.candles)) {
-        throw new Error("missing candles");
+      if (!Array.isArray(parsed?.candles) || parsed.candles.length === 0) {
+        throw new Error("That file has no candles array - is it an exported analysis?");
+      }
+      if (parsed.candles.length > MAX_IMPORT_CANDLES) {
+        throw new Error("That file holds more bars than this tool supports.");
+      }
+      // Reject rather than repair: silently storing malformed bars would feed
+      // NaNs into every chart and risk metric downstream.
+      if (!parsed.candles.every(isCandleLike)) {
+        throw new Error("Some rows in that file are not valid OHLCV bars.");
       }
       await saveAnalysis(
         toSavedAnalysis(
@@ -66,9 +93,16 @@ export function SavedAnalyses({
           Boolean(parsed.hasVolume),
         ),
       );
+      setImportError(null);
       await refresh();
-    } catch {
-      // Ignore malformed imports rather than crash the workspace.
+    } catch (e) {
+      setImportError(
+        e instanceof SyntaxError
+          ? "Could not read that file - is it valid JSON?"
+          : e instanceof Error
+            ? e.message
+            : "Could not import that file.",
+      );
     }
   }
 
@@ -100,6 +134,12 @@ export function SavedAnalyses({
           }}
         />
       </div>
+
+      {importError && (
+        <p role="alert" className="mb-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
+          {importError}
+        </p>
+      )}
 
       {items.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border bg-card p-4 text-center text-sm text-muted-foreground">

@@ -111,12 +111,27 @@ export function ipoFileName(data: IpoDataset, today: string): string {
 
 /* ------------------------------ validators ------------------------------ */
 
+/**
+ * Upper bounds on rows accepted from an untrusted payload. Far beyond any real
+ * IPO's data, but low enough that a crafted million-row import cannot hang or
+ * crash the renderer. Rows past the cap are dropped silently, like malformed
+ * rows.
+ */
+const MAX_ROWS = {
+  timeline: 200,
+  financials: 100,
+  gmp: 1000,
+  applications: 500,
+  contributorsPerApplication: 200,
+  subscription: 100,
+} as const;
+
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function asArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
+function asArray(value: unknown, maxRows: number): unknown[] {
+  return Array.isArray(value) ? value.slice(0, maxRows) : [];
 }
 
 function str(value: unknown, fallback: string): string {
@@ -178,7 +193,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     savedAt: str(metaRaw.savedAt, ""),
   };
 
-  const timeline = asArray(raw.timeline).flatMap((entry) => {
+  const timeline = asArray(raw.timeline, MAX_ROWS.timeline).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const label = str(entry.label, "Milestone");
     // Prefer the explicit flag; fall back to the label set for legacy payloads.
@@ -192,7 +207,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return [makeMilestone({ label, date, ...(fixed ? { fixed: true } : {}) })];
   });
 
-  const financials = asArray(raw.financials).flatMap((entry) => {
+  const financials = asArray(raw.financials, MAX_ROWS.financials).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const totalAssets = num(entry.totalAssets, NaN);
     const grossRevenue = num(entry.grossRevenue, NaN);
@@ -203,7 +218,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return [makeFinancialRow({ period: str(entry.period, "-"), totalAssets, grossRevenue, pat })];
   });
 
-  const gmp = asArray(raw.gmp).flatMap((entry) => {
+  const gmp = asArray(raw.gmp, MAX_ROWS.gmp).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const date = coerceIsoDate(entry.date);
     const value = num(entry.value, NaN);
@@ -211,10 +226,10 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return [makeGmpRow({ date, value })];
   });
 
-  const applications = asArray(raw.applications).flatMap((entry) => {
+  const applications = asArray(raw.applications, MAX_ROWS.applications).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
-    const contributors = asArray(entry.contributors).flatMap((c) => {
+    const contributors = asArray(entry.contributors, MAX_ROWS.contributorsPerApplication).flatMap((c) => {
       if (!isObject(c)) return [];
       const unitsRaw = num(c.units, NaN);
       const priceRaw = num(c.price, NaN);
@@ -250,7 +265,7 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     ];
   });
 
-  const subscription = asArray(raw.subscription).flatMap((entry) => {
+  const subscription = asArray(raw.subscription, MAX_ROWS.subscription).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const category = str(entry.category, "");
     if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category)) return [];
