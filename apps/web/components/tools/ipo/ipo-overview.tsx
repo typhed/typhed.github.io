@@ -36,7 +36,7 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               className={cn(
                 "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
                 meta.applicationType === "SME"
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                  ? "border-warning/40 bg-warning/10 text-warning"
                   : "border-brand/30 bg-brand/10 text-brand",
               )}
             >

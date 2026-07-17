@@ -118,16 +118,17 @@ rendered output identical).
 
 Goal: the design agent's confirmed findings closed without altering the visual language.
 
-  - [ ] Success/warning theme tokens (light-theme `text-emerald-500` / `text-amber-500` fail WCAG
-    contrast on white cards) - darker light-theme values, unchanged dark theme, applied to all sites.
-  - [ ] Clerk modal accent follows the active theme instead of a hard-coded light-theme hex.
-  - [ ] `aria-pressed` on `Segmented` and `TimeframeSelect`; `aria-expanded` on the integrity
-    disclosure; focus-visible rings on the segmented controls, chat send and FAB.
-  - [ ] Space-key scroll fix on the upload dropzone; focus trap in the edit drawer; chat panel width
-    clamp for 320 px viewports.
-  - [ ] Copy: "ALLOTED" and flag typos corrected, false "30% tax bracket Net Profit" claim removed,
-    grammar fixes, deterministic saved-analysis timestamp format.
-  - [ ] Commit (no co-author trailer).
+  - [x] Success/warning theme tokens (light-theme `text-emerald-500` / `text-amber-500` fail WCAG
+    contrast on white cards) - the light values sit at the 700 shades (>= 4.5:1), the dark values
+    equal the previous 500s so dark rendering is unchanged; all 8 sites migrated.
+  - [x] Clerk modal accent follows the active theme (ThemeProvider now wraps ClerkAuthProvider).
+  - [x] `aria-pressed` on `Segmented` and `TimeframeSelect`; `aria-expanded` + `aria-controls` on
+    the integrity disclosure; focus-visible rings on the segmented controls, chat send and FAB.
+  - [x] Space-key scroll fix on the upload dropzone; Tab focus trap in the edit drawer; chat panel
+    width clamp for 320 px viewports.
+  - [x] Copy: "ALLOTED"/"Alloted"/"Cutt-Off" corrected, false "30% tax bracket Net Profit" claim
+    removed, grammar fixes, deterministic dd-mm-yyyy saved-analysis timestamp.
+  - [x] Commit (no co-author trailer).
 
 ## Phase F - Verification and Parity
 

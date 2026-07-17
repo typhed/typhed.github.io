@@ -28,6 +28,7 @@ export function ChatFab() {
         onClick={() => setOpen((value) => !value)}
         className={cn(
           "flex h-14 w-14 items-center justify-center rounded-full text-brand-foreground shadow-lg transition-transform hover:scale-105",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "bg-gradient-to-br from-brand to-brand-2",
         )}
       >

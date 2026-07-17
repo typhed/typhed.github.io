@@ -177,14 +177,14 @@ export function deriveApplicationMetrics(
       let allottedQty = app.allotment.quantityAllotted;
       if (allottedQty > appliedUnits) {
         allottedQty = appliedUnits;
-        flags.push("Mismatch Alloted Quantity [CLAMPED]");
+        flags.push("Mismatch Allotted Quantity [CLAMPED]");
       }
-      if (allottedQty <= 0) flags.push("Alloted Quantity is Zero");
-      else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("QTY Mismatch with Alloted Quantity Lot Size");
+      if (allottedQty <= 0) flags.push("Allotted Quantity is Zero");
+      else if (lotSize > 0 && allottedQty % lotSize !== 0) flags.push("QTY Mismatch with Allotted Quantity Lot Size");
       rawActual = allottedQty * (app.allotment.sellingPrice - cutoffPrice);
     } else {
       rawActual = Number.isFinite(app.allotment.totalAmount) ? app.allotment.totalAmount : 0;
-      if (rawActual === 0) flags.push("Total Amount Undefined for Alloted");
+      if (rawActual === 0) flags.push("Total Amount Undefined for Allotted");
     }
   }
   // Normalise negative zero (0 * negative) so the UI shows "₹0", not "-₹0".
@@ -213,7 +213,7 @@ export function deriveApplicationMetrics(
     app.contributors.some(
       (c) => Number.isFinite(c.price) && cutoffPrice > 0 && Math.abs(c.price - cutoffPrice) > 0.005,
     );
-  if (anyPriceMismatch) flags.push("Invalid Contributor Price from Cutt-Off Value");
+  if (anyPriceMismatch) flags.push("Contributor Price Differs from Cut-Off Price");
 
   return {
     id: app.id,

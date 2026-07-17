@@ -134,7 +134,7 @@ export function StatTile({
 }) {
   const toneClass = {
     default: "text-foreground",
-    positive: "text-emerald-500",
+    positive: "text-success",
     negative: "text-destructive",
     brand: "text-brand",
   }[tone];
@@ -175,9 +175,11 @@ export function Segmented<T extends string>({
         <button
           key={option.value}
           type="button"
+          aria-pressed={option.value === value}
           onClick={() => onChange(option.value)}
           className={cn(
             "rounded px-3 py-1 text-xs font-medium transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             option.value === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:text-foreground",

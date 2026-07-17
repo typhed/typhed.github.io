@@ -102,7 +102,7 @@ export function IpoFinancials({
                   <td
                     className={cn(
                       "py-2 pl-2 text-right tabular-nums",
-                      !hasYoy ? "text-muted-foreground" : up ? "text-emerald-500" : "text-destructive",
+                      !hasYoy ? "text-muted-foreground" : up ? "text-success" : "text-destructive",
                     )}
                   >
                     <span className="inline-flex items-center gap-1">

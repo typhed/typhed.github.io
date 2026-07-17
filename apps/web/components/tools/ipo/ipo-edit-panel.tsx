@@ -43,6 +43,7 @@ export function IpoEditPanel({
   onFinancialsChange: (next: FinancialRow[]) => void;
 }) {
   const closeRef = React.useRef<HTMLButtonElement>(null);
+  const panelRef = React.useRef<HTMLElement>(null);
 
   // Read the latest onClose through a ref so the mount effect depends only on
   // `open`. With onClose in the deps, a parent passing an inline callback would
@@ -56,7 +57,28 @@ export function IpoEditPanel({
   React.useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
+      if (e.key === "Escape") {
+        onCloseRef.current();
+        return;
+      }
+      // Focus trap: aria-modal tells screen readers the page behind does not
+      // exist, so Tab must not walk out of the drawer onto it.
+      if (e.key === "Tab" && panelRef.current) {
+        const focusables = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusables.length === 0) return;
+        const first = focusables[0]!;
+        const last = focusables[focusables.length - 1]!;
+        const active = document.activeElement;
+        if (e.shiftKey && (active === first || !panelRef.current.contains(active))) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && (active === last || !panelRef.current.contains(active))) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener("keydown", onKey);
     const previousOverflow = document.body.style.overflow;
@@ -78,6 +100,7 @@ export function IpoEditPanel({
         aria-hidden
       />
       <aside
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Edit IPO data"

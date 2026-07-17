@@ -46,7 +46,7 @@ export function ChatPanel() {
   }
 
   return (
-    <div className="flex h-[28rem] w-80 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl">
+    <div className="flex h-[28rem] w-80 max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl">
       <div className="border-b border-border px-4 py-3">
         <p className="font-display text-sm font-semibold">TyPhed Assistant</p>
         <p className="text-xs text-muted-foreground">Placeholder - AI answers coming soon</p>
@@ -93,7 +93,7 @@ export function ChatPanel() {
           type="submit"
           aria-label="Send"
           disabled={draft.trim() === ""}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground disabled:opacity-50"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card disabled:opacity-50"
         >
           <SendHorizontal className="h-4 w-4" />
         </button>

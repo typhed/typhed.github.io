@@ -20,9 +20,11 @@ export function TimeframeSelect({
         <button
           key={tf.id}
           type="button"
+          aria-pressed={tf.id === value}
           onClick={() => onChange(tf.id)}
           className={cn(
             "rounded px-2.5 py-1 text-xs font-medium transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             tf.id === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:bg-accent hover:text-foreground",

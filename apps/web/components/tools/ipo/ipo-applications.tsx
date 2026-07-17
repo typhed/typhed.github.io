@@ -103,12 +103,10 @@ export function IpoApplications({
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
             <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-              No applications yet. Add one to start tracking. We have created a custom application form,
-              where you can create and track multiple applications and also set n-contributors for each of the
-              application (for example, you have applied a ₹ 50L from one account under "BIG HNI" category, and
-              this involves two person contributing). Based on the settings, and if alloted, the function
-              calculates the take home profit for each contributor/application. We've also added the option to
-              calculate the "Net Profit" considering an user falls under the 30% tax bracket (default).
+              No applications yet. Add one to start tracking. Each application can carry multiple
+              contributors - for example, a ₹50L bHNI application funded by two people - and every
+              contributor&apos;s share, expected profit and, once allotted, take-home profit is split
+              by their contribution automatically.
             </p>
           )}
           {applications.map((app) => {
@@ -210,7 +208,7 @@ function ApplicationCard({
             className="h-4 w-4 rounded border-input"
             style={{ accentColor: "hsl(var(--brand))" }}
           />
-          ALLOTED
+          ALLOTTED
         </label>
         <RemoveRowButton label={`Remove ${app.name}`} onClick={onRemove} />
       </div>
@@ -220,7 +218,7 @@ function ApplicationCard({
           Win Probability: {probText}
         </span>
         {(metrics?.flags ?? []).map((flag) => (
-          <span key={flag} className="inline-flex items-center gap-1 text-amber-500">
+          <span key={flag} className="inline-flex items-center gap-1 text-warning">
             <AlertTriangle className="h-3 w-3" aria-hidden />
             {flag}
           </span>
@@ -406,7 +404,7 @@ function ApplicationCard({
                     <span
                       className={cn(
                         "tabular-nums",
-                        (cm?.actualProfit ?? 0) >= 0 ? "text-emerald-500" : "text-destructive",
+                        (cm?.actualProfit ?? 0) >= 0 ? "text-success" : "text-destructive",
                       )}
                     >
                       {fmtInr(cm?.actualProfit ?? 0, 0)}

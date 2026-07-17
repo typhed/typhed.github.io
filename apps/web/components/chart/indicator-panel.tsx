@@ -29,6 +29,7 @@ export function IndicatorPanel({
           onClick={() => onToggle(indicator.id)}
           className={cn(
             "rounded-md border px-2.5 py-1 text-xs font-medium transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             state[indicator.id]
               ? "border-brand bg-brand/10 text-brand"
               : "border-border text-muted-foreground hover:text-foreground",

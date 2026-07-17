@@ -17,6 +17,14 @@ import { Button } from "@/components/ui/button";
 /** Hard ceiling on imported bars - beyond any real dataset, below crash territory. */
 const MAX_IMPORT_CANDLES = 2_000_000;
 
+/** "dd-mm-yyyy hh:mm" from a ms timestamp - the site's date convention, not the
+ * runtime locale's (which mixes a third format into the UI). */
+function fmtSavedAt(ms: number): string {
+  const d = new Date(ms);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /** Shape-check one untrusted candle: numeric fields, volume number-or-null. */
 function isCandleLike(value: unknown): value is Candle {
   if (typeof value !== "object" || value === null) return false;
@@ -145,8 +153,8 @@ export function SavedAnalyses({
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{item.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {item.candles.length.toLocaleString()} bars &middot;{" "}
-                  {new Date(item.savedAt).toLocaleString()}
+                  {item.candles.length.toLocaleString("en-IN")} bars &middot;{" "}
+                  {fmtSavedAt(item.savedAt)}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
