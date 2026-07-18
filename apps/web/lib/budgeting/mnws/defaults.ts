@@ -45,7 +45,7 @@ export function blankBonusEntry(date: string): BonusEntry {
 export function defaultMnwsDataset(): MnwsDataset {
   return {
     meta: {
-      planName: "My MNWS Plan",
+      planName: "My 50-30-20 Plan",
       schemaVersion: SCHEMA_VERSION,
       savedAt: "",
     },

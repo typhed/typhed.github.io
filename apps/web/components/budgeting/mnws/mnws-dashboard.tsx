@@ -109,7 +109,7 @@ export function MnwsDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-xl font-semibold">
-            MNWS Budgeting Rule
+            50-30-20 (modified) Rule
           </h1>
           <p className="text-muted-foreground text-sm">
             A disciplined 50-30-20: edit your salary history and windfalls, then

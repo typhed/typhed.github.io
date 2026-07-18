@@ -273,8 +273,10 @@ export function MnwsInputs({
           onChange={onBonusesChange}
         />
         <p className="text-muted-foreground mt-3 text-xs">
-          Splits should total 100 %; any shortfall is treated as ordinary
-          spending and is not deployed.
+          To change how a windfall is split, edit its <strong>Needs %</strong>,{" "}
+          <strong>Wants %</strong> and <strong>Savings %</strong> on that row
+          (default 25 / 0 / 75). Splits should total 100 %; any shortfall is
+          treated as ordinary spending and is not deployed.
         </p>
       </ToolCard>
 
@@ -286,7 +288,7 @@ export function MnwsInputs({
           <TextField
             label="Plan name"
             value={meta.planName}
-            placeholder="My MNWS Plan"
+            placeholder="My 50-30-20 Plan"
             onChange={(planName) => onMetaChange({ planName })}
           />
           <NumberField

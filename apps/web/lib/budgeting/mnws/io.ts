@@ -72,7 +72,7 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
   if (!isObject(raw)) {
     return {
       ok: false,
-      error: "This file isn't a valid MNWS budgeting export.",
+      error: "This file isn't a valid 50-30-20 (modified) budgeting export.",
     };
   }
 
@@ -121,7 +121,7 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
 
   const data: MnwsDataset = {
     meta: {
-      planName: str(metaRaw.planName, "My MNWS Plan"),
+      planName: str(metaRaw.planName, "My 50-30-20 Plan"),
       schemaVersion: SCHEMA_VERSION,
       savedAt: str(metaRaw.savedAt, ""),
     },

@@ -51,7 +51,7 @@ function RuleCard({
 export function MnwsRuleExplainer() {
   return (
     <ToolCard
-      title="How the MNWS rule works"
+      title="How the 50-30-20 (modified) rule works"
       description="A disciplined twist on 50-30-20: keep your lifestyle steady and let every raise flow mostly into savings."
     >
       <div className="grid gap-4 md:grid-cols-3">

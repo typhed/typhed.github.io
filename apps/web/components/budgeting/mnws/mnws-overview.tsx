@@ -164,7 +164,7 @@ export function MnwsBottomLine({ result }: { result: MnwsResult }) {
       <p className="text-foreground mt-1.5 text-sm leading-relaxed sm:text-base">
         Over{" "}
         <span className="font-semibold">{fmtDuration(summary.monthCount)}</span>{" "}
-        of disciplined MNWS budgeting, you set aside{" "}
+        of disciplined 50-30-20 (modified) budgeting, you set aside{" "}
         <span className="font-semibold tabular-nums">
           {fmtInr(summary.totalSavings, 0)}
         </span>{" "}
