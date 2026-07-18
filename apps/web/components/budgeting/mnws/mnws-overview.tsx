@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { fmtInr, fmtPercent } from "@/lib/format";
 import type { MnwsResult } from "@/lib/budgeting/mnws/engine";
 import { ToolCard, StatTile } from "@/components/tools/controls";
@@ -42,11 +43,14 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
         height={14}
         className="mt-3"
       />
-      <div className="mt-3 grid grid-cols-3 gap-2">
+      <div className="mt-3 grid gap-2 lg:grid-cols-3">
         {SERIES_ORDER.map((key) => (
           <div
             key={key}
-            className="border-border bg-card rounded-md border p-3 text-center"
+            className={cn(
+              "rounded-md border p-3 text-center",
+              SERIES[key].cardClass,
+            )}
           >
             <p className="text-muted-foreground inline-flex items-center gap-1.5 text-xs">
               <span
@@ -55,12 +59,25 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
               />
               {SERIES[key].label}
             </p>
-            <p className="font-display text-foreground mt-1 text-xl font-semibold tabular-nums">
-              {hasSalary ? fmtPercent(currentRates[key], 1) : "-"}
-            </p>
-            <p className="text-muted-foreground text-[11px] tabular-nums">
-              {hasSalary ? `${fmtInr(currentAlloc[key], 0)}/mo` : "-"}
-            </p>
+            <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-2.5 gap-y-1.5">
+              <span className="font-display text-foreground text-xl font-semibold tabular-nums">
+                {hasSalary ? fmtPercent(currentRates[key], 1) : "-"}
+              </span>
+              {hasSalary ? (
+                <span
+                  className={cn(
+                    "font-display rounded-md border px-2 py-0.5 text-2xl font-semibold tabular-nums",
+                    SERIES[key].chipClass,
+                  )}
+                >
+                  {fmtInr(currentAlloc[key], 0)} / month
+                </span>
+              ) : (
+                <span className="text-muted-foreground text-[11px] tabular-nums">
+                  -
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>
