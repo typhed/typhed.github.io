@@ -62,3 +62,8 @@ export function indexToIso(index: number): string {
 export function indexToYear(index: number): number {
   return Math.floor(index / 12);
 }
+
+/** Ascending comparator for ISO "yyyy-mm-dd" / "yyyy-mm" strings (lexicographic works). */
+export function compareIso(a: string, b: string): number {
+  return a < b ? -1 : a > b ? 1 : 0;
+}

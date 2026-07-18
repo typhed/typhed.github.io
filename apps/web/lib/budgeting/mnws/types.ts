@@ -28,14 +28,22 @@ export const BASE_SPLIT = { needs: 0.5, wants: 0.3, savings: 0.2 } as const;
  * to 1). Because wants is 0.30 in both splits, the recurring wants rate stays a
  * flat 30 %, while needs drifts 50 % -> 20 % and savings drifts 20 % -> 50 %.
  */
-export const INCREMENT_SPLIT = { needs: 0.2, wants: 0.3, savings: 0.5 } as const;
+export const INCREMENT_SPLIT = {
+  needs: 0.2,
+  wants: 0.3,
+  savings: 0.5,
+} as const;
 
 /**
  * Default one-time split for a bonus / windfall, in PERCENT POINTS (editable per
  * entry). Needs + wants + savings should sum to 100; any shortfall is treated as
  * ordinary spending and simply not deployed.
  */
-export const DEFAULT_BONUS_SPLIT = { needs: 25, wants: 0, savings: 75 } as const;
+export const DEFAULT_BONUS_SPLIT = {
+  needs: 25,
+  wants: 0,
+  savings: 75,
+} as const;
 
 /** Sensible bounds for the assumed annual return, percent. */
 export const RETURN_MIN = 0;

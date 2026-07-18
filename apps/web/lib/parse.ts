@@ -19,15 +19,24 @@ export function str(value: unknown, fallback: string): string {
 
 export function num(value: unknown, fallback: number): number {
   if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value))) {
+  if (
+    typeof value === "string" &&
+    value.trim() !== "" &&
+    Number.isFinite(Number(value))
+  ) {
     return Number(value);
   }
   return fallback;
 }
 
 /** Return `value` when it is one of `allowed`, else `fallback`. */
-export function enumOr<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
-  return typeof value === "string" && (allowed as readonly string[]).includes(value)
+export function enumOr<T extends string>(
+  value: unknown,
+  allowed: readonly T[],
+  fallback: T,
+): T {
+  return typeof value === "string" &&
+    (allowed as readonly string[]).includes(value)
     ? (value as T)
     : fallback;
 }

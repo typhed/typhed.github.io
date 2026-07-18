@@ -23,8 +23,7 @@ import type { MnwsDataset } from "./types";
 import { makeBonusEntry, makeSalaryEntry } from "./defaults";
 
 export type ParseResult =
-  | { ok: true; data: MnwsDataset }
-  | { ok: false; error: string };
+  { ok: true; data: MnwsDataset } | { ok: false; error: string };
 
 /** Serialise to pretty JSON: stamp schema/version + savedAt, strip row ids. */
 export function serializeMnwsDataset(data: MnwsDataset): string {
@@ -37,7 +36,11 @@ export function serializeMnwsDataset(data: MnwsDataset): string {
     settings: {
       annualReturnPct: data.settings.annualReturnPct,
     },
-    salaries: data.salaries.map((s) => ({ date: s.date, amount: s.amount, note: s.note })),
+    salaries: data.salaries.map((s) => ({
+      date: s.date,
+      amount: s.amount,
+      note: s.note,
+    })),
     bonuses: data.bonuses.map((b) => ({
       date: b.date,
       amount: b.amount,
@@ -67,7 +70,10 @@ function clamp(value: number, lo: number, hi: number): number {
  */
 export function safeParseMnwsDataset(raw: unknown): ParseResult {
   if (!isObject(raw)) {
-    return { ok: false, error: "This file isn't a valid MNWS budgeting export." };
+    return {
+      ok: false,
+      error: "This file isn't a valid MNWS budgeting export.",
+    };
   }
 
   const metaRaw = isObject(raw.meta) ? raw.meta : {};
@@ -77,7 +83,13 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
     if (!isObject(entry)) return [];
     const date = coerceIsoDate(entry.date);
     if (date === null) return [];
-    return [makeSalaryEntry({ date, amount: Math.max(0, num(entry.amount, 0)), note: str(entry.note, "") })];
+    return [
+      makeSalaryEntry({
+        date,
+        amount: Math.max(0, num(entry.amount, 0)),
+        note: str(entry.note, ""),
+      }),
+    ];
   });
 
   const bonuses = asArray(raw.bonuses).flatMap((entry) => {
@@ -90,14 +102,21 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
         amount: Math.max(0, num(entry.amount, 0)),
         needsPct: clamp(num(entry.needsPct, DEFAULT_BONUS_SPLIT.needs), 0, 100),
         wantsPct: clamp(num(entry.wantsPct, DEFAULT_BONUS_SPLIT.wants), 0, 100),
-        savingsPct: clamp(num(entry.savingsPct, DEFAULT_BONUS_SPLIT.savings), 0, 100),
+        savingsPct: clamp(
+          num(entry.savingsPct, DEFAULT_BONUS_SPLIT.savings),
+          0,
+          100,
+        ),
         note: str(entry.note, ""),
       }),
     ];
   });
 
   if (salaries.length === 0 && bonuses.length === 0) {
-    return { ok: false, error: "No usable salary or bonus entries found in this file." };
+    return {
+      ok: false,
+      error: "No usable salary or bonus entries found in this file.",
+    };
   }
 
   const data: MnwsDataset = {
@@ -107,7 +126,11 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
       savedAt: str(metaRaw.savedAt, ""),
     },
     settings: {
-      annualReturnPct: clamp(num(settingsRaw.annualReturnPct, DEFAULT_ANNUAL_RETURN_PCT), RETURN_MIN, RETURN_MAX),
+      annualReturnPct: clamp(
+        num(settingsRaw.annualReturnPct, DEFAULT_ANNUAL_RETURN_PCT),
+        RETURN_MIN,
+        RETURN_MAX,
+      ),
     },
     salaries,
     bonuses,

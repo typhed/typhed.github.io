@@ -21,31 +21,44 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
   const hasSalary = currentSalary > 0;
 
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
+    <div className="border-border bg-background rounded-lg border p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-xs font-medium text-muted-foreground">
+        <p className="text-muted-foreground text-xs font-medium">
           Current needs / wants / savings goal
         </p>
-        <p className="text-xs text-muted-foreground">
-          at {hasSalary ? `${fmtInr(currentSalary, 0)} / month` : "your latest salary"}
+        <p className="text-muted-foreground text-xs">
+          at{" "}
+          {hasSalary
+            ? `${fmtInr(currentSalary, 0)} / month`
+            : "your latest salary"}
         </p>
       </div>
       <SplitBar
-        split={{ needs: currentRates.needs, wants: currentRates.wants, savings: currentRates.savings }}
+        split={{
+          needs: currentRates.needs,
+          wants: currentRates.wants,
+          savings: currentRates.savings,
+        }}
         height={14}
         className="mt-3"
       />
       <div className="mt-3 grid grid-cols-3 gap-2">
         {SERIES_ORDER.map((key) => (
-          <div key={key} className="rounded-md border border-border bg-card p-3 text-center">
-            <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
+          <div
+            key={key}
+            className="border-border bg-card rounded-md border p-3 text-center"
+          >
+            <p className="text-muted-foreground inline-flex items-center gap-1.5 text-xs">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: SERIES[key].color }}
+              />
               {SERIES[key].label}
             </p>
-            <p className="mt-1 font-display text-xl font-semibold tabular-nums text-foreground">
+            <p className="font-display text-foreground mt-1 text-xl font-semibold tabular-nums">
               {hasSalary ? fmtPercent(currentRates[key], 1) : "-"}
             </p>
-            <p className="text-[11px] tabular-nums text-muted-foreground">
+            <p className="text-muted-foreground text-[11px] tabular-nums">
               {hasSalary ? `${fmtInr(currentAlloc[key], 0)}/mo` : "-"}
             </p>
           </div>
@@ -70,14 +83,18 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
           <>
             <CurrentGoal result={result} />
             {firstAlloc && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                Allocations begin <span className="font-medium text-foreground">{firstAlloc}</span>, the month after
-                your first salary. Add earlier salaries or wait for that month to see the full timeline.
+              <p className="text-muted-foreground mt-3 text-sm">
+                Allocations begin{" "}
+                <span className="text-foreground font-medium">
+                  {firstAlloc}
+                </span>
+                , the month after your first salary. Add earlier salaries or
+                wait for that month to see the full timeline.
               </p>
             )}
           </>
         ) : (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No salary entries yet. Add your first salary below to get started.
           </p>
         )}
@@ -140,15 +157,23 @@ export function MnwsBottomLine({ result }: { result: MnwsResult }) {
   ).join(" · ");
 
   return (
-    <div className="rounded-lg border border-brand/30 bg-brand/10 p-5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-brand">Bottom line</p>
-      <p className="mt-1.5 text-sm leading-relaxed text-foreground sm:text-base">
-        Over <span className="font-semibold">{fmtDuration(summary.monthCount)}</span> of disciplined MNWS budgeting,
-        you set aside <span className="font-semibold tabular-nums">{fmtInr(summary.totalSavings, 0)}</span> in savings
-        — compounding to a corpus of{" "}
-        <span className="font-semibold tabular-nums text-brand">{fmtInr(summary.investedCorpus, 0)}</span> at{" "}
-        {fmtPercent(summary.annualReturnPct / 100, 0)} p.a. Your current goal is{" "}
-        <span className="font-semibold">{goal}</span>.
+    <div className="border-brand/30 bg-brand/10 rounded-lg border p-5">
+      <p className="text-brand text-[11px] font-semibold uppercase tracking-wide">
+        Bottom line
+      </p>
+      <p className="text-foreground mt-1.5 text-sm leading-relaxed sm:text-base">
+        Over{" "}
+        <span className="font-semibold">{fmtDuration(summary.monthCount)}</span>{" "}
+        of disciplined MNWS budgeting, you set aside{" "}
+        <span className="font-semibold tabular-nums">
+          {fmtInr(summary.totalSavings, 0)}
+        </span>{" "}
+        in savings — compounding to a corpus of{" "}
+        <span className="text-brand font-semibold tabular-nums">
+          {fmtInr(summary.investedCorpus, 0)}
+        </span>{" "}
+        at {fmtPercent(summary.annualReturnPct / 100, 0)} p.a. Your current goal
+        is <span className="font-semibold">{goal}</span>.
       </p>
     </div>
   );

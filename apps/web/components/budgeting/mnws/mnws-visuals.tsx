@@ -15,21 +15,29 @@ export function SplitBar({
   height?: number;
   className?: string;
 }) {
-  const total = SERIES_ORDER.reduce((sum, key) => sum + Math.max(0, split[key]), 0) || 1;
+  const total =
+    SERIES_ORDER.reduce((sum, key) => sum + Math.max(0, split[key]), 0) || 1;
   return (
     <div
-      className={cn("flex w-full overflow-hidden rounded-full bg-muted", className)}
+      className={cn(
+        "bg-muted flex w-full overflow-hidden rounded-full",
+        className,
+      )}
       style={{ height }}
       role="img"
       aria-label={SERIES_ORDER.map(
-        (key) => `${SERIES[key].label} ${Math.round((Math.max(0, split[key]) / total) * 100)}%`,
+        (key) =>
+          `${SERIES[key].label} ${Math.round((Math.max(0, split[key]) / total) * 100)}%`,
       ).join(", ")}
     >
       {SERIES_ORDER.map((key) => {
         const pct = (Math.max(0, split[key]) / total) * 100;
         if (pct <= 0) return null;
         return (
-          <div key={key} style={{ width: `${pct}%`, backgroundColor: SERIES[key].color }} />
+          <div
+            key={key}
+            style={{ width: `${pct}%`, backgroundColor: SERIES[key].color }}
+          />
         );
       })}
     </div>
@@ -47,11 +55,19 @@ export function SeriesLegend({
   return (
     <div className={cn("flex flex-wrap gap-x-4 gap-y-1.5 text-xs", className)}>
       {SERIES_ORDER.map((key) => (
-        <span key={key} className="inline-flex items-center gap-1.5 text-muted-foreground">
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
+        <span
+          key={key}
+          className="text-muted-foreground inline-flex items-center gap-1.5"
+        >
+          <span
+            className="h-2.5 w-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: SERIES[key].color }}
+          />
           {SERIES[key].label}
           {values?.[key] && (
-            <span className="font-medium tabular-nums text-foreground">{values[key]}</span>
+            <span className="text-foreground font-medium tabular-nums">
+              {values[key]}
+            </span>
           )}
         </span>
       ))}

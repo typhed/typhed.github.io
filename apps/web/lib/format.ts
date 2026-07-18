@@ -34,7 +34,8 @@ export function fmtInrShort(value: number): string {
   if (!Number.isFinite(value)) return "-";
   const sign = value < 0 ? "-" : "";
   const abs = Math.abs(value);
-  const compact = (n: number) => (n >= 10 ? String(Math.round(n)) : n.toFixed(1));
+  const compact = (n: number) =>
+    n >= 10 ? String(Math.round(n)) : n.toFixed(1);
   if (abs >= 1e7) return `${sign}₹${compact(abs / 1e7)}Cr`;
   if (abs >= 1e5) return `${sign}₹${compact(abs / 1e5)}L`;
   if (abs >= 1e3) return `${sign}₹${Math.round(abs / 1e3)}k`;
@@ -50,7 +51,18 @@ export function fmtDisplayDate(iso: string): string {
 }
 
 const MONTH_ABBREVIATIONS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ] as const;
 
 /** Short "dd Mon" label for chart axes, e.g. "14 Jul". */

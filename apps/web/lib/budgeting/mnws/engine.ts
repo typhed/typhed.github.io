@@ -40,7 +40,12 @@
 import { fmtMonthYear } from "@/lib/format";
 import { BASE_SPLIT, INCREMENT_SPLIT } from "./types";
 import type { MnwsDataset } from "./types";
-import { indexToIso, indexToYear, monthIndexFromIso } from "./dates";
+import {
+  compareIso,
+  indexToIso,
+  indexToYear,
+  monthIndexFromIso,
+} from "./dates";
 
 export interface Allocation {
   needs: number;
@@ -154,20 +159,31 @@ export interface MnwsResult {
 }
 
 function addAlloc(a: Allocation, b: Allocation): Allocation {
-  return { needs: a.needs + b.needs, wants: a.wants + b.wants, savings: a.savings + b.savings };
+  return {
+    needs: a.needs + b.needs,
+    wants: a.wants + b.wants,
+    savings: a.savings + b.savings,
+  };
 }
 
 function ratesOf(alloc: Allocation, salary: number): Allocation {
   if (!(salary > 0)) return { ...ZERO };
-  return { needs: alloc.needs / salary, wants: alloc.wants / salary, savings: alloc.savings / salary };
+  return {
+    needs: alloc.needs / salary,
+    wants: alloc.wants / salary,
+    savings: alloc.savings / salary,
+  };
 }
 
 /** Build the ordered, cumulative salary regimes from the raw salary entries. */
 function buildRegimes(data: MnwsDataset): RegimeInfo[] {
   const sorted = data.salaries
     .filter((s) => monthIndexFromIso(s.date) !== null)
-    .map((s) => ({ date: s.date, amount: Number.isFinite(s.amount) ? Math.max(0, s.amount) : 0 }))
-    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+    .map((s) => ({
+      date: s.date,
+      amount: Number.isFinite(s.amount) ? Math.max(0, s.amount) : 0,
+    }))
+    .sort((a, b) => compareIso(a.date, b.date));
 
   const regimes: RegimeInfo[] = [];
   let alloc: Allocation = { ...ZERO };
@@ -210,7 +226,11 @@ function buildBonusMap(
   data: MnwsDataset,
   startIndex: number,
   endIndex: number,
-): { map: Map<number, { alloc: Allocation; inflow: number }>; dropped: number; unbalanced: number } {
+): {
+  map: Map<number, { alloc: Allocation; inflow: number }>;
+  dropped: number;
+  unbalanced: number;
+} {
   const map = new Map<number, { alloc: Allocation; inflow: number }>();
   let dropped = 0;
   let unbalanced = 0;
@@ -221,11 +241,6 @@ function buildBonusMap(
     const amount = Number.isFinite(b.amount) ? Math.max(0, b.amount) : 0;
     if (amount === 0) continue;
 
-    const needsPct = Number.isFinite(b.needsPct) ? b.needsPct : 0;
-    const wantsPct = Number.isFinite(b.wantsPct) ? b.wantsPct : 0;
-    const savingsPct = Number.isFinite(b.savingsPct) ? b.savingsPct : 0;
-    if (Math.abs(needsPct + wantsPct + savingsPct - 100) > 0.01) unbalanced++;
-
     // Deploy the month after receipt; a windfall received before tracking began
     // lands in the first tracked month, one dated in the future is dropped.
     const applied = Math.max(raw + 1, startIndex);
@@ -234,13 +249,22 @@ function buildBonusMap(
       continue;
     }
 
+    // Only count an unbalanced split once we know the bonus is actually applied.
+    const needsPct = Number.isFinite(b.needsPct) ? b.needsPct : 0;
+    const wantsPct = Number.isFinite(b.wantsPct) ? b.wantsPct : 0;
+    const savingsPct = Number.isFinite(b.savingsPct) ? b.savingsPct : 0;
+    if (Math.abs(needsPct + wantsPct + savingsPct - 100) > 0.01) unbalanced++;
+
     const add: Allocation = {
       needs: amount * (needsPct / 100),
       wants: amount * (wantsPct / 100),
       savings: amount * (savingsPct / 100),
     };
     const cur = map.get(applied) ?? { alloc: { ...ZERO }, inflow: 0 };
-    map.set(applied, { alloc: addAlloc(cur.alloc, add), inflow: cur.inflow + amount });
+    map.set(applied, {
+      alloc: addAlloc(cur.alloc, add),
+      inflow: cur.inflow + amount,
+    });
   }
 
   return { map, dropped, unbalanced };
@@ -297,10 +321,15 @@ export function computeMnws(data: MnwsDataset, today: string): MnwsResult {
 
   const startIndex = regimes[0]!.effectiveIndex;
   const todayIndex = monthIndexFromIso(today);
-  if (todayIndex === null || todayIndex < startIndex) return emptyResult(regimes, warnings);
+  if (todayIndex === null || todayIndex < startIndex)
+    return emptyResult(regimes, warnings);
   const endIndex = todayIndex;
 
-  const { map: bonusMap, dropped, unbalanced } = buildBonusMap(data, startIndex, endIndex);
+  const {
+    map: bonusMap,
+    dropped,
+    unbalanced,
+  } = buildBonusMap(data, startIndex, endIndex);
   if (dropped > 0) {
     warnings.push(
       `${dropped} bonus ${dropped === 1 ? "entry is" : "entries are"} dated after the current month and ${dropped === 1 ? "was" : "were"} not applied.`,
@@ -320,7 +349,10 @@ export function computeMnws(data: MnwsDataset, today: string): MnwsResult {
   let invested = 0;
 
   for (let m = startIndex; m <= endIndex; m++) {
-    while (regimePtr + 1 < regimes.length && regimes[regimePtr + 1]!.effectiveIndex <= m) {
+    while (
+      regimePtr + 1 < regimes.length &&
+      regimes[regimePtr + 1]!.effectiveIndex <= m
+    ) {
       regimePtr++;
     }
     const regime = regimes[regimePtr]!;

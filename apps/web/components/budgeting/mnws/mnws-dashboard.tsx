@@ -3,14 +3,28 @@
 import * as React from "react";
 import { AlertTriangle, Download, RotateCcw, Upload, X } from "lucide-react";
 
-import type { MnwsDataset, MnwsMeta, MnwsSettings } from "@/lib/budgeting/mnws/types";
+import type {
+  MnwsDataset,
+  MnwsMeta,
+  MnwsSettings,
+} from "@/lib/budgeting/mnws/types";
 import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types";
-import { DEFAULT_MNWS_DATASET, defaultMnwsDataset } from "@/lib/budgeting/mnws/defaults";
+import {
+  DEFAULT_MNWS_DATASET,
+  defaultMnwsDataset,
+} from "@/lib/budgeting/mnws/defaults";
 import { computeMnws } from "@/lib/budgeting/mnws/engine";
-import { mnwsFileName, safeParseMnwsDataset, serializeMnwsDataset } from "@/lib/budgeting/mnws/io";
+import {
+  mnwsFileName,
+  safeParseMnwsDataset,
+  serializeMnwsDataset,
+} from "@/lib/budgeting/mnws/io";
 import { Button } from "@/components/ui/button";
 import { MnwsRuleExplainer } from "@/components/budgeting/mnws/mnws-rule-explainer";
-import { MnwsBottomLine, MnwsOverview } from "@/components/budgeting/mnws/mnws-overview";
+import {
+  MnwsBottomLine,
+  MnwsOverview,
+} from "@/components/budgeting/mnws/mnws-overview";
 import { MnwsCharts } from "@/components/budgeting/mnws/mnws-charts";
 import { MnwsInputs } from "@/components/budgeting/mnws/mnws-inputs";
 import { MnwsSchedule } from "@/components/budgeting/mnws/mnws-schedule";
@@ -55,7 +69,9 @@ export function MnwsDashboard() {
     setData((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
 
   function handleDownload() {
-    const blob = new Blob([serializeMnwsDataset(data)], { type: "application/json" });
+    const blob = new Blob([serializeMnwsDataset(data)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -92,14 +108,20 @@ export function MnwsDashboard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-xl font-semibold">MNWS Budgeting Rule</h1>
-          <p className="text-sm text-muted-foreground">
-            A disciplined 50-30-20: edit your salary history and windfalls, then download a single JSON file to reuse
-            it later.
+          <h1 className="font-display text-xl font-semibold">
+            MNWS Budgeting Rule
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            A disciplined 50-30-20: edit your salary history and windfalls, then
+            download a single JSON file to reuse it later.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => importRef.current?.click()}
+          >
             <Upload className="h-4 w-4" />
             Import
           </Button>
@@ -128,14 +150,14 @@ export function MnwsDashboard() {
       {importError && (
         <div
           role="alert"
-          className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+          className="border-destructive/40 bg-destructive/10 text-destructive flex items-start justify-between gap-3 rounded-lg border p-3 text-sm"
         >
           <span>{importError}</span>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={() => setImportError(null)}
-            className="shrink-0 rounded p-0.5 hover:bg-destructive/10"
+            className="hover:bg-destructive/10 shrink-0 rounded p-0.5"
           >
             <X className="h-4 w-4" />
           </button>
@@ -169,16 +191,19 @@ export function MnwsDashboard() {
         settings={data.settings}
         today={today}
         onMetaChange={patchMeta}
-        onSalariesChange={(salaries) => setData((prev) => ({ ...prev, salaries }))}
+        onSalariesChange={(salaries) =>
+          setData((prev) => ({ ...prev, salaries }))
+        }
         onBonusesChange={(bonuses) => setData((prev) => ({ ...prev, bonuses }))}
         onSettingsChange={patchSettings}
       />
 
       <MnwsSchedule result={result} />
 
-      <p className="text-xs text-muted-foreground">
-        Your edits stay in this browser and in the JSON file you download - nothing is uploaded. Figures are
-        projections based on your inputs and the assumed return, not financial advice.
+      <p className="text-muted-foreground text-xs">
+        Your edits stay in this browser and in the JSON file you download -
+        nothing is uploaded. Figures are projections based on your inputs and
+        the assumed return, not financial advice.
       </p>
 
       <MnwsBottomLine result={result} />

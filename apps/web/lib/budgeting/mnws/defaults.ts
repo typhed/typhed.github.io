@@ -9,7 +9,11 @@
  */
 
 import { newId } from "@/lib/utils";
-import { DEFAULT_ANNUAL_RETURN_PCT, DEFAULT_BONUS_SPLIT, SCHEMA_VERSION } from "./types";
+import {
+  DEFAULT_ANNUAL_RETURN_PCT,
+  DEFAULT_BONUS_SPLIT,
+  SCHEMA_VERSION,
+} from "./types";
 import type { BonusEntry, MnwsDataset, SalaryEntry } from "./types";
 
 export function makeSalaryEntry(init: Omit<SalaryEntry, "id">): SalaryEntry {
@@ -46,12 +50,32 @@ export function defaultMnwsDataset(): MnwsDataset {
       savedAt: "",
     },
     salaries: [
-      makeSalaryEntry({ date: "2016-11-30", amount: 45000, note: "First salary" }),
-      makeSalaryEntry({ date: "2017-07-31", amount: 52000, note: "First appraisal" }),
+      makeSalaryEntry({
+        date: "2016-11-30",
+        amount: 45000,
+        note: "First salary",
+      }),
+      makeSalaryEntry({
+        date: "2017-07-31",
+        amount: 52000,
+        note: "First appraisal",
+      }),
       makeSalaryEntry({ date: "2018-08-31", amount: 63000, note: "Appraisal" }),
-      makeSalaryEntry({ date: "2020-04-30", amount: 82000, note: "Switch + hike" }),
-      makeSalaryEntry({ date: "2022-06-30", amount: 108000, note: "Promotion" }),
-      makeSalaryEntry({ date: "2024-05-31", amount: 150000, note: "Senior role" }),
+      makeSalaryEntry({
+        date: "2020-04-30",
+        amount: 82000,
+        note: "Switch + hike",
+      }),
+      makeSalaryEntry({
+        date: "2022-06-30",
+        amount: 108000,
+        note: "Promotion",
+      }),
+      makeSalaryEntry({
+        date: "2024-05-31",
+        amount: 150000,
+        note: "Senior role",
+      }),
     ],
     bonuses: [
       makeBonusEntry({

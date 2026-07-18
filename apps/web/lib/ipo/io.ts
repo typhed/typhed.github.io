@@ -35,11 +35,17 @@ import {
   makeSubscriptionRow,
 } from "./defaults";
 import { slugify } from "@/lib/utils";
-import { asArray, coerceIsoDate, enumOr, isObject, num, str } from "@/lib/parse";
+import {
+  asArray,
+  coerceIsoDate,
+  enumOr,
+  isObject,
+  num,
+  str,
+} from "@/lib/parse";
 
 export type ParseResult =
-  | { ok: true; data: IpoDataset }
-  | { ok: false; error: string };
+  { ok: true; data: IpoDataset } | { ok: false; error: string };
 
 /** Serialise to pretty JSON: stamp schema/version + savedAt, strip row ids. */
 export function serializeIpoDataset(data: IpoDataset): string {
@@ -103,7 +109,10 @@ export function ipoFileName(data: IpoDataset, today: string): string {
  */
 export function safeParseIpoDataset(raw: unknown): ParseResult {
   if (!isObject(raw)) {
-    return { ok: false, error: "This file isn't a valid IPO dashboard export." };
+    return {
+      ok: false,
+      error: "This file isn't a valid IPO dashboard export.",
+    };
   }
 
   const metaRaw = isObject(raw.meta) ? raw.meta : {};
@@ -115,7 +124,11 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
   const meta: IpoMeta = {
     companyName: str(metaRaw.companyName, "Untitled IPO"),
     nseSymbol: str(metaRaw.nseSymbol, ""),
-    applicationType: enumOr<ApplicationType>(metaRaw.applicationType, APPLICATION_TYPES, "MAINBOARD"),
+    applicationType: enumOr<ApplicationType>(
+      metaRaw.applicationType,
+      APPLICATION_TYPES,
+      "MAINBOARD",
+    ),
     lotSize: Math.max(1, Math.round(num(metaRaw.lotSize, 1))),
     priceBand: { min: bandMin, max: bandMax },
     currency: str(metaRaw.currency, "INR"),
@@ -136,10 +149,21 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     const totalAssets = num(entry.totalAssets, NaN);
     const grossRevenue = num(entry.grossRevenue, NaN);
     const pat = num(entry.pat, NaN);
-    if (!Number.isFinite(totalAssets) || !Number.isFinite(grossRevenue) || !Number.isFinite(pat)) {
+    if (
+      !Number.isFinite(totalAssets) ||
+      !Number.isFinite(grossRevenue) ||
+      !Number.isFinite(pat)
+    ) {
       return [];
     }
-    return [makeFinancialRow({ period: str(entry.period, "-"), totalAssets, grossRevenue, pat })];
+    return [
+      makeFinancialRow({
+        period: str(entry.period, "-"),
+        totalAssets,
+        grossRevenue,
+        pat,
+      }),
+    ];
   });
 
   const gmp = asArray(raw.gmp).flatMap((entry) => {
@@ -160,15 +184,26 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
       const amountRaw = num(c.amount, NaN);
       // Accept a row that carries EITHER units+price ("detailed") or a direct
       // amount ("total"); drop only rows with no usable numeric field at all.
-      const hasDetailed = Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
+      const hasDetailed =
+        Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
       const hasTotal = Number.isFinite(amountRaw);
       if (!hasDetailed && !hasTotal) return [];
       const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0);
       const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0);
       // Fall back to units*price so a legacy row keeps its corpus if the user
       // later switches the application to "total" mode.
-      const amount = Math.max(0, Number.isFinite(amountRaw) ? amountRaw : units * price);
-      return [makeContributor({ name: str(c.name, "Contributor"), units, price, amount })];
+      const amount = Math.max(
+        0,
+        Number.isFinite(amountRaw) ? amountRaw : units * price,
+      );
+      return [
+        makeContributor({
+          name: str(c.name, "Contributor"),
+          units,
+          price,
+          amount,
+        }),
+      ];
     });
     return [
       makeApplication({
@@ -176,10 +211,18 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
         category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
         // Legacy exports (no mode) carry units+price, so default to "detailed"
         // to preserve them; new exports set the mode explicitly.
-        contributionMode: enumOr<ContributionMode>(entry.contributionMode, CONTRIBUTION_MODES, "detailed"),
+        contributionMode: enumOr<ContributionMode>(
+          entry.contributionMode,
+          CONTRIBUTION_MODES,
+          "detailed",
+        ),
         allotted: entry.allotted === true,
         allotment: {
-          mode: enumOr<AllotmentMode>(allotmentRaw.mode, ALLOTMENT_MODES, "total"),
+          mode: enumOr<AllotmentMode>(
+            allotmentRaw.mode,
+            ALLOTMENT_MODES,
+            "total",
+          ),
           quantityAllotted: Math.max(0, num(allotmentRaw.quantityAllotted, 0)),
           sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
           totalAmount: num(allotmentRaw.totalAmount, 0),
@@ -192,7 +235,8 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
   const subscription = asArray(raw.subscription).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const category = str(entry.category, "");
-    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category)) return [];
+    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category))
+      return [];
     return [
       makeSubscriptionRow({
         category: category as SubscriptionCategory,
@@ -212,5 +256,8 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return { ok: false, error: "No usable IPO data found in this file." };
   }
 
-  return { ok: true, data: { meta, timeline, financials, gmp, applications, subscription } };
+  return {
+    ok: true,
+    data: { meta, timeline, financials, gmp, applications, subscription },
+  };
 }
