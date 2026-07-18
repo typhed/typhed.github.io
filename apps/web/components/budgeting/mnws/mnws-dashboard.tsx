@@ -11,7 +11,9 @@ import { mnwsFileName, safeParseMnwsDataset, serializeMnwsDataset } from "@/lib/
 import { Button } from "@/components/ui/button";
 import { MnwsRuleExplainer } from "@/components/budgeting/mnws/mnws-rule-explainer";
 import { MnwsBottomLine, MnwsOverview } from "@/components/budgeting/mnws/mnws-overview";
+import { MnwsCharts } from "@/components/budgeting/mnws/mnws-charts";
 import { MnwsInputs } from "@/components/budgeting/mnws/mnws-inputs";
+import { MnwsSchedule } from "@/components/budgeting/mnws/mnws-schedule";
 
 export function MnwsDashboard() {
   const [data, setData] = React.useState<MnwsDataset>(DEFAULT_MNWS_DATASET);
@@ -158,6 +160,8 @@ export function MnwsDashboard() {
 
       <MnwsOverview result={result} />
 
+      <MnwsCharts result={result} />
+
       <MnwsInputs
         meta={data.meta}
         salaries={data.salaries}
@@ -169,6 +173,8 @@ export function MnwsDashboard() {
         onBonusesChange={(bonuses) => setData((prev) => ({ ...prev, bonuses }))}
         onSettingsChange={patchSettings}
       />
+
+      <MnwsSchedule result={result} />
 
       <p className="text-xs text-muted-foreground">
         Your edits stay in this browser and in the JSON file you download - nothing is uploaded. Figures are

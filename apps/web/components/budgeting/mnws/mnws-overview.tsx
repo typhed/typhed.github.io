@@ -42,7 +42,7 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
               {SERIES[key].label}
             </p>
-            <p className={`mt-1 font-display text-xl font-semibold tabular-nums ${SERIES[key].textClass}`}>
+            <p className="mt-1 font-display text-xl font-semibold tabular-nums text-foreground">
               {hasSalary ? fmtPercent(currentRates[key], 1) : "-"}
             </p>
             <p className="text-[11px] tabular-nums text-muted-foreground">

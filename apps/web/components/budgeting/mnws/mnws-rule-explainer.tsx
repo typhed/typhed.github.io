@@ -27,7 +27,7 @@ function RuleCard({
           <span key={key} className="inline-flex items-center gap-1">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
             <span className="text-muted-foreground">{SERIES[key].label}</span>
-            <span className={`font-semibold tabular-nums ${SERIES[key].textClass}`}>
+            <span className="font-semibold tabular-nums text-foreground">
               {Math.round((Math.max(0, split[key]) / total) * 100)}%
             </span>
           </span>

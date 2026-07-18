@@ -17,10 +17,13 @@ export interface SeriesMeta {
   textClass: string;
 }
 
+// Hues validated with the dataviz palette checker (light + dark surfaces):
+// amber-600 / violet-500 / emerald-600 all pass lightness, chroma, CVD
+// separation and contrast in both modes.
 export const SERIES: Record<SeriesKey, SeriesMeta> = {
-  needs: { key: "needs", label: "Needs", color: "hsl(38 92% 50%)", textClass: "text-amber-500" },
-  wants: { key: "wants", label: "Wants", color: "hsl(262 83% 66%)", textClass: "text-violet-500" },
-  savings: { key: "savings", label: "Savings", color: "hsl(160 84% 39%)", textClass: "text-emerald-500" },
+  needs: { key: "needs", label: "Needs", color: "#d97706", textClass: "text-amber-600 dark:text-amber-500" },
+  wants: { key: "wants", label: "Wants", color: "#8b5cf6", textClass: "text-violet-500" },
+  savings: { key: "savings", label: "Savings", color: "#059669", textClass: "text-emerald-600 dark:text-emerald-500" },
 };
 
 /** Fixed render order: needs, wants, savings (left→right, bottom→top in stacks). */

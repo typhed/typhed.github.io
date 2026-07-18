@@ -29,6 +29,18 @@ export function fmtInr(value: number, digits = 2): string {
   }).format(value);
 }
 
+/** Compact Indian-rupee label for chart axes, e.g. `₹1.2Cr`, `₹6.5L`, `₹45k`. */
+export function fmtInrShort(value: number): string {
+  if (!Number.isFinite(value)) return "-";
+  const sign = value < 0 ? "-" : "";
+  const abs = Math.abs(value);
+  const compact = (n: number) => (n >= 10 ? String(Math.round(n)) : n.toFixed(1));
+  if (abs >= 1e7) return `${sign}₹${compact(abs / 1e7)}Cr`;
+  if (abs >= 1e5) return `${sign}₹${compact(abs / 1e5)}L`;
+  if (abs >= 1e3) return `${sign}₹${Math.round(abs / 1e3)}k`;
+  return `${sign}₹${Math.round(abs)}`;
+}
+
 /** Render an ISO "yyyy-mm-dd" date as "dd-mm-yyyy" (matching the source sheet). */
 export function fmtDisplayDate(iso: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
