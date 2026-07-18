@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { fmtInr, fmtNumber, fmtPercent } from "@/lib/format";
+import { fmtInr, fmtNumber, fmtPercent, signTone } from "@/lib/format";
 import type { IpoMeta } from "@/lib/ipo/types";
 import type { IpoMetrics } from "@/lib/ipo/analytics";
 import { StatTile } from "@/components/tools/controls";
@@ -17,7 +17,7 @@ function countdownLabel(days: number): string | null {
 
 export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetrics }) {
   const countdown = countdownLabel(metrics.daysToListing);
-  const gainTone = metrics.listingGainPct >= 0 ? "positive" : "negative";
+  const gainTone = signTone(metrics.listingGainPct);
 
   return (
     <section className="rounded-lg border border-border bg-card p-6">
@@ -36,7 +36,7 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               className={cn(
                 "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
                 meta.applicationType === "SME"
-                  ? "border-amber-500/40 bg-amber-500/10 text-amber-500"
+                  ? "border-warning/40 bg-warning/10 text-warning"
                   : "border-brand/30 bg-brand/10 text-brand",
               )}
             >
@@ -77,7 +77,7 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
         <StatTile
           label="Est. profit / lot"
           value={fmtInr(metrics.profitPerLot, 0)}
-          tone={metrics.profitPerLot >= 0 ? "positive" : "negative"}
+          tone={signTone(metrics.profitPerLot)}
           note="if GMP holds"
         />
       </div>

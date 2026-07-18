@@ -9,8 +9,10 @@ export function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function asArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
+/** Coerce to an array; when `maxRows` is given, rows past the cap are dropped. */
+export function asArray(value: unknown, maxRows?: number): unknown[] {
+  const rows = Array.isArray(value) ? value : [];
+  return maxRows === undefined ? rows : rows.slice(0, maxRows);
 }
 
 export function str(value: unknown, fallback: string): string {

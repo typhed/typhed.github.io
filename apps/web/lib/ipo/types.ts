@@ -6,13 +6,18 @@
  * and browser localStorage. Keep it JSON-serialisable and free of React types.
  */
 
-/** Bumped whenever the on-disk JSON shape changes; drives `safeParseIpoDataset` migration. */
-export const SCHEMA_VERSION = 4;
+/**
+ * Bumped whenever the on-disk JSON shape changes. Stamped into every export for
+ * provenance; the parser itself is defensive field-by-field and accepts any
+ * older shape, so no per-version migration code exists (yet).
+ */
+export const SCHEMA_VERSION = 5;
 
 /**
- * The localStorage key holding the last-edited dataset for this browser. Bumped
- * to `v2` alongside SCHEMA_VERSION 3 so a stale `v1` cache does not mask the new
- * seed dataset; the portable JSON file remains importable regardless.
+ * The localStorage key holding the last-edited dataset for this browser. Bump
+ * the suffix when a seed change must not be masked by a stale cache (last done
+ * for the SCHEMA_VERSION 3 seed overhaul); the portable JSON file remains
+ * importable regardless.
  */
 export const IPO_STORAGE_KEY = "typhed:ipo:v2";
 
@@ -40,19 +45,6 @@ export const SUBSCRIPTION_CATEGORIES = [
   "CUSTOM",
 ] as const;
 export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
-
-/**
- * Fixed-label rows seeded by default, in display order. Their names are not
- * editable (only the times value is); user-added CUSTOM rows sit before OVERALL.
- */
-export const DEFAULT_SUBSCRIPTION_CATEGORIES: readonly SubscriptionCategory[] = [
-  "QIB",
-  "bHNI",
-  "sHNI",
-  "RETAIL",
-  "SHAREHOLDER",
-  "OVERALL",
-];
 
 export interface PriceBand {
   /** Lower price band, INR per share. */
@@ -86,8 +78,47 @@ export interface Milestone {
   /** Ephemeral React key; stripped from exported JSON, regenerated on load. */
   id: string;
   label: string;
-  /** ISO date, "yyyy-mm-dd". */
+  /** ISO date, "yyyy-mm-dd"; may be empty for a fixed milestone with no date set. */
   date: string;
+  /**
+   * True for the canonical lifecycle milestones: the editor renders them as
+   * read-only, date-only rows (no rename, no delete) and keeps them even with a
+   * blank date. Absent / false for user-added ("custom") milestones, which are
+   * fully editable, removable and re-orderable.
+   */
+  fixed?: boolean;
+}
+
+/**
+ * The canonical IPO-lifecycle milestone labels, in chronological order. Used to
+ * seed the fixed rows and to recognise fixed milestones in legacy payloads that
+ * predate the explicit `fixed` flag. A blank-dated milestone is hidden from the
+ * rendered timeline until a date is supplied.
+ */
+export const FIXED_MILESTONE_LABELS = [
+  "Offer Start",
+  "Offer End",
+  "Allotment Date",
+  "Refund Initiation",
+  "DEMAT Transfer",
+  "Listing Date",
+  "Mandate End",
+] as const;
+
+const FIXED_MILESTONE_SET: ReadonlySet<string> = new Set(FIXED_MILESTONE_LABELS);
+
+/** Whether `label` names one of the canonical fixed lifecycle milestones. */
+export function isFixedMilestone(label: string): boolean {
+  return FIXED_MILESTONE_SET.has(label);
+}
+
+/**
+ * Whether a milestone is a fixed lifecycle row. Prefers the explicit `fixed`
+ * flag and falls back to the canonical label set so payloads written before the
+ * flag existed are still classified correctly.
+ */
+export function isMilestoneFixed(milestone: { fixed?: boolean; label: string }): boolean {
+  return milestone.fixed === true || isFixedMilestone(milestone.label);
 }
 
 /** One fiscal year of reported financials. */

@@ -35,6 +35,11 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
+    /* Semantic status colours. Light values sit at the 700 shades so small
+       status text clears WCAG 4.5:1 on the white card (the 500s measure ~2.5:1). */
+    --success: 163 94% 24%;
+    --warning: 26 90% 37%;
+
     --border: 220 13% 91%;
     --input: 220 13% 91%;
     --ring: 239 84% 67%;
@@ -70,6 +75,11 @@
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
+
+    /* The 500 shades - identical to the previous hard-coded emerald/amber, so
+       the dark theme is visually unchanged. */
+    --success: 160 84% 39%;
+    --warning: 38 92% 50%;
 
     --border: 224 33% 20%;
     --input: 224 33% 20%;

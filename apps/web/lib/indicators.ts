@@ -15,16 +15,17 @@ export interface IndicatorMeta {
   id: IndicatorId;
   label: string;
   detail: string;
-  placement: "overlay" | "pane";
 }
 
-/** Indicators offered in the show/hide panel, with fixed v1 parameters. */
+/** Indicators offered in the show/hide panel, with fixed v1 parameters. SMA,
+ * EMA and Bollinger overlay the price pane; RSI and MACD get their own pane
+ * (decided by `computeIndicators` / the chart, not by this metadata). */
 export const INDICATORS: readonly IndicatorMeta[] = [
-  { id: "sma", label: "SMA 20", detail: "Simple moving average", placement: "overlay" },
-  { id: "ema", label: "EMA 21", detail: "Exponential moving average", placement: "overlay" },
-  { id: "bollinger", label: "Bollinger 20, 2", detail: "Volatility bands", placement: "overlay" },
-  { id: "rsi", label: "RSI 14", detail: "Relative strength", placement: "pane" },
-  { id: "macd", label: "MACD 12, 26, 9", detail: "Trend momentum", placement: "pane" },
+  { id: "sma", label: "SMA 20", detail: "Simple moving average" },
+  { id: "ema", label: "EMA 21", detail: "Exponential moving average" },
+  { id: "bollinger", label: "Bollinger 20, 2", detail: "Volatility bands" },
+  { id: "rsi", label: "RSI 14", detail: "Relative strength" },
+  { id: "macd", label: "MACD 12, 26, 9", detail: "Trend momentum" },
 ];
 
 export type IndicatorState = Record<IndicatorId, boolean>;

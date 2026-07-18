@@ -65,6 +65,14 @@ describe("validateCandles", () => {
     expect(result.issues.some((i) => i.code === "negative_volume")).toBe(true);
   });
 
+  it("flags a non-finite timestamp", () => {
+    const result = validateCandles([bar(Number.NaN, 10, 12, 9, 11)]);
+    expect(result.ok).toBe(false);
+    expect(
+      result.issues.some((i) => i.code === "non_finite" && i.message.includes("time")),
+    ).toBe(true);
+  });
+
   it("reports no volume when the source omits it", () => {
     const result = validateCandles([bar(60, 10, 12, 9, 11, null)]);
     expect(result.stats.hasVolume).toBe(false);

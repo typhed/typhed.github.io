@@ -41,12 +41,12 @@ export function MonteCarlo() {
     >
       <div className="grid gap-4 sm:grid-cols-4">
         <NumberField label="Start equity" value={startEquity} onChange={setStartEquity} min={0} />
-        <NumberField label="Win rate" value={winRatePct} onChange={setWinRatePct} min={0} suffix="%" />
+        <NumberField label="Win rate" value={winRatePct} onChange={setWinRatePct} min={0} max={100} suffix="%" />
         <NumberField label="Win return" value={winReturnPct} onChange={setWinReturnPct} suffix="%" />
         <NumberField label="Loss return" value={lossReturnPct} onChange={setLossReturnPct} suffix="%" />
         <NumberField label="Trades / path" value={tradesPerTrial} onChange={setTradesPerTrial} min={1} />
         <NumberField label="Paths" value={trials} onChange={setTrials} min={1} />
-        <NumberField label="Ruin level" value={ruinPct} onChange={setRuinPct} min={0} suffix="%" />
+        <NumberField label="Ruin level" value={ruinPct} onChange={setRuinPct} min={0} max={100} suffix="%" />
         <NumberField label="Seed" value={seed} onChange={setSeed} min={0} />
       </div>
 

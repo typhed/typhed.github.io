@@ -4,8 +4,9 @@ import * as React from "react";
 
 import { fmtDisplayDate } from "@/lib/format";
 import type { FinancialRow, GmpRow, IpoMeta, Milestone } from "@/lib/ipo/types";
-import { sortedGmp, sortedTimeline } from "@/lib/ipo/analytics";
-import { makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
+import { isMilestoneFixed } from "@/lib/ipo/types";
+import { sortedGmp } from "@/lib/ipo/analytics";
+import { blankFixedMilestones, makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
 import { NumberField, Segmented, TextField } from "@/components/tools/controls";
 import {
   AddRowButton,
@@ -14,8 +15,13 @@ import {
   NumberCell,
   patchRow,
   RemoveRowButton,
+  ReorderButtons,
+  ResetButton,
   TextCell,
 } from "@/components/tools/editable-table";
+
+/** Seed date for a new dated row when "today" is not known yet (pre-hydration). */
+const FALLBACK_ISO_DATE = "2026-01-01";
 
 /** Issue details: name, lot size, price band, unit. */
 export function MetaEditor({
@@ -84,7 +90,15 @@ export function MetaEditor({
   );
 }
 
-/** IPO timeline milestones. */
+/**
+ * IPO timeline milestones. Fixed lifecycle milestones render as read-only,
+ * date-only rows (no rename, no delete, no re-order controls). User-added
+ * ("custom") milestones are fully editable, removable, and can be moved up or
+ * down through the whole list - a single new milestone can therefore be placed
+ * anywhere, while the fixed rows keep their relative order because only custom
+ * rows ever move. "Reset timeline" drops the custom milestones and clears every
+ * date.
+ */
 export function TimelineEditor({
   milestones,
   today,
@@ -94,43 +108,87 @@ export function TimelineEditor({
   today: string;
   onChange: (next: Milestone[]) => void;
 }) {
-  const ordered = sortedTimeline(milestones);
+  const moveMilestone = (id: string, direction: -1 | 1) => {
+    const idx = milestones.findIndex((m) => m.id === id);
+    const target = idx + direction;
+    if (idx < 0 || target < 0 || target >= milestones.length) return;
+    const next = [...milestones];
+    [next[idx], next[target]] = [next[target]!, next[idx]!];
+    onChange(next);
+  };
+
+  const handleReset = () => {
+    const confirmed =
+      typeof window === "undefined" ||
+      window.confirm(
+        "Reset the IPO Timeline?\n\nThis clears every milestone date and removes any milestones you added. The fixed milestones stay so you can fill their dates in again.",
+      );
+    if (confirmed) onChange(blankFixedMilestones());
+  };
+
   return (
     <div>
       <div className="space-y-2">
         <div className="hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Milestone</span>
           <span>Date</span>
-          <span className="sr-only">Remove</span>
+          <span className="sr-only">Actions</span>
         </div>
-        {ordered.map((milestone) => (
-          <div
-            key={milestone.id}
-            className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
-          >
-            <TextCell
-              ariaLabel="Milestone label"
-              value={milestone.label}
-              onChange={(label) => onChange(patchRow(milestones, milestone.id, { label }))}
-            />
-            <DateCell
-              ariaLabel="Milestone date"
-              value={milestone.date}
-              onChange={(date) => onChange(patchRow(milestones, milestone.id, { date }))}
-            />
-            <RemoveRowButton
-              label={`Remove ${milestone.label}`}
-              onClick={() => onChange(dropRow(milestones, milestone.id))}
-            />
-          </div>
-        ))}
+
+        {milestones.map((milestone, idx) => {
+          const fixed = isMilestoneFixed(milestone);
+          return (
+            <div
+              key={milestone.id}
+              className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
+            >
+              {fixed ? (
+                <div className="flex items-center rounded-md border border-input bg-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground">
+                  {milestone.label}
+                </div>
+              ) : (
+                <TextCell
+                  ariaLabel="Milestone label"
+                  value={milestone.label}
+                  onChange={(label) => onChange(patchRow(milestones, milestone.id, { label }))}
+                />
+              )}
+              <DateCell
+                ariaLabel={`${milestone.label || "Milestone"} date`}
+                value={milestone.date}
+                onChange={(date) => onChange(patchRow(milestones, milestone.id, { date }))}
+              />
+              {fixed ? (
+                <span aria-hidden className="hidden sm:block" />
+              ) : (
+                <div className="flex items-center">
+                  <ReorderButtons
+                    label={milestone.label || "milestone"}
+                    canMoveUp={idx > 0}
+                    canMoveDown={idx < milestones.length - 1}
+                    onMoveUp={() => moveMilestone(milestone.id, -1)}
+                    onMoveDown={() => moveMilestone(milestone.id, 1)}
+                  />
+                  <RemoveRowButton
+                    label={`Remove ${milestone.label || "milestone"}`}
+                    onClick={() => onChange(dropRow(milestones, milestone.id))}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
-      <AddRowButton
-        label="Add milestone"
-        onClick={() =>
-          onChange([...milestones, makeMilestone({ label: "New milestone", date: today || "2026-01-01" })])
-        }
-      />
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <AddRowButton
+          label="Add milestone"
+          onClick={() =>
+            onChange([...milestones, makeMilestone({ label: "New milestone", date: today || FALLBACK_ISO_DATE })])
+          }
+        />
+        <ResetButton label="Reset timeline" onClick={handleReset} />
+      </div>
     </div>
   );
 }
@@ -175,7 +233,7 @@ export function GmpEditor({
         label="Add reading"
         onClick={() => {
           const last = ordered[ordered.length - 1];
-          onChange([...rows, makeGmpRow({ date: last?.date ?? "2026-01-01", value: last?.value ?? 0 })]);
+          onChange([...rows, makeGmpRow({ date: last?.date ?? FALLBACK_ISO_DATE, value: last?.value ?? 0 })]);
         }}
       />
     </div>

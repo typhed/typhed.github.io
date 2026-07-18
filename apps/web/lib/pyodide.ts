@@ -7,6 +7,14 @@
 
 const PYODIDE_VERSION = "0.26.4";
 const CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+/**
+ * Subresource-integrity hash of the pinned `pyodide.js` bootstrap (sha384 of
+ * the immutable versioned artefact). A tampered CDN response fails the
+ * integrity check instead of executing. The wasm/stdlib payloads Pyodide then
+ * fetches itself are outside SRI's reach - this protects the entry point that
+ * would otherwise control those loads. Recompute when PYODIDE_VERSION changes.
+ */
+const PYODIDE_SRI = "sha384-i3R37b3tF+HWudsUf1VSEOY2YxwSNMqY8DQa9Z0O3xh+NkJ9o+yjcGyIi5huj+nB";
 
 // Pyodide has no bundled types here; treat the runtime as unknown-shaped.
 type PyodideRuntime = {
@@ -34,9 +42,16 @@ function loadScript(src: string): Promise<void> {
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
+    script.integrity = PYODIDE_SRI;
+    script.crossOrigin = "anonymous";
     script.dataset.pyodide = "true";
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load the Python runtime."));
+    script.onerror = () => {
+      // Drop the failed tag, otherwise every retry would find it, resolve
+      // immediately without loading anything, and fail forever.
+      script.remove();
+      reject(new Error("Failed to load the Python runtime."));
+    };
     document.head.appendChild(script);
   });
 }
@@ -84,6 +99,8 @@ export interface AdvancedStats {
   historical_var: number;
   gaussian_var: number;
   cornish_fisher_var: number;
+  /** Set (1.0) by analytics.py when the series is degenerate (n < 3 or zero variance). */
+  error?: number;
 }
 
 /** Run the browser-side Python advanced statistics on a return series. */

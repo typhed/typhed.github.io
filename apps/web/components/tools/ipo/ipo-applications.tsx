@@ -29,6 +29,12 @@ import {
 
 const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }));
 
+// Shared by the corpus-input and allotment segmented controls.
+const ENTRY_MODE_OPTIONS = [
+  { value: "total", label: "Total Amount" },
+  { value: "detailed", label: "Quantity & Price" },
+] as const;
+
 // Fixed-category display labels: uppercase throughout except sHNI / bHNI.
 const SUB_LABEL: Record<SubscriptionCategory, string> = {
   RETAIL: "RETAIL",
@@ -45,21 +51,20 @@ function isApplicationCategory(c: SubscriptionCategory): c is ApplicationCategor
   return (APPLICATION_CATEGORIES as readonly string[]).includes(c);
 }
 
-/** Long, badge-friendly probability label for the application header. */
-function formatProbability(category: ApplicationCategory, p: number | null): string {
-  if (p === null) return "-";
-  if (p >= 1) return "100%";
-  const pct = `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
-  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`;
-  if (category === "SHAREHOLDER") return pct;
-  return `>= ${pct}`;
-}
-
 /** Compact probability for the narrow subscription panel. */
 function formatPercentShort(p: number | null): string {
   if (p === null) return "-";
   if (p >= 1) return "100%";
   return `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
+}
+
+/** Long, badge-friendly probability label for the application header. */
+function formatProbability(category: ApplicationCategory, p: number | null): string {
+  if (p === null || p >= 1) return formatPercentShort(p);
+  const pct = formatPercentShort(p);
+  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`;
+  if (category === "SHAREHOLDER") return pct;
+  return `>= ${pct}`;
 }
 
 export function IpoApplications({
@@ -98,12 +103,10 @@ export function IpoApplications({
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
             <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-              No applications yet. Add one to start tracking. We have created a custom application form,
-              where you can create and track multiple applications and also set n-contributors for each of the
-              application (for example, you have applied a ₹ 50L from one account under "BIG HNI" category, and
-              this involves two person contributing). Based on the settings, and if alloted, the function
-              calculates the take home profit for each contributor/application. We've also added the option to
-              calculate the "Net Profit" considering an user falls under the 30% tax bracket (default).
+              No applications yet. Add one to start tracking. Each application can carry multiple
+              contributors - for example, a ₹50L bHNI application funded by two people - and every
+              contributor&apos;s share, expected profit and, once allotted, take-home profit is split
+              by their contribution automatically.
             </p>
           )}
           {applications.map((app) => {
@@ -205,7 +208,7 @@ function ApplicationCard({
             className="h-4 w-4 rounded border-input"
             style={{ accentColor: "hsl(var(--brand))" }}
           />
-          ALLOTED
+          ALLOTTED
         </label>
         <RemoveRowButton label={`Remove ${app.name}`} onClick={onRemove} />
       </div>
@@ -215,7 +218,7 @@ function ApplicationCard({
           Win Probability: {probText}
         </span>
         {(metrics?.flags ?? []).map((flag) => (
-          <span key={flag} className="inline-flex items-center gap-1 text-amber-500">
+          <span key={flag} className="inline-flex items-center gap-1 text-warning">
             <AlertTriangle className="h-3 w-3" aria-hidden />
             {flag}
           </span>
@@ -228,10 +231,7 @@ function ApplicationCard({
           Corpus Input
         </p>
         <Segmented
-          options={[
-            { value: "total", label: "Total Amount" },
-            { value: "detailed", label: "Quantity & Price" },
-          ]}
+          options={ENTRY_MODE_OPTIONS}
           value={app.contributionMode}
           onChange={onContributionModeChange}
         />
@@ -337,9 +337,9 @@ function ApplicationCard({
         />
         <StatTile
           label="Expected Profit"
-          value={metrics && Number.isFinite(metrics.expectedProfit) ? fmtInr(metrics.expectedProfit, 0) : "-"}
+          value={fmtInr(metrics?.expectedProfit ?? 0, 0)}
           tone="brand"
-          note="probability-weighted"
+          note="assumes full allotment"
         />
         {app.allotted && (
           <StatTile
@@ -358,10 +358,7 @@ function ApplicationCard({
               Allotment
             </p>
             <Segmented
-              options={[
-                { value: "total", label: "Total Amount" },
-                { value: "detailed", label: "Quantity & Price" },
-              ]}
+              options={ENTRY_MODE_OPTIONS}
               value={app.allotment.mode}
               onChange={(mode) => onAllotmentChange({ ...app.allotment, mode })}
             />
@@ -407,7 +404,7 @@ function ApplicationCard({
                     <span
                       className={cn(
                         "tabular-nums",
-                        (cm?.actualProfit ?? 0) >= 0 ? "text-emerald-500" : "text-destructive",
+                        (cm?.actualProfit ?? 0) >= 0 ? "text-success" : "text-destructive",
                       )}
                     >
                       {fmtInr(cm?.actualProfit ?? 0, 0)}

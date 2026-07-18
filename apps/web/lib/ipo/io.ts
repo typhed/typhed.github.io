@@ -23,6 +23,8 @@ import {
   APPLICATION_CATEGORIES,
   APPLICATION_TYPES,
   CONTRIBUTION_MODES,
+  isFixedMilestone,
+  isMilestoneFixed,
   SCHEMA_VERSION,
   SUBSCRIPTION_CATEGORIES,
 } from "./types";
@@ -61,7 +63,11 @@ export function serializeIpoDataset(data: IpoDataset): string {
       schemaVersion: SCHEMA_VERSION,
       savedAt: new Date().toISOString(),
     },
-    timeline: data.timeline.map((m) => ({ label: m.label, date: m.date })),
+    timeline: data.timeline.map((m) => ({
+      label: m.label,
+      date: m.date,
+      ...(isMilestoneFixed(m) ? { fixed: true } : {}),
+    })),
     financials: data.financials.map((f) => ({
       period: f.period,
       totalAssets: f.totalAssets,
@@ -104,6 +110,21 @@ export function ipoFileName(data: IpoDataset, today: string): string {
 }
 
 /**
+ * Upper bounds on rows accepted from an untrusted payload. Far beyond any real
+ * IPO's data, but low enough that a crafted million-row import cannot hang or
+ * crash the renderer. Rows past the cap are dropped silently, like malformed
+ * rows.
+ */
+const MAX_ROWS = {
+  timeline: 200,
+  financials: 100,
+  gmp: 1000,
+  applications: 500,
+  contributorsPerApplication: 200,
+  subscription: 100,
+} as const;
+
+/**
  * Validate/clamp an untrusted payload into a fresh `IpoDataset`. Never spreads
  * the input; reads only named fields. Malformed rows are dropped, not fatal.
  */
@@ -137,36 +158,45 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     savedAt: str(metaRaw.savedAt, ""),
   };
 
-  const timeline = asArray(raw.timeline).flatMap((entry) => {
+  const timeline = asArray(raw.timeline, MAX_ROWS.timeline).flatMap((entry) => {
     if (!isObject(entry)) return [];
+    const label = str(entry.label, "Milestone");
+    // Prefer the explicit flag; fall back to the label set for legacy payloads.
+    const fixed = entry.fixed === true || isFixedMilestone(label);
     const date = coerceIsoDate(entry.date);
-    if (date === null) return [];
-    return [makeMilestone({ label: str(entry.label, "Milestone"), date })];
-  });
-
-  const financials = asArray(raw.financials).flatMap((entry) => {
-    if (!isObject(entry)) return [];
-    const totalAssets = num(entry.totalAssets, NaN);
-    const grossRevenue = num(entry.grossRevenue, NaN);
-    const pat = num(entry.pat, NaN);
-    if (
-      !Number.isFinite(totalAssets) ||
-      !Number.isFinite(grossRevenue) ||
-      !Number.isFinite(pat)
-    ) {
-      return [];
+    if (date === null) {
+      // Fixed lifecycle milestones persist even without a date (hidden from the
+      // timeline until filled in); a custom milestone needs a valid date.
+      return fixed ? [makeMilestone({ label, date: "", fixed: true })] : [];
     }
-    return [
-      makeFinancialRow({
-        period: str(entry.period, "-"),
-        totalAssets,
-        grossRevenue,
-        pat,
-      }),
-    ];
+    return [makeMilestone({ label, date, ...(fixed ? { fixed: true } : {}) })];
   });
 
-  const gmp = asArray(raw.gmp).flatMap((entry) => {
+  const financials = asArray(raw.financials, MAX_ROWS.financials).flatMap(
+    (entry) => {
+      if (!isObject(entry)) return [];
+      const totalAssets = num(entry.totalAssets, NaN);
+      const grossRevenue = num(entry.grossRevenue, NaN);
+      const pat = num(entry.pat, NaN);
+      if (
+        !Number.isFinite(totalAssets) ||
+        !Number.isFinite(grossRevenue) ||
+        !Number.isFinite(pat)
+      ) {
+        return [];
+      }
+      return [
+        makeFinancialRow({
+          period: str(entry.period, "-"),
+          totalAssets,
+          grossRevenue,
+          pat,
+        }),
+      ];
+    },
+  );
+
+  const gmp = asArray(raw.gmp, MAX_ROWS.gmp).flatMap((entry) => {
     if (!isObject(entry)) return [];
     const date = coerceIsoDate(entry.date);
     const value = num(entry.value, NaN);
@@ -174,77 +204,89 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return [makeGmpRow({ date, value })];
   });
 
-  const applications = asArray(raw.applications).flatMap((entry) => {
-    if (!isObject(entry)) return [];
-    const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
-    const contributors = asArray(entry.contributors).flatMap((c) => {
-      if (!isObject(c)) return [];
-      const unitsRaw = num(c.units, NaN);
-      const priceRaw = num(c.price, NaN);
-      const amountRaw = num(c.amount, NaN);
-      // Accept a row that carries EITHER units+price ("detailed") or a direct
-      // amount ("total"); drop only rows with no usable numeric field at all.
-      const hasDetailed =
-        Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
-      const hasTotal = Number.isFinite(amountRaw);
-      if (!hasDetailed && !hasTotal) return [];
-      const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0);
-      const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0);
-      // Fall back to units*price so a legacy row keeps its corpus if the user
-      // later switches the application to "total" mode.
-      const amount = Math.max(
-        0,
-        Number.isFinite(amountRaw) ? amountRaw : units * price,
-      );
+  const applications = asArray(raw.applications, MAX_ROWS.applications).flatMap(
+    (entry) => {
+      if (!isObject(entry)) return [];
+      const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
+      const contributors = asArray(
+        entry.contributors,
+        MAX_ROWS.contributorsPerApplication,
+      ).flatMap((c) => {
+        if (!isObject(c)) return [];
+        const unitsRaw = num(c.units, NaN);
+        const priceRaw = num(c.price, NaN);
+        const amountRaw = num(c.amount, NaN);
+        // Accept a row that carries EITHER units+price ("detailed") or a direct
+        // amount ("total"); drop only rows with no usable numeric field at all.
+        const hasDetailed =
+          Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
+        const hasTotal = Number.isFinite(amountRaw);
+        if (!hasDetailed && !hasTotal) return [];
+        const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0);
+        const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0);
+        // Fall back to units*price so a legacy row keeps its corpus if the user
+        // later switches the application to "total" mode.
+        const amount = Math.max(
+          0,
+          Number.isFinite(amountRaw) ? amountRaw : units * price,
+        );
+        return [
+          makeContributor({
+            name: str(c.name, "Contributor"),
+            units,
+            price,
+            amount,
+          }),
+        ];
+      });
       return [
-        makeContributor({
-          name: str(c.name, "Contributor"),
-          units,
-          price,
-          amount,
+        makeApplication({
+          name: str(entry.name, "Application"),
+          category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
+          // Legacy exports (no mode) carry units+price, so default to "detailed"
+          // to preserve them; new exports set the mode explicitly.
+          contributionMode: enumOr<ContributionMode>(
+            entry.contributionMode,
+            CONTRIBUTION_MODES,
+            "detailed",
+          ),
+          allotted: entry.allotted === true,
+          allotment: {
+            mode: enumOr<AllotmentMode>(
+              allotmentRaw.mode,
+              ALLOTMENT_MODES,
+              "total",
+            ),
+            quantityAllotted: Math.max(
+              0,
+              num(allotmentRaw.quantityAllotted, 0),
+            ),
+            sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
+            totalAmount: num(allotmentRaw.totalAmount, 0),
+          },
+          contributors,
         }),
       ];
-    });
-    return [
-      makeApplication({
-        name: str(entry.name, "Application"),
-        category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
-        // Legacy exports (no mode) carry units+price, so default to "detailed"
-        // to preserve them; new exports set the mode explicitly.
-        contributionMode: enumOr<ContributionMode>(
-          entry.contributionMode,
-          CONTRIBUTION_MODES,
-          "detailed",
-        ),
-        allotted: entry.allotted === true,
-        allotment: {
-          mode: enumOr<AllotmentMode>(
-            allotmentRaw.mode,
-            ALLOTMENT_MODES,
-            "total",
-          ),
-          quantityAllotted: Math.max(0, num(allotmentRaw.quantityAllotted, 0)),
-          sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
-          totalAmount: num(allotmentRaw.totalAmount, 0),
-        },
-        contributors,
-      }),
-    ];
-  });
+    },
+  );
 
-  const subscription = asArray(raw.subscription).flatMap((entry) => {
-    if (!isObject(entry)) return [];
-    const category = str(entry.category, "");
-    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category))
-      return [];
-    return [
-      makeSubscriptionRow({
-        category: category as SubscriptionCategory,
-        ...(category === "CUSTOM" ? { label: str(entry.label, "Custom") } : {}),
-        timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
-      }),
-    ];
-  });
+  const subscription = asArray(raw.subscription, MAX_ROWS.subscription).flatMap(
+    (entry) => {
+      if (!isObject(entry)) return [];
+      const category = str(entry.category, "");
+      if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category))
+        return [];
+      return [
+        makeSubscriptionRow({
+          category: category as SubscriptionCategory,
+          ...(category === "CUSTOM"
+            ? { label: str(entry.label, "Custom") }
+            : {}),
+          timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
+        }),
+      ];
+    },
+  );
 
   if (
     timeline.length === 0 &&

@@ -10,7 +10,7 @@
  */
 
 import * as React from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, RotateCcw, Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -160,6 +160,61 @@ export function RemoveRowButton({
       className="h-8 w-8 shrink-0"
     >
       <Trash2 className="h-4 w-4" />
+    </Button>
+  );
+}
+
+/** Up / down icon buttons that move a row within its group; disabled at each edge. */
+export function ReorderButtons({
+  onMoveUp,
+  onMoveDown,
+  canMoveUp,
+  canMoveDown,
+  label,
+}: {
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  label: string;
+}) {
+  return (
+    <div className="flex shrink-0 items-center">
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Move ${label} up`}
+        disabled={!canMoveUp}
+        onClick={onMoveUp}
+        className="h-8 w-8"
+      >
+        <ChevronUp className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Move ${label} down`}
+        disabled={!canMoveDown}
+        onClick={onMoveDown}
+        className="h-8 w-8"
+      >
+        <ChevronDown className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
+/** A red ghost button that clears a section back to its blank state. */
+export function ResetButton({ onClick, label }: { onClick: () => void; label: string }) {
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={onClick}
+      className="mt-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
+    >
+      <RotateCcw className="h-4 w-4" />
+      {label}
     </Button>
   );
 }

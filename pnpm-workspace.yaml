@@ -2,6 +2,15 @@ packages:
   - "apps/*"
   - "packages/*"
 
+# Force patched transitive versions past known advisories:
+#   vite  >=6.4.3  - server.fs.deny bypass + launch-editor NTLM disclosure
+#   esbuild ^0.25  - dev-server request forwarding (0.24.3 was never published)
+#   postcss >=8.5.10 - unescaped </style> XSS (next pins an older build-time copy)
+overrides:
+  vite: ">=6.4.3 <7"
+  esbuild: "^0.25.0"
+  postcss: ">=8.5.10"
+
 # Images are exported unoptimised, so sharp's native build is not needed.
 # esbuild's install step links the platform binary that vitest/vite use.
 allowBuilds:

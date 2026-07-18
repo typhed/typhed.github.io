@@ -34,6 +34,7 @@ export function NumberField({
   onChange,
   step = "any",
   min,
+  max,
   suffix,
 }: {
   label: string;
@@ -41,6 +42,7 @@ export function NumberField({
   onChange: (value: number) => void;
   step?: string | number;
   min?: number;
+  max?: number;
   suffix?: string;
 }) {
   return (
@@ -52,6 +54,7 @@ export function NumberField({
           inputMode="decimal"
           step={step}
           min={min}
+          max={max}
           value={Number.isFinite(value) ? value : ""}
           onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
           className="w-full bg-transparent px-3 py-2 text-sm outline-none"
@@ -131,7 +134,7 @@ export function StatTile({
 }) {
   const toneClass = {
     default: "text-foreground",
-    positive: "text-emerald-500",
+    positive: "text-success",
     negative: "text-destructive",
     brand: "text-brand",
   }[tone];
@@ -143,6 +146,15 @@ export function StatTile({
         {value}
       </p>
       {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
+    </div>
+  );
+}
+
+/** Dashed empty-state placeholder shown where a chart would render. */
+export function ChartEmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
+      {message}
     </div>
   );
 }
@@ -163,9 +175,11 @@ export function Segmented<T extends string>({
         <button
           key={option.value}
           type="button"
+          aria-pressed={option.value === value}
           onClick={() => onChange(option.value)}
           className={cn(
             "rounded px-3 py-1 text-xs font-medium transition-colors",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
             option.value === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:text-foreground",

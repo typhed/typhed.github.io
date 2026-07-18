@@ -49,7 +49,12 @@ export interface GmpForecast {
 export interface FinancialDerived extends FinancialRow {
   /** pat / grossRevenue, as a fraction (NaN if revenue is 0). */
   patMargin: number;
-  /** Year-over-year change vs the previous period, as a fraction (NaN for the first row). */
+  /**
+   * Year-over-year change vs the previous period, as a fraction. NaN for the
+   * first row and whenever the base is not a positive number - percentage
+   * growth from a zero or negative base (e.g. a loss year) is not meaningful
+   * and would flip the sign of a genuine improvement.
+   */
   revenueGrowth: number;
   patGrowth: number;
   assetGrowth: number;
@@ -57,7 +62,6 @@ export interface FinancialDerived extends FinancialRow {
 
 export interface IpoMetrics {
   minInvestment: number;
-  minInvestmentLower: number;
   latestGmp: number;
   estListingPrice: number;
   /** latestGmp / priceBand.max, as a fraction. */
@@ -74,6 +78,21 @@ export interface IpoMetrics {
   daysToListing: number;
 }
 
+/**
+ * Loop-based min/max. `Math.min(...values)` spreads the array into call
+ * arguments and throws a RangeError past the engine argument limit, so a large
+ * imported dataset could crash the page; a loop has no such ceiling.
+ */
+export function valueRange(values: readonly number[]): { min: number; max: number } {
+  let min = Infinity;
+  let max = -Infinity;
+  for (const v of values) {
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  return { min, max };
+}
+
 /** GMP rows sorted chronologically (ISO dates sort lexicographically). */
 export function sortedGmp(rows: GmpRow[]): GmpRow[] {
   return [...rows].sort((a, b) => a.date.localeCompare(b.date));
@@ -82,6 +101,14 @@ export function sortedGmp(rows: GmpRow[]): GmpRow[] {
 /** Milestones sorted chronologically. */
 export function sortedTimeline(rows: Milestone[]): Milestone[] {
   return [...rows].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Whether a milestone label names the listing event. The single definition for
+ * every listing check (headline metrics, timeline emphasis and icon).
+ */
+export function isListingMilestone(label: string): boolean {
+  return /listing/i.test(label);
 }
 
 /** Best-effort fiscal-year sort key from a period label (first run of digits). */
@@ -110,8 +137,7 @@ export function gmpStats(rows: GmpRow[]): GmpStats {
   const first = values[0]!;
   const latest = values[count - 1]!;
   const prev = count > 1 ? values[count - 2]! : NaN;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const { min, max } = valueRange(values);
   const avg = values.reduce((sum, v) => sum + v, 0) / count;
   const trend = latest - first;
   const deltaPrev = count > 1 ? latest - prev : NaN;
@@ -184,8 +210,12 @@ export function financialsWithGrowth(rows: FinancialRow[]): FinancialDerived[] {
   const sorted = [...rows].sort((a, b) => fiscalKey(a.period) - fiscalKey(b.period));
   return sorted.map((row, idx) => {
     const prev = idx > 0 ? sorted[idx - 1]! : null;
+    // Growth is only meaningful from a positive base: dividing by a negative
+    // base (a loss year) inverts the sign of a real improvement.
     const growth = (curr: number, before: number | undefined) =>
-      prev && Number.isFinite(before) && before !== 0 ? (curr - (before as number)) / (before as number) : NaN;
+      prev && Number.isFinite(before) && (before as number) > 0
+        ? (curr - (before as number)) / (before as number)
+        : NaN;
     return {
       ...row,
       patMargin: row.grossRevenue !== 0 ? row.pat / row.grossRevenue : NaN,
@@ -214,7 +244,7 @@ export function deriveIpoMetrics(data: IpoDataset, today: string): IpoMetrics {
   const financials = financialsWithGrowth(data.financials);
   const latestFinancial = financials.length > 0 ? financials[financials.length - 1]! : null;
 
-  const listing = sortedTimeline(data.timeline).find((m) => /listing/i.test(m.label)) ?? null;
+  const listing = sortedTimeline(data.timeline).find((m) => isListingMilestone(m.label)) ?? null;
   const listingDate = listing ? listing.date : null;
 
   const minInvestment = lotSize * priceBand.max;
@@ -223,7 +253,6 @@ export function deriveIpoMetrics(data: IpoDataset, today: string): IpoMetrics {
 
   return {
     minInvestment,
-    minInvestmentLower: lotSize * priceBand.min,
     latestGmp,
     estListingPrice,
     listingGainPct,

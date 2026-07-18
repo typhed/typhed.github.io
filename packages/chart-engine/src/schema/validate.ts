@@ -83,6 +83,7 @@ export function validateCandles(input: readonly Candle[]): ValidationResult {
 
   deduped.forEach((bar, index) => {
     for (const [name, value] of [
+      ["time", bar.time],
       ["open", bar.open],
       ["high", bar.high],
       ["low", bar.low],

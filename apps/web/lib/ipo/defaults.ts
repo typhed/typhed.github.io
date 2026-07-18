@@ -16,11 +16,22 @@ import type {
   Milestone,
   SubscriptionRow,
 } from "./types";
-import { SCHEMA_VERSION } from "./types";
-import { newId } from "@/lib/utils";
+import { FIXED_MILESTONE_LABELS, SCHEMA_VERSION } from "./types";
+import { newId } from "@/lib/id";
 
 export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
   return { id: newId(), ...init };
+}
+
+/**
+ * The fixed lifecycle milestones with cleared dates, in canonical order. Used
+ * by the timeline reset: it drops any custom milestones and blanks every date
+ * while keeping the fixed rows so they can be filled in again.
+ */
+export function blankFixedMilestones(): Milestone[] {
+  return FIXED_MILESTONE_LABELS.map((label) =>
+    makeMilestone({ label, date: "", fixed: true }),
+  );
 }
 
 export function makeFinancialRow(init: Omit<FinancialRow, "id">): FinancialRow {
@@ -60,13 +71,25 @@ export function defaultIpoDataset(): IpoDataset {
       savedAt: "",
     },
     timeline: [
-      makeMilestone({ label: "Offer Start", date: "2026-07-14" }),
-      makeMilestone({ label: "Offer End", date: "2026-07-16" }),
-      makeMilestone({ label: "Allotment Date", date: "2026-07-17" }),
-      makeMilestone({ label: "Refund Initiation", date: "2026-07-20" }),
-      makeMilestone({ label: "DEMAT Transfer", date: "2026-07-20" }),
-      makeMilestone({ label: "Listing Date", date: "2026-07-21" }),
-      makeMilestone({ label: "Mandate End", date: "2026-07-31" }),
+      makeMilestone({ label: "Offer Start", date: "2026-07-14", fixed: true }),
+      makeMilestone({ label: "Offer End", date: "2026-07-16", fixed: true }),
+      makeMilestone({
+        label: "Allotment Date",
+        date: "2026-07-17",
+        fixed: true,
+      }),
+      makeMilestone({
+        label: "Refund Initiation",
+        date: "2026-07-20",
+        fixed: true,
+      }),
+      makeMilestone({
+        label: "DEMAT Transfer",
+        date: "2026-07-20",
+        fixed: true,
+      }),
+      makeMilestone({ label: "Listing Date", date: "2026-07-21", fixed: true }),
+      makeMilestone({ label: "Mandate End", date: "2026-07-31", fixed: true }),
     ],
     financials: [
       makeFinancialRow({
@@ -116,5 +139,6 @@ export function defaultIpoDataset(): IpoDataset {
   };
 }
 
-/** A ready-made instance for initial React state / SSR (deterministic ids at import). */
+/** A ready-made instance for initial React state / SSR. Ids are minted once at
+ * module load; they are only React keys and are never rendered or persisted. */
 export const DEFAULT_IPO_DATASET: IpoDataset = defaultIpoDataset();

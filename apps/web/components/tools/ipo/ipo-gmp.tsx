@@ -4,9 +4,9 @@ import * as React from "react";
 
 import { fmtDayMonth, fmtDisplayDate, fmtInr } from "@/lib/format";
 import type { GmpRow } from "@/lib/ipo/types";
-import { niceScale, sortedGmp, type GmpForecast, type GmpStats } from "@/lib/ipo/analytics";
+import { niceScale, sortedGmp, valueRange, type GmpForecast, type GmpStats } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
-import { StatTile, ToolCard } from "@/components/tools/controls";
+import { ChartEmptyState, StatTile, ToolCard } from "@/components/tools/controls";
 
 /** Signed INR delta, e.g. "+₹12" / "-₹4" / "-" when not finite. */
 function fmtDelta(value: number): string {
@@ -91,18 +91,13 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
   const [hover, setHover] = React.useState<number | null>(null);
 
   const n = rows.length;
-  const values = rows.map((r) => r.value);
-  const scale = React.useMemo(
-    () => niceScale(Math.min(...values), Math.max(...values), { maxTicks: 4 }),
-    [values],
-  );
+  const scale = React.useMemo(() => {
+    const { min, max } = valueRange(rows.map((r) => r.value));
+    return niceScale(min, max, { maxTicks: 4 });
+  }, [rows]);
 
   if (n === 0) {
-    return (
-      <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
-        No GMP readings yet.
-      </div>
-    );
+    return <ChartEmptyState message="No GMP readings yet." />;
   }
 
   const iw = Math.max(0, width - PAD.left - PAD.right);

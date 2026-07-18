@@ -8,7 +8,7 @@
  * ids for add/remove edits and for rows rebuilt by the JSON parser.
  */
 
-import { newId } from "@/lib/utils";
+import { newId } from "@/lib/id";
 import {
   DEFAULT_ANNUAL_RETURN_PCT,
   DEFAULT_BONUS_SPLIT,

@@ -15,14 +15,14 @@ import {
 import { cn } from "@/lib/utils";
 import { fmtDisplayDate } from "@/lib/format";
 import type { Milestone } from "@/lib/ipo/types";
-import { sortedTimeline } from "@/lib/ipo/analytics";
+import { isListingMilestone, sortedTimeline } from "@/lib/ipo/analytics";
 import { ToolCard } from "@/components/tools/controls";
 
 type Status = "past" | "today" | "upcoming";
 
 function iconFor(label: string): LucideIcon {
   const key = label.toLowerCase();
-  if (key.includes("listing")) return Rocket;
+  if (isListingMilestone(label)) return Rocket;
   if (key.includes("start") || key.includes("open")) return Flag;
   if (key.includes("end") || key.includes("close")) return FlagOff;
   if (key.includes("allot")) return ClipboardCheck;
@@ -40,7 +40,18 @@ function statusOf(date: string, today: string): Status {
 }
 
 export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; today: string }) {
-  const ordered = sortedTimeline(milestones);
+  // Milestones without a date are skipped - a fixed milestone can be left blank.
+  const ordered = sortedTimeline(milestones).filter((milestone) => milestone.date);
+
+  if (ordered.length === 0) {
+    return (
+      <ToolCard title="IPO Timeline" description="Key dates in the offer lifecycle.">
+        <p className="text-sm text-muted-foreground">
+          No timeline dates set yet - add them from &ldquo;Edit data&rdquo;.
+        </p>
+      </ToolCard>
+    );
+  }
 
   return (
     <ToolCard title="IPO Timeline" description="Key dates in the offer lifecycle.">
@@ -54,7 +65,7 @@ export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; to
         />
         {ordered.map((milestone) => {
           const status = statusOf(milestone.date, today);
-          const emphasis = milestone.label.toLowerCase().includes("listing");
+          const emphasis = isListingMilestone(milestone.label);
           const Icon = iconFor(milestone.label);
           return (
             <li

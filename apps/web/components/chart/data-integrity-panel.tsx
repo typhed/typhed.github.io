@@ -21,6 +21,7 @@ export function DataIntegrityPanel({
   missingIntervals: number;
 }) {
   const [open, setOpen] = React.useState(!dataset.ok);
+  const detailsId = React.useId();
 
   const errors = dataset.issues.filter((i) => i.severity === "error");
   const warnings = dataset.issues.filter((i) => i.severity === "warning");
@@ -29,15 +30,17 @@ export function DataIntegrityPanel({
   const status = !dataset.ok
     ? { icon: <XCircle className="h-4 w-4" />, tone: "text-destructive", label: `${errors.length} integrity error${errors.length === 1 ? "" : "s"}` }
     : warnings.length > 0 || missingIntervals > 0 || droppedRows > 0
-      ? { icon: <AlertTriangle className="h-4 w-4" />, tone: "text-amber-500", label: "Loaded with notes" }
-      : { icon: <CheckCircle2 className="h-4 w-4" />, tone: "text-emerald-500", label: "Clean" };
+      ? { icon: <AlertTriangle className="h-4 w-4" />, tone: "text-warning", label: "Loaded with notes" }
+      : { icon: <CheckCircle2 className="h-4 w-4" />, tone: "text-success", label: "Clean" };
 
   return (
     <div className="rounded-lg border border-border bg-card">
       <button
         type="button"
+        aria-expanded={open}
+        aria-controls={detailsId}
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+        className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span className="flex items-center gap-2 text-sm font-medium">
           <span className={status.tone}>{status.icon}</span>
@@ -49,7 +52,7 @@ export function DataIntegrityPanel({
       </button>
 
       {open && (
-        <div className="space-y-4 border-t border-border px-4 py-4 text-sm">
+        <div id={detailsId} className="space-y-4 border-t border-border px-4 py-4 text-sm">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
             <Stat label="Rows parsed" value={String(dataset.stats.inputRows + droppedRows)} />
             <Stat label="Rows charted" value={String(dataset.stats.outputRows)} />
@@ -65,7 +68,7 @@ export function DataIntegrityPanel({
             <IssueList tone="text-destructive" title="Errors" messages={errors.map((i) => i.message)} />
           )}
           {warnings.length > 0 && (
-            <IssueList tone="text-amber-500" title="Warnings" messages={warnings.map((i) => i.message)} />
+            <IssueList tone="text-warning" title="Warnings" messages={warnings.map((i) => i.message)} />
           )}
           {droppedRows > 0 && (
             <IssueList

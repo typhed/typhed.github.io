@@ -1,5 +1,7 @@
 import type { Candle } from "@typhed/chart-engine";
 
+import { newId } from "@/lib/id";
+
 const DB_NAME = "typhed-trading";
 const STORE = "analyses";
 const VERSION = 1;
@@ -72,10 +74,7 @@ export function toSavedAnalysis(
   hasVolume: boolean,
 ): SavedAnalysis {
   return {
-    id:
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    id: newId(),
     name,
     fileName,
     savedAt: Date.now(),

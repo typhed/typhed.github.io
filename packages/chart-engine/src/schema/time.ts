@@ -52,8 +52,12 @@ function parseNumeric(value: number, format: TimeFormat): UTCTimestamp | null {
       return null; // an ISO format was declared but a bare number was given
     case "auto":
     default:
-      // Heuristic ranges: ms since epoch, then seconds since epoch, then an
-      // Excel serial date (roughly 1..60000 -> years 1900..2064).
+      // Heuristic ranges: ms since epoch (2001+), then seconds since epoch
+      // (2001+), then an Excel serial date (60..80000 -> years 1900..2119,
+      // starting past the Feb-1900 leap-year bug region). Values in the
+      // 80000..1e9 gap are ambiguous (pre-2001 unix seconds vs far-future
+      // Excel serials) and deliberately return null - declare an explicit
+      // `unix_s` / `unix_ms` format for pre-2001 history.
       if (value >= 1e12) return Math.floor(value / 1000);
       if (value >= 1e9) return Math.floor(value);
       if (value > 59 && value < 80000) {

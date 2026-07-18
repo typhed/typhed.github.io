@@ -24,21 +24,14 @@ export function sma(candles: readonly Candle[], period: number): LinePoint[] {
  * Exponential moving average of close with alpha = 2 / (period + 1), seeded
  * with the first close and applied recursively - identical to pandas
  * `close.ewm(span=period, adjust=False).mean()` at every index. Emitted for
- * every bar (early values are warm-up).
+ * every bar (early values are warm-up). Delegates to `emaSeries`, the single
+ * implementation of the recursion.
  */
 export function ema(candles: readonly Candle[], period: number): LinePoint[] {
-  if (period < 1 || candles.length === 0) return [];
-
-  const alpha = 2 / (period + 1);
-  const out: LinePoint[] = [];
-  let prev = candles[0]!.close;
-  out.push({ time: candles[0]!.time, value: prev });
-
-  for (let i = 1; i < candles.length; i += 1) {
-    prev = alpha * candles[i]!.close + (1 - alpha) * prev;
-    out.push({ time: candles[i]!.time, value: prev });
-  }
-  return out;
+  return emaSeries(
+    candles.map((candle) => ({ time: candle.time, value: candle.close })),
+    period,
+  );
 }
 
 /** EMA over a bare number series (used by MACD on the MACD line). */

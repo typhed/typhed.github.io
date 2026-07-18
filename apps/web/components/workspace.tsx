@@ -82,10 +82,17 @@ export function Workspace() {
     setIndicatorState((prev) => ({ ...prev, [id]: !prev[id] }));
   }
 
+  // Guards against two quick selections racing: only the latest parse may
+  // apply, otherwise a slow large file picked first could finish last and
+  // silently replace the file the user actually chose.
+  const parseSeq = React.useRef(0);
+
   async function handleFile(file: File) {
     setError(null);
+    const seq = ++parseSeq.current;
     try {
       const parsed = await readTable(file);
+      if (seq !== parseSeq.current) return;
       if (parsed.headers.length === 0) {
         throw new Error("No columns were found in that file.");
       }
@@ -94,6 +101,7 @@ export function Workspace() {
       setFileName(file.name);
       setStep("map");
     } catch (e) {
+      if (seq !== parseSeq.current) return;
       setError(e instanceof Error ? e.message : "Could not read that file.");
     }
   }
@@ -128,9 +136,15 @@ export function Workspace() {
     if (!dataset) return;
     const name = window.prompt("Name this analysis", fileName || "Untitled");
     if (!name) return;
-    await saveAnalysis(
-      toSavedAnalysis(name, fileName, [...dataset.candles], dataset.stats.hasVolume),
-    );
+    try {
+      await saveAnalysis(
+        toSavedAnalysis(name, fileName, [...dataset.candles], dataset.stats.hasVolume),
+      );
+    } catch {
+      // IndexedDB can fail (quota, private mode); tell the user instead of an
+      // unhandled rejection that looks like a successful save.
+      window.alert("Could not save this analysis - browser storage refused the write.");
+    }
   }
 
   const base = React.useMemo(

@@ -50,21 +50,23 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable}`}
     >
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <ClerkAuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
+        {/* ThemeProvider wraps Clerk so the auth modal accent can follow the
+            active theme (see ClerkAuthProvider). */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ClerkAuthProvider>
             <div className="relative flex min-h-dvh flex-col">
               <SiteHeader />
               <main className="flex-1">{children}</main>
               <SiteFooter />
             </div>
             <ChatFab />
-          </ThemeProvider>
-        </ClerkAuthProvider>
+          </ClerkAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
