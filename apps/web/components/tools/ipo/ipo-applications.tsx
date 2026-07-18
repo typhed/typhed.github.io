@@ -25,7 +25,7 @@ import {
   RemoveRowButton,
   SelectCell,
   TextCell,
-} from "@/components/tools/ipo/editable-table";
+} from "@/components/tools/editable-table";
 
 const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }));
 

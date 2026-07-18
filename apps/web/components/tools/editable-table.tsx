@@ -1,10 +1,12 @@
 "use client";
 
 /**
- * Small, unstyled-cell building blocks shared by the timeline / GMP / financials
- * editors. Each editor owns its own column grid; these primitives keep the input
- * styling and the add / remove controls consistent without imposing a rigid
- * column model. Cell inputs are label-less (the editor renders one header row).
+ * Small, unstyled-cell building blocks for editable tables / grids, shared by
+ * every tool that lets the user add and edit rows (the IPO editors, the MNWS
+ * salary / bonus tables, ...). Each editor owns its own column grid; these
+ * primitives keep the input styling and the add / remove controls consistent
+ * without imposing a rigid column model. Cell inputs are label-less (the editor
+ * renders one header row) and every row is keyed by an ephemeral `id`.
  */
 
 import * as React from "react";
@@ -17,7 +19,11 @@ const cellClass =
   "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 /** Immutably patch the row with the given id. */
-export function patchRow<T extends { id: string }>(rows: T[], id: string, patch: Partial<T>): T[] {
+export function patchRow<T extends { id: string }>(
+  rows: T[],
+  id: string,
+  patch: Partial<T>,
+): T[] {
   return rows.map((row) => (row.id === id ? { ...row, ...patch } : row));
 }
 
@@ -75,11 +81,14 @@ export function NumberCell({
       min={min}
       disabled={disabled}
       value={Number.isFinite(value) ? value : ""}
-      onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
+      onChange={(e) =>
+        onChange(e.target.value === "" ? 0 : Number(e.target.value))
+      }
       className={cn(
         cellClass,
         "tabular-nums",
-        disabled && "cursor-not-allowed bg-muted text-muted-foreground opacity-60",
+        disabled &&
+          "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
       )}
     />
   );
@@ -135,16 +144,34 @@ export function DateCell({
 }
 
 /** A ghost icon button that removes the row it sits in. */
-export function RemoveRowButton({ onClick, label }: { onClick: () => void; label: string }) {
+export function RemoveRowButton({
+  onClick,
+  label,
+}: {
+  onClick: () => void;
+  label: string;
+}) {
   return (
-    <Button variant="ghost" size="icon" aria-label={label} onClick={onClick} className="h-8 w-8 shrink-0">
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label={label}
+      onClick={onClick}
+      className="h-8 w-8 shrink-0"
+    >
       <Trash2 className="h-4 w-4" />
     </Button>
   );
 }
 
 /** An outline button that appends a new row. */
-export function AddRowButton({ onClick, label }: { onClick: () => void; label: string }) {
+export function AddRowButton({
+  onClick,
+  label,
+}: {
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <Button variant="outline" size="sm" onClick={onClick} className="mt-3">
       <Plus className="h-4 w-4" />

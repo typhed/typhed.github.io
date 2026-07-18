@@ -17,6 +17,7 @@ export const SITE = {
 export const NAV_LINKS: ReadonlyArray<{ label: string; href: string }> = [
   { label: "Workspace", href: "/" },
   { label: "IPO", href: "/tools/ipo" },
+  { label: "50-30-20", href: "/budgeting/mnws" },
   { label: "Main Site", href: SITE.parentUrl },
   { label: "Blog", href: SITE.blogUrl },
 ];

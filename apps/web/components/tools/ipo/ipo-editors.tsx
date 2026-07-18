@@ -15,7 +15,7 @@ import {
   patchRow,
   RemoveRowButton,
   TextCell,
-} from "@/components/tools/ipo/editable-table";
+} from "@/components/tools/editable-table";
 
 /** Issue details: name, lot size, price band, unit. */
 export function MetaEditor({

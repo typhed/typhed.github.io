@@ -17,14 +17,7 @@ import type {
   SubscriptionRow,
 } from "./types";
 import { SCHEMA_VERSION } from "./types";
-
-/** Stable-enough unique id for a row; used only as a React key. */
-export function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-}
+import { newId } from "@/lib/utils";
 
 export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
   return { id: newId(), ...init };
@@ -46,7 +39,9 @@ export function makeApplication(init: Omit<Application, "id">): Application {
   return { id: newId(), ...init };
 }
 
-export function makeSubscriptionRow(init: Omit<SubscriptionRow, "id">): SubscriptionRow {
+export function makeSubscriptionRow(
+  init: Omit<SubscriptionRow, "id">,
+): SubscriptionRow {
   return { id: newId(), ...init };
 }
 
@@ -74,9 +69,24 @@ export function defaultIpoDataset(): IpoDataset {
       makeMilestone({ label: "Mandate End", date: "2026-07-31" }),
     ],
     financials: [
-      makeFinancialRow({ period: "Mar'24", totalAssets: 7106.93, grossRevenue: 3426.08, pat: 2072.79 }),
-      makeFinancialRow({ period: "Mar'25", totalAssets: 8771.86, grossRevenue: 4236.15, pat: 2540.15 }),
-      makeFinancialRow({ period: "Mar'26", totalAssets: 6420.45, grossRevenue: 4976.11, pat: 3067.38 }),
+      makeFinancialRow({
+        period: "Mar'24",
+        totalAssets: 7106.93,
+        grossRevenue: 3426.08,
+        pat: 2072.79,
+      }),
+      makeFinancialRow({
+        period: "Mar'25",
+        totalAssets: 8771.86,
+        grossRevenue: 4236.15,
+        pat: 2540.15,
+      }),
+      makeFinancialRow({
+        period: "Mar'26",
+        totalAssets: 6420.45,
+        grossRevenue: 4976.11,
+        pat: 3067.38,
+      }),
     ],
     gmp: [
       makeGmpRow({ date: "2026-07-09", value: 84 }),
@@ -95,7 +105,11 @@ export function defaultIpoDataset(): IpoDataset {
       makeSubscriptionRow({ category: "bHNI", timesSubscribed: 26.01 }),
       makeSubscriptionRow({ category: "sHNI", timesSubscribed: 15.51 }),
       makeSubscriptionRow({ category: "RETAIL", timesSubscribed: 3.76 }),
-      makeSubscriptionRow({ category: "CUSTOM", label: "EMPLOYEE", timesSubscribed: 4.65 }),
+      makeSubscriptionRow({
+        category: "CUSTOM",
+        label: "EMPLOYEE",
+        timesSubscribed: 4.65,
+      }),
       makeSubscriptionRow({ category: "SHAREHOLDER", timesSubscribed: 9.52 }),
       makeSubscriptionRow({ category: "OVERALL", timesSubscribed: 41.73 }),
     ],
