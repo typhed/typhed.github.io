@@ -27,6 +27,25 @@ function yearTicks(months: MonthRow[]): number[] {
   return ticks;
 }
 
+/**
+ * Year ticks thinned to a minimum pixel gap. Later ticks win, so the extra
+ * start-month tick is dropped when it crowds the first January label, and
+ * crowded January labels thin out on narrow viewports.
+ */
+function visibleYearTicks(
+  months: MonthRow[],
+  x: (i: number) => number,
+  minGap = 34,
+): number[] {
+  const all = yearTicks(months);
+  const kept: number[] = [];
+  for (let j = all.length - 1; j >= 0; j--) {
+    const idx = all[j]!;
+    if (kept.length === 0 || x(kept[0]!) - x(idx) >= minGap) kept.unshift(idx);
+  }
+  return kept;
+}
+
 /** A dot swatch + label legend row, used where SeriesLegend's keys don't apply. */
 function Legend({
   items,
@@ -143,7 +162,7 @@ function CorpusChart({
   const bonusMonths = months
     .map((m, i) => ({ m, i }))
     .filter(({ m }) => m.bonusInflow > 0);
-  const ticks = yearTicks(months);
+  const ticks = visibleYearTicks(months, x);
   const hovered = hover !== null ? months[hover] : undefined;
 
   return (
@@ -343,7 +362,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
     months.map((m, i) => `${x(i).toFixed(1)},${y(fn(m)).toFixed(1)}`).join(" ");
 
   const gridlines = [0, 0.25, 0.5, 0.75, 1];
-  const ticks = yearTicks(months);
+  const ticks = visibleYearTicks(months, x);
   const lastIdx = n - 1;
   const hovered = hover !== null ? months[hover] : undefined;
 
