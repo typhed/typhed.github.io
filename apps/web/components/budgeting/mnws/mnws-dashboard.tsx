@@ -10,8 +10,8 @@ import type {
 } from "@/lib/budgeting/mnws/types";
 import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types";
 import {
+  blankMnwsDataset,
   DEFAULT_MNWS_DATASET,
-  defaultMnwsDataset,
 } from "@/lib/budgeting/mnws/defaults";
 import { computeMnws } from "@/lib/budgeting/mnws/engine";
 import {
@@ -42,7 +42,11 @@ export function MnwsDashboard() {
     try {
       const raw = window.localStorage.getItem(MNWS_STORAGE_KEY);
       if (raw) {
-        const parsed = safeParseMnwsDataset(JSON.parse(raw));
+        // allowEmpty: a plan cleared via "Reset" must survive reload rather
+        // than falling back to the seed dataset.
+        const parsed = safeParseMnwsDataset(JSON.parse(raw), {
+          allowEmpty: true,
+        });
         if (parsed.ok) setData(parsed.data);
       }
     } catch {
@@ -95,13 +99,17 @@ export function MnwsDashboard() {
   }
 
   function handleReset() {
-    setData(defaultMnwsDataset());
-    setImportError(null);
-    try {
-      window.localStorage.removeItem(MNWS_STORAGE_KEY);
-    } catch {
-      // Non-fatal.
+    if (
+      !window.confirm(
+        "Clear all salary and bonus entries? This cannot be undone.",
+      )
+    ) {
+      return;
     }
+    // The persist effect writes the blank plan to storage, so a reload stays
+    // blank instead of restoring the seed dataset.
+    setData(blankMnwsDataset());
+    setImportError(null);
   }
 
   return (

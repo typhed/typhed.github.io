@@ -6,8 +6,11 @@
  * guards BOTH the file import and the localStorage hydrate, so a hand-edited or
  * corrupt payload can never crash the page: it validates every field, coerces
  * or clamps what it can, drops malformed rows, and rejects only if no salary
- * and no bonus survive. It never spreads the untrusted object - it reads named
- * fields (via the shared `@/lib/parse` helpers) and rebuilds a fresh dataset.
+ * and no bonus survive. The hydrate passes `allowEmpty` so an intentionally
+ * cleared plan (after "Reset") round-trips instead of resurrecting the seed;
+ * file import stays strict. It never spreads the untrusted object - it reads
+ * named fields (via the shared `@/lib/parse` helpers) and rebuilds a fresh
+ * dataset.
  */
 
 import { slugify } from "@/lib/utils";
@@ -67,8 +70,13 @@ function clamp(value: number, lo: number, hi: number): number {
 /**
  * Validate/clamp an untrusted payload into a fresh `MnwsDataset`. Never spreads
  * the input; reads only named fields. Malformed rows are dropped, not fatal.
+ * `allowEmpty` accepts a dataset with no surviving rows (the hydrate path);
+ * without it an empty result is rejected (the import path).
  */
-export function safeParseMnwsDataset(raw: unknown): ParseResult {
+export function safeParseMnwsDataset(
+  raw: unknown,
+  opts?: { allowEmpty?: boolean },
+): ParseResult {
   if (!isObject(raw)) {
     return {
       ok: false,
@@ -112,7 +120,7 @@ export function safeParseMnwsDataset(raw: unknown): ParseResult {
     ];
   });
 
-  if (salaries.length === 0 && bonuses.length === 0) {
+  if (salaries.length === 0 && bonuses.length === 0 && !opts?.allowEmpty) {
     return {
       ok: false,
       error: "No usable salary or bonus entries found in this file.",

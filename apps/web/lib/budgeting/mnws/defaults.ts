@@ -4,7 +4,8 @@
  * `DEFAULT_MNWS_DATASET` is a realistic ~10-year salary journey (echoing the
  * worked example: a first salary dated 2016-11-30 and the first raise dated
  * 2017-07-31) plus two windfalls, so the page renders a complete, illustrative
- * corpus curve on first visit and after "Reset". The factories mint fresh row
+ * corpus curve on first visit. "Reset" instead clears to `blankMnwsDataset`,
+ * an empty plan the user fills in row by row. The factories mint fresh row
  * ids for add/remove edits and for rows rebuilt by the JSON parser.
  */
 
@@ -39,6 +40,22 @@ export function blankBonusEntry(date: string): BonusEntry {
     savingsPct: DEFAULT_BONUS_SPLIT.savings,
     note: "",
   });
+}
+
+/** An empty plan: what "Reset" clears to, filled in by the user row by row. */
+export function blankMnwsDataset(): MnwsDataset {
+  return {
+    meta: {
+      planName: "My 50-30-20 Plan",
+      schemaVersion: SCHEMA_VERSION,
+      savedAt: "",
+    },
+    salaries: [],
+    bonuses: [],
+    settings: {
+      annualReturnPct: DEFAULT_ANNUAL_RETURN_PCT,
+    },
+  };
 }
 
 /** The seed plan: a disciplined ten-year salary journey with two windfalls. */
