@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { fmtInr, fmtPercent } from "@/lib/format";
+import { fmtInr, fmtInrCrore, fmtPercent } from "@/lib/format";
 import type { MnwsResult } from "@/lib/budgeting/mnws/engine";
 import { ToolCard, StatTile } from "@/components/tools/controls";
 import { SERIES, SERIES_ORDER } from "./series";
@@ -156,7 +156,7 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
         />
         <StatTile
           label="Raises · bonuses"
-          value={`${summary.incrementCount} · ${fmtInr(summary.bonusReceived, 0)}`}
+          value={`${summary.incrementCount} · ${fmtInrCrore(summary.bonusReceived)}`}
           note={`${summary.monthCount} months tracked`}
         />
       </div>

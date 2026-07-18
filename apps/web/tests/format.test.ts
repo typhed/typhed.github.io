@@ -4,6 +4,7 @@ import {
   fmtDayMonth,
   fmtDisplayDate,
   fmtInr,
+  fmtInrCrore,
   fmtMoney,
   fmtNumber,
   fmtPercent,
@@ -17,10 +18,17 @@ describe("number formatters (pinned en-IN)", () => {
     expect(fmtInr(100000, 0)).toBe("₹1,00,000");
   });
 
+  it("expresses rupee amounts in crores to three decimals", () => {
+    expect(fmtInrCrore(159461)).toBe("₹0.016 Cr");
+    expect(fmtInrCrore(400000)).toBe("₹0.040 Cr");
+    expect(fmtInrCrore(0)).toBe("₹0.000 Cr");
+  });
+
   it("renders a dash for non-finite values", () => {
     expect(fmtMoney(Number.NaN)).toBe("-");
     expect(fmtInr(Infinity)).toBe("-");
     expect(fmtPercent(Number.NaN)).toBe("-");
+    expect(fmtInrCrore(Number.NaN)).toBe("-");
   });
 
   it("formats fractions as percentages", () => {

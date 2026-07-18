@@ -60,6 +60,12 @@ export function fmtInrShort(value: number): string {
   return `${sign}₹${Math.round(abs)}`;
 }
 
+/** Rupee amount expressed in crores, e.g. `₹0.016 Cr`. */
+export function fmtInrCrore(value: number, digits = 3): string {
+  if (!Number.isFinite(value)) return "-";
+  return `₹${(value / 1e7).toFixed(digits)} Cr`;
+}
+
 /** Compact axis label: thousands collapse to "1.5K", smaller values round to integers. */
 export function fmtCompact(value: number): string {
   const abs = Math.abs(value);

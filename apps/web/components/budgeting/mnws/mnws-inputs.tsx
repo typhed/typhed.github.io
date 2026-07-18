@@ -24,9 +24,9 @@ import {
   TextCell,
 } from "@/components/tools/editable-table";
 
-/** Chronological display order; edits still key off the row id, so it re-sorts. */
-function byDate<T extends { date: string }>(rows: T[]): T[] {
-  return [...rows].sort((a, b) => compareIso(a.date, b.date));
+/** Newest-first display order; edits still key off the row id, so it re-sorts. */
+function byDateDesc<T extends { date: string }>(rows: T[]): T[] {
+  return [...rows].sort((a, b) => compareIso(b.date, a.date));
 }
 
 /**
@@ -61,7 +61,7 @@ function SalaryEditor({
   today: string;
   onChange: (next: SalaryEntry[]) => void;
 }) {
-  const ordered = byDate(salaries);
+  const ordered = byDateDesc(salaries);
   return (
     <div>
       <div className="space-y-2">
@@ -109,12 +109,12 @@ function SalaryEditor({
       <AddRowButton
         label="Add salary / increment"
         onClick={() => {
-          const last = ordered[ordered.length - 1];
+          const latest = ordered[0];
           onChange([
             ...salaries,
             makeSalaryEntry({
               date: today || "2016-01-31",
-              amount: last?.amount ?? 0,
+              amount: latest?.amount ?? 0,
               note: "",
             }),
           ]);
@@ -134,7 +134,7 @@ function BonusEditor({
   today: string;
   onChange: (next: BonusEntry[]) => void;
 }) {
-  const ordered = byDate(bonuses);
+  const ordered = byDateDesc(bonuses);
   return (
     <div>
       <div className="space-y-2">
@@ -254,7 +254,7 @@ export function MnwsInputs({
     <div className="space-y-6">
       <ToolCard
         title="Salary history"
-        description="Enter every salary and increment. Each applies from the following month and carries forward until the next entry; rows sort by date automatically."
+        description="Enter every salary and increment. Each applies from the following month and carries forward until the next entry; rows sort newest-first automatically."
       >
         <SalaryEditor
           salaries={salaries}
