@@ -67,3 +67,23 @@ export function indexToYear(index: number): number {
 export function compareIso(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
+
+/**
+ * Indian financial-year start year for a month index. The FY runs April → March,
+ * so Jan–Mar belong to the FY that started the previous April.
+ * e.g. Dec 2016 and Feb 2017 both return 2016 (F.Y. 2016-17).
+ */
+export function financialYearStart(index: number): number {
+  const { year, month } = indexToYm(index);
+  return month >= 4 ? year : year - 1;
+}
+
+/** Full financial-year label from its start year, e.g. `2016 -> "F.Y. 2016-17"`. */
+export function financialYearLabel(startYear: number): string {
+  return `F.Y. ${startYear}-${String((startYear + 1) % 100).padStart(2, "0")}`;
+}
+
+/** Compact financial-year label for chart axes, e.g. `2016 -> "FY17"`. */
+export function financialYearShort(startYear: number): string {
+  return `FY${String((startYear + 1) % 100).padStart(2, "0")}`;
+}

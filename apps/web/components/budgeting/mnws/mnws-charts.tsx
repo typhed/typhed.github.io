@@ -6,7 +6,7 @@ import { fmtInr, fmtInrShort, fmtPercent } from "@/lib/format";
 import { niceScale } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";
 import type {
-  AnnualRow,
+  FinancialYearRow,
   MnwsResult,
   MonthRow,
 } from "@/lib/budgeting/mnws/engine";
@@ -450,13 +450,13 @@ function DriftChart({ months }: { months: MonthRow[] }) {
 
 const A_PAD = { top: 16, right: 16, bottom: 28, left: 56 };
 
-/** Stacked bars of each year's savings: recurring salary savings + windfalls. */
-function AnnualChart({ annual }: { annual: AnnualRow[] }) {
+/** Stacked bars of each financial year's savings: salary savings + windfalls. */
+function AnnualChart({ years }: { years: FinancialYearRow[] }) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const [hover, setHover] = React.useState<number | null>(null);
 
-  const n = annual.length;
-  const maxVal = annual.reduce((max, a) => Math.max(max, a.totalSavings), 0);
+  const n = years.length;
+  const maxVal = years.reduce((max, a) => Math.max(max, a.totalSavings), 0);
   const scale = React.useMemo(
     () => niceScale(0, maxVal, { includeZero: true, maxTicks: 5 }),
     [maxVal],
@@ -491,7 +491,7 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
           height={HEIGHT}
           role="img"
           tabIndex={0}
-          aria-label={`Savings added each year from ${annual[0]?.year} to ${annual[n - 1]?.year}.`}
+          aria-label={`Savings added each financial year from ${years[0]?.label} to ${years[n - 1]?.label}.`}
           className="focus-visible:ring-ring rounded-md outline-none focus-visible:ring-2"
           onKeyDown={(e) => {
             if (stepHover(e.key, n - 1, setHover)) e.preventDefault();
@@ -521,7 +521,7 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
             </g>
           ))}
 
-          {annual.map((a, i) => {
+          {years.map((a, i) => {
             const salaryTop = y(a.salarySavings);
             const totalTop = y(a.totalSavings);
             const base = y(scale.lo);
@@ -529,7 +529,7 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
             const isHover = hover === i;
             return (
               <g
-                key={a.year}
+                key={a.startYear}
                 onPointerEnter={() => setHover(i)}
                 onPointerLeave={() =>
                   setHover((prev) => (prev === i ? null : prev))
@@ -563,7 +563,7 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
                   textAnchor="middle"
                   className="text-muted-foreground fill-current text-[11px]"
                 >
-                  {a.year}
+                  {a.shortLabel}
                 </text>
               </g>
             );
@@ -571,7 +571,7 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
         </svg>
       )}
 
-      {hover !== null && annual[hover] && width > 0 && (
+      {hover !== null && years[hover] && width > 0 && (
         <div
           className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
           style={{
@@ -580,26 +580,26 @@ function AnnualChart({ annual }: { annual: AnnualRow[] }) {
           }}
         >
           <div className="text-popover-foreground font-semibold">
-            {annual[hover]!.year}
+            {years[hover]!.label}
           </div>
           <div className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: SERIES.savings.color }}
             />
-            Salary {fmtInr(annual[hover]!.salarySavings, 0)}
+            Salary {fmtInr(years[hover]!.salarySavings, 0)}
           </div>
-          {annual[hover]!.bonusSavings > 0 && (
+          {years[hover]!.bonusSavings > 0 && (
             <div className="text-popover-foreground flex items-center gap-1.5 tabular-nums">
               <span
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: CORPUS_COLORS.invested }}
               />
-              Bonus {fmtInr(annual[hover]!.bonusSavings, 0)}
+              Bonus {fmtInr(years[hover]!.bonusSavings, 0)}
             </div>
           )}
           <div className="border-border text-muted-foreground mt-0.5 border-t pt-0.5 tabular-nums">
-            Total {fmtInr(annual[hover]!.totalSavings, 0)}
+            Total {fmtInr(years[hover]!.totalSavings, 0)}
           </div>
         </div>
       )}
@@ -650,10 +650,10 @@ export function MnwsCharts({ result }: { result: MnwsResult }) {
         </ToolCard>
 
         <ToolCard
-          title="Savings added each year"
-          description="Yearly contributions to the corpus, split into recurring salary savings and one-off windfalls."
+          title="Savings added each financial year"
+          description="Contributions to the corpus per F.Y. (Apr–Mar), split into recurring salary savings and one-off windfalls."
         >
-          <AnnualChart annual={result.annual} />
+          <AnnualChart years={result.financialYears} />
         </ToolCard>
       </div>
     </div>

@@ -42,6 +42,9 @@ import { BASE_SPLIT, INCREMENT_SPLIT } from "./types";
 import type { MnwsDataset } from "./types";
 import {
   compareIso,
+  financialYearLabel,
+  financialYearShort,
+  financialYearStart,
   indexToIso,
   indexToYear,
   monthIndexFromIso,
@@ -102,17 +105,29 @@ export interface MonthRow {
   investedCumulative: number;
 }
 
-/** One calendar year, aggregated from its months. */
-export interface AnnualRow {
-  year: number;
+/** One Indian financial year (Apr–Mar), aggregated from its months. */
+export interface FinancialYearRow {
+  /** FY start year, e.g. 2016 for F.Y. 2016-17. */
+  startYear: number;
+  /** Full label, e.g. "F.Y. 2016-17". */
+  label: string;
+  /** Compact axis label, e.g. "FY17". */
+  shortLabel: string;
+  /** Total salary received across the FY's months. */
+  income: number;
+  /** Recurring salary savings in the FY. */
   salarySavings: number;
+  /** Bonus/windfall savings deployed in the FY. */
   bonusSavings: number;
+  /** salarySavings + bonusSavings. */
   totalSavings: number;
+  /** Gross windfalls received (deployed) in the FY. */
+  windfall: number;
   needs: number;
   wants: number;
-  /** End-of-year nominal cash saved (cumulative). */
+  /** End-of-FY nominal cash saved (cumulative). */
   cashCumulative: number;
-  /** End-of-year invested corpus (cumulative). */
+  /** End-of-FY invested corpus (cumulative). */
   investedCumulative: number;
 }
 
@@ -152,7 +167,7 @@ export interface MnwsSummary {
 
 export interface MnwsResult {
   months: MonthRow[];
-  annual: AnnualRow[];
+  financialYears: FinancialYearRow[];
   regimes: RegimeInfo[];
   summary: MnwsSummary;
   warnings: string[];
@@ -274,7 +289,7 @@ function emptyResult(regimes: RegimeInfo[], warnings: string[]): MnwsResult {
   const last = regimes[regimes.length - 1];
   return {
     months: [],
-    annual: [],
+    financialYears: [],
     regimes,
     warnings,
     summary: {
@@ -385,32 +400,41 @@ export function computeMnws(data: MnwsDataset, today: string): MnwsResult {
     });
   }
 
-  // Aggregate to calendar years for the year-over-year bar chart.
-  const annualMap = new Map<number, AnnualRow>();
+  // Aggregate to Indian financial years (Apr–Mar) for the schedule and bar chart.
+  const fyMap = new Map<number, FinancialYearRow>();
   for (const row of months) {
+    const startYear = financialYearStart(row.index);
     const cur =
-      annualMap.get(row.year) ??
+      fyMap.get(startYear) ??
       ({
-        year: row.year,
+        startYear,
+        label: financialYearLabel(startYear),
+        shortLabel: financialYearShort(startYear),
+        income: 0,
         salarySavings: 0,
         bonusSavings: 0,
         totalSavings: 0,
+        windfall: 0,
         needs: 0,
         wants: 0,
         cashCumulative: 0,
         investedCumulative: 0,
-      } satisfies AnnualRow);
+      } satisfies FinancialYearRow);
+    cur.income += row.salary;
     cur.salarySavings += row.base.savings;
     cur.bonusSavings += row.bonus.savings;
     cur.totalSavings += row.savings;
+    cur.windfall += row.bonusInflow;
     cur.needs += row.base.needs + row.bonus.needs;
     cur.wants += row.base.wants + row.bonus.wants;
-    // Overwritten each month; the last write is December (or the final month).
+    // Overwritten each month; the last write is the FY's final tracked month.
     cur.cashCumulative = row.cashCumulative;
     cur.investedCumulative = row.investedCumulative;
-    annualMap.set(row.year, cur);
+    fyMap.set(startYear, cur);
   }
-  const annual = [...annualMap.values()].sort((a, b) => a.year - b.year);
+  const financialYears = [...fyMap.values()].sort(
+    (a, b) => a.startYear - b.startYear,
+  );
 
   // Roll up the summary from the walked months.
   let totalSalary = 0;
@@ -439,7 +463,7 @@ export function computeMnws(data: MnwsDataset, today: string): MnwsResult {
 
   return {
     months,
-    annual,
+    financialYears,
     regimes,
     warnings,
     summary: {
