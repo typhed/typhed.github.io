@@ -34,6 +34,7 @@ import {
   makeMilestone,
   makeSubscriptionRow,
 } from "./defaults";
+import { slugify } from "@/lib/utils";
 
 export type ParseResult =
   | { ok: true; data: IpoDataset }
@@ -86,14 +87,6 @@ export function serializeIpoDataset(data: IpoDataset): string {
     })),
   };
   return JSON.stringify(clean, null, 2);
-}
-
-/** Lowercase, dash-separated slug for filenames. */
-export function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }
 
 /** Download filename, e.g. `ipo-sample-ipo-2026-07-16.json`. */

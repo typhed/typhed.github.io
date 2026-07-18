@@ -1,10 +1,12 @@
 "use client";
 
 /**
- * Small, unstyled-cell building blocks shared by the timeline / GMP / financials
- * editors. Each editor owns its own column grid; these primitives keep the input
- * styling and the add / remove controls consistent without imposing a rigid
- * column model. Cell inputs are label-less (the editor renders one header row).
+ * Small, unstyled-cell building blocks for editable tables / grids, shared by
+ * every tool that lets the user add and edit rows (the IPO editors, the MNWS
+ * salary / bonus tables, ...). Each editor owns its own column grid; these
+ * primitives keep the input styling and the add / remove controls consistent
+ * without imposing a rigid column model. Cell inputs are label-less (the editor
+ * renders one header row) and every row is keyed by an ephemeral `id`.
  */
 
 import * as React from "react";
