@@ -1,0 +1,33 @@
+/**
+ * The three MNWS buckets as a shared, single-source palette + label set, used
+ * by the rule explainer, the KPI panel, the split bars and the charts so every
+ * surface colours needs / wants / savings identically. Savings is the hero, so
+ * it also gets emphasised as the brand-adjacent green elsewhere; needs/wants use
+ * fixed, theme-stable hues distinct from the cyan/indigo brand accent.
+ */
+
+export type SeriesKey = "needs" | "wants" | "savings";
+
+export interface SeriesMeta {
+  key: SeriesKey;
+  label: string;
+  /** CSS colour for SVG fills / strokes (theme-stable, works in light + dark). */
+  color: string;
+  /** Tailwind text-colour class for inline figures. */
+  textClass: string;
+}
+
+export const SERIES: Record<SeriesKey, SeriesMeta> = {
+  needs: { key: "needs", label: "Needs", color: "hsl(38 92% 50%)", textClass: "text-amber-500" },
+  wants: { key: "wants", label: "Wants", color: "hsl(262 83% 66%)", textClass: "text-violet-500" },
+  savings: { key: "savings", label: "Savings", color: "hsl(160 84% 39%)", textClass: "text-emerald-500" },
+};
+
+/** Fixed render order: needs, wants, savings (left→right, bottom→top in stacks). */
+export const SERIES_ORDER: readonly SeriesKey[] = ["needs", "wants", "savings"];
+
+/** Colour for the two corpus lines: nominal cash saved vs invested corpus. */
+export const CORPUS_COLORS = {
+  cash: SERIES.savings.color,
+  invested: "hsl(var(--brand))",
+} as const;
