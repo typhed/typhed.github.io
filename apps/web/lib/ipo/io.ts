@@ -35,6 +35,7 @@ import {
   makeSubscriptionRow,
 } from "./defaults";
 import { slugify } from "@/lib/utils";
+import { asArray, coerceIsoDate, enumOr, isObject, num, str } from "@/lib/parse";
 
 export type ParseResult =
   | { ok: true; data: IpoDataset }
@@ -94,48 +95,6 @@ export function ipoFileName(data: IpoDataset, today: string): string {
   const slug = slugify(data.meta.companyName) || "dashboard";
   const stamp = today || new Date().toISOString().slice(0, 10);
   return `ipo-${slug}-${stamp}.json`;
-}
-
-/* ------------------------------ validators ------------------------------ */
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function asArray(value: unknown): unknown[] {
-  return Array.isArray(value) ? value : [];
-}
-
-function str(value: unknown, fallback: string): string {
-  return typeof value === "string" ? value : fallback;
-}
-
-function num(value: unknown, fallback: number): number {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
-  if (typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value))) {
-    return Number(value);
-  }
-  return fallback;
-}
-
-/** Return `value` when it is one of `allowed`, else `fallback`. */
-function enumOr<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
-  return typeof value === "string" && (allowed as readonly string[]).includes(value)
-    ? (value as T)
-    : fallback;
-}
-
-/** Accept ISO "yyyy-mm-dd" as-is; coerce "dd-mm-yyyy" / "dd/mm/yyyy"; else null. */
-function coerceIsoDate(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const trimmed = value.trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
-  const match = trimmed.match(/^(\d{2})[-/](\d{2})[-/](\d{4})$/);
-  if (match) {
-    const [, dd, mm, yyyy] = match;
-    if (dd && mm && yyyy) return `${yyyy}-${mm}-${dd}`;
-  }
-  return null;
 }
 
 /**

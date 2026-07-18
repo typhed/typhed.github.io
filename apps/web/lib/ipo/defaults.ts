@@ -17,14 +17,7 @@ import type {
   SubscriptionRow,
 } from "./types";
 import { SCHEMA_VERSION } from "./types";
-
-/** Stable-enough unique id for a row; used only as a React key. */
-export function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-}
+import { newId } from "@/lib/utils";
 
 export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
   return { id: newId(), ...init };
