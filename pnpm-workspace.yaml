@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "serverless"
 
 # Force patched transitive versions past known advisories:
 #   vite  >=6.4.3  - server.fs.deny bypass + launch-editor NTLM disclosure
@@ -16,7 +17,10 @@ overrides:
 # unrs-resolver (pulled in by eslint-config-next's import resolver) ships
 # prebuilt binaries as optional dependencies; its build script is only a
 # fallback compiler, so it stays off.
+# @clerk/shared's postinstall is a telemetry/notice script, not a native
+# build; nothing breaks with it off.
 allowBuilds:
+  "@clerk/shared": false
   esbuild: true
   sharp: false
   unrs-resolver: false

@@ -2,7 +2,8 @@ import type { Candle } from "@typhed/chart-engine";
 
 import { newId } from "@/lib/id";
 
-const DB_NAME = "typhed-trading";
+/** Exported so the privacy module can erase the whole database on demand. */
+export const DB_NAME = "typhed-trading";
 const STORE = "analyses";
 const VERSION = 1;
 

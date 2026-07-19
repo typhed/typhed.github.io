@@ -24,23 +24,33 @@ on GitHub Pages; only this one function runs on a server.
 
 ## Flow
 
-  1. The browser gets the current Clerk session token client-side.
-  2. It calls this function with `Authorization: Bearer <token>` and the tool inputs.
-  3. The function verifies the token against Clerk (`@clerk/backend` `verifyToken`, JWKS-backed).
-  4. It checks `publicMetadata.tier` / `entitlements` for the requested feature.
-  5. Only a verified, entitled caller receives the computed result; others get 401 or 403.
+1. The handler rejects any request whose `Origin` is not on the configured allowlist (403), and answers CORS
+   preflights only for allowed origins.
+2. The browser gets the current Clerk session token client-side and calls the gate with
+   `Authorization: Bearer <token>` plus the tool inputs.
+3. The handler verifies the token via `@clerk/backend` `verifyToken` (JWKS-backed signature and lifetime checks).
+4. A fixed-window per-user rate limit (default 30 requests/minute) brakes hot callers before any computation runs.
+5. It checks `publicMetadata.tier` / `entitlements` for the requested feature.
+6. Only a verified, entitled, in-budget caller receives the computed result; others get 401, 403, or 429.
 
 ## Deploying
 
-  * Host on Cloudflare Workers, Vercel Edge, or any Node/edge runtime.
-  * Set `CLERK_SECRET_KEY` (or `CLERK_JWT_KEY`) as a secret - never in the client bundle.
-  * Add the function's origin to the site's allowed fetch targets.
-  * Replace the placeholder `verifyClerkToken` with the real `@clerk/backend` call.
+- Host on Cloudflare Workers, Vercel Edge, or any runtime with a `fetch(Request) -> Response` shape; wire it via
+  `createGateHandler({ secretKey, allowedOrigins })` as shown in the file's doc comment.
+- Set `CLERK_SECRET_KEY` (or the instance's PEM `CLERK_JWT_KEY` for networkless verification) as a deployment
+  secret - never in the client bundle.
+- Customise the Clerk session token to include `{"publicMetadata": "{{user.public_metadata}}"}` (Dashboard >
+  Sessions), or the entitlement claims this gate reads will be absent and every caller gets 403.
+- Set `allowedOrigins` to exactly the sites that may call the gate (for example `https://trading.typhed.com`).
+- The bundled rate limiter is in-memory and per isolate - a brake, not a distributed quota. Move the counters to
+  KV / Durable Objects / Redis before the gate fronts real spend.
 
 ## Status
 
-This is a documented pattern, wired for Phase 5 but not yet deployed. The
-current Pro tools (Monte Carlo, Advanced analytics) use the soft gate; move a
-tool behind this function when its IP genuinely needs protection.
+**Implemented but not deployed.** The handler compiles and typechecks as the `@typhed/serverless-gate` workspace
+package, with real token verification, an origin allowlist, and rate limiting - but nothing hosts it yet and no tool
+calls it. Until it is deployed, the Pro tools (Monte Carlo, Advanced analytics) remain **convenience-gated only**:
+their code ships in the static bundle behind the soft `<Entitled>` gate, and Pro must not be marketed as
+hard-protected. Move a tool behind this function when its IP genuinely needs protection.
 
 </div>

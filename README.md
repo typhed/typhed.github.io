@@ -62,6 +62,15 @@ $ pnpm --filter web typecheck
 
 `build` produces the static export at `apps/web/out`, which is what deploys to GitHub Pages.
 
+## 🔒 Data And Privacy
+
+Everything you upload or type stays in your browser: candles live in IndexedDB (`typhed-trading`), and
+the IPO and budgeting datasets live in `localStorage` - in plaintext, as every site's browser storage
+is. Nothing is transmitted anywhere. Two controls bound that storage: signing out erases all locally
+stored tool data automatically, and the footer's **Clear local data** button erases it on demand at any
+time. One honest limit: signing out from a sibling `typhed.com` site while this site is closed cannot be
+observed here, so on a shared device prefer the footer control or sign out from this site itself.
+
 ## ⚠️ Disclaimer
 
 This platform is a decision-support tool, not investment advice. It can contain errors. Verify every

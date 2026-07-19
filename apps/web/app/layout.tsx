@@ -6,6 +6,7 @@ import "./globals.css";
 import { SITE } from "@/lib/constants";
 import { ClerkAuthProvider } from "@/components/clerk-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PrivacyGuard } from "@/components/privacy-guard";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { ChatFab } from "@/components/chat-fab";
@@ -59,6 +60,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ClerkAuthProvider>
+            <PrivacyGuard />
             <div className="relative flex min-h-dvh flex-col">
               <SiteHeader />
               <main className="flex-1">{children}</main>

@@ -60,8 +60,10 @@ function grantsFor(tier: Tier, granted: string[]) {
  * When Clerk is disabled (no key) the app treats everyone as a free user, so
  * paid features render their locked state - useful for local development.
  *
- * Note: this is a soft gate. A paid tool's code still ships in the bundle;
- * genuine IP protection needs the Phase 5 serverless verification.
+ * Note: this is a soft gate. A paid tool's code still ships in the bundle.
+ * The serverless hard gate (serverless/verify-entitlement.ts) is implemented
+ * but not deployed, so until it is, Pro is a convenience tier - never
+ * describe it as hard-protected.
  */
 export function useEntitlements(): Entitlements {
   // CLERK_ENABLED is a build-time constant, so this branch is stable for the

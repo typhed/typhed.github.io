@@ -10,6 +10,7 @@ import {
 import { SITE } from "@/lib/constants";
 import { TOOLS } from "@/lib/tool-registry";
 import { BrandMark } from "@/components/brand-mark";
+import { ClearLocalDataButton } from "@/components/clear-local-data";
 import { CopyrightYear } from "@/components/copyright-year";
 
 /**
@@ -124,10 +125,11 @@ export function SiteFooter() {
             <p>{COPYRIGHT_LINES[1]}</p>
           </div>
           <div className="space-y-1 sm:text-right">
-            <p>
+            <p className="flex gap-3 sm:justify-end">
               <a href={PRIVACY_LINK.href} className="hover:text-brand">
                 {PRIVACY_LINK.label}
               </a>
+              <ClearLocalDataButton />
             </p>
             <p>{SITE.disclaimer}</p>
           </div>
