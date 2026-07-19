@@ -17,6 +17,7 @@ import {
   PRODUCT_ID,
   SITE_DESCRIPTION,
 } from "@/lib/site.local";
+import { TOOL_CATEGORIES, toolsInCategory } from "@/lib/tool-registry";
 
 /** Registry lookups are compile-time data; a miss is a build defect. */
 function required<T>(value: T | undefined, what: string): T {
@@ -55,19 +56,33 @@ export type NavLink = {
   newTab: boolean;
 };
 
-/** Primary navigation: site-internal links first, then the product switcher. */
-export const NAV_LINKS: ReadonlyArray<NavLink> = [
-  ...INTERNAL_NAV_LINKS.map((link) => ({
-    ...link,
-    external: false,
-    newTab: false,
-  })),
-  ...productSwitcherFor(PRODUCT_ID).map((p) => ({
-    label: p.label,
-    href: p.url,
-    external: true,
-    newTab: p.openInNewTab,
-  })),
-];
+export type NavGroup = {
+  label: string;
+  items: ReadonlyArray<{ label: string; href: string }>;
+};
+
+/** Site-internal links rendered before the dropdown groups. */
+export const SITE_NAV_LINKS = INTERNAL_NAV_LINKS;
+
+/** One dropdown group per tool category, fed by the tool registry. */
+export const NAV_GROUPS: ReadonlyArray<NavGroup> = TOOL_CATEGORIES.map(
+  (category) => ({
+    label: category.label,
+    items: toolsInCategory(category.id).map((tool) => ({
+      label: tool.name,
+      href: tool.route,
+    })),
+  }),
+);
+
+/** Cross-product switcher links; same-tab per the registry flag. */
+export const PRODUCT_NAV_LINKS: ReadonlyArray<NavLink> = productSwitcherFor(
+  PRODUCT_ID,
+).map((p) => ({
+  label: p.label,
+  href: p.url,
+  external: true,
+  newTab: p.openInNewTab,
+}));
 
 export const LOGIN_CTA = "Login / Sign Up";
