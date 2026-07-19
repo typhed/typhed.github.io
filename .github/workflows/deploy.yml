@@ -23,6 +23,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # The platform control file must be a verbatim copy of the canonical
+      # source; a drifted copy must never deploy. Until the canonical file
+      # lands on typhed.github.io (phase M1) a 404 only warns, so this repo
+      # can deploy in the interim.
+      - name: Platform config drift guard
+        run: |
+          set -euo pipefail
+          canonical_url="https://raw.githubusercontent.com/typhed/typhed.github.io/master/packages/ui/lib/platform.ts"
+          local_copy="apps/web/lib/platform.ts"
+          status=$(curl -sS -o /tmp/canonical-platform.ts -w "%{http_code}" "$canonical_url")
+          if [ "$status" = "404" ]; then
+            echo "::warning::Canonical platform.ts not on typhed.github.io@master yet (M1 pending); drift check skipped."
+            exit 0
+          fi
+          if [ "$status" != "200" ]; then
+            echo "::error::Could not fetch canonical platform.ts (HTTP $status)."
+            exit 1
+          fi
+          if ! diff -u /tmp/canonical-platform.ts "$local_copy"; then
+            version=$(grep -m1 PLATFORM_CONFIG_VERSION "$local_copy" || true)
+            echo "::error::$local_copy drifted from the canonical copy ($version). Re-copy the canonical file and commit."
+            exit 1
+          fi
+
       - name: Set up pnpm
         # Third-party action pinned to the full commit SHA of the v4 tag so a
         # moved tag can never inject code into the build job.

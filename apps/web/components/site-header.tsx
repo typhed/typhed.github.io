@@ -15,16 +15,16 @@ export function SiteHeader() {
       <div className="container flex h-16 items-center justify-between">
         <BrandMark />
 
-        <nav className="hidden items-center gap-6 md:flex">
-          {NAV_LINKS.map((link) => {
-            const isExternal = link.href.startsWith("http");
-            return isExternal ? (
+        <nav className="hidden items-center gap-6 md:flex" aria-label="Primary">
+          {NAV_LINKS.map((link) =>
+            link.external ? (
               <a
                 key={link.href}
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 className={linkClass}
+                {...(link.newTab
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
               >
                 {link.label}
               </a>
@@ -32,8 +32,8 @@ export function SiteHeader() {
               <Link key={link.href} href={link.href} className={linkClass}>
                 {link.label}
               </Link>
-            );
-          })}
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2">

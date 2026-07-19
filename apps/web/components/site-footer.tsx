@@ -36,7 +36,7 @@ export function SiteFooter() {
           <span>
             &copy; {year} {SITE.entity}. All rights reserved.
           </span>
-          <span>Not investment advice. Verify every figure before you trade.</span>
+          <span>{SITE.disclaimer}</span>
         </div>
       </div>
     </footer>
