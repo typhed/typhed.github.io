@@ -49,9 +49,9 @@ accuracy-critical logic in isolated, unit-tested units.
 
 ## 🧭 Roadmap
 
-The phase-by-phase plan and its per-phase exit gates live in
-[Initial Plan.md](.claude/plans/Initial%20Plan.md). Each phase is validated, simplified, reviewed,
-security-checked, and committed before the next begins.
+Development planning, design decisions, and the phase-wise work plan for every `typhed.com` property
+live in the TyPhed organization's private control hub, not in this repository. Each phase is still
+validated, simplified, reviewed, security-checked, and committed here before the next begins.
 
 ## 🧪 Build and Verify
 
