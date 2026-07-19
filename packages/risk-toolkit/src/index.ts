@@ -43,3 +43,13 @@ export {
   type MonteCarloInput,
   type MonteCarloResult,
 } from "./montecarlo";
+
+export {
+  createSimulation,
+  simulate,
+  FAN_PERCENTILES,
+  type DataDrivenMode,
+  type SimulateInput,
+  type Simulation,
+  type SimulationSummary,
+} from "./simulate";
