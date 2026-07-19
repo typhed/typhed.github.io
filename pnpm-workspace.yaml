@@ -13,6 +13,10 @@ overrides:
 
 # Images are exported unoptimised, so sharp's native build is not needed.
 # esbuild's install step links the platform binary that vitest/vite use.
+# unrs-resolver (pulled in by eslint-config-next's import resolver) ships
+# prebuilt binaries as optional dependencies; its build script is only a
+# fallback compiler, so it stays off.
 allowBuilds:
   esbuild: true
   sharp: false
+  unrs-resolver: false

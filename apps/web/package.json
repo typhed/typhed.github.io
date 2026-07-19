@@ -28,12 +28,14 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
-    "@typhed/tailwind-config": "workspace:*",
-    "@typhed/tsconfig": "workspace:*",
     "@types/node": "^22.10.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@typhed/tailwind-config": "workspace:*",
+    "@typhed/tsconfig": "workspace:*",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^15.5.20",
     "postcss": "^8.5.1",
     "rimraf": "^6.0.1",
     "tailwindcss": "^3.4.17",
