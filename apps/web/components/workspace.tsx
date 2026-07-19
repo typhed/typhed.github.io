@@ -17,6 +17,7 @@ import {
 } from "@typhed/chart-engine";
 
 import { baseTimeframe, timeframeOptions } from "@/lib/timeframe-options";
+import { fmtNumber } from "@/lib/format";
 import {
   computeIndicators,
   DEFAULT_INDICATOR_STATE,
@@ -202,7 +203,7 @@ export function Workspace() {
           <div>
             <h1 className="font-display text-xl font-semibold">{fileName}</h1>
             <p className="text-sm text-muted-foreground">
-              {dataset.stats.outputRows.toLocaleString()} bars &middot; base{" "}
+              {fmtNumber(dataset.stats.outputRows, 0)} bars &middot; base{" "}
               {base.label}
             </p>
           </div>

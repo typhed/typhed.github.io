@@ -14,12 +14,18 @@
 export const SCHEMA_VERSION = 5;
 
 /**
- * The localStorage key holding the last-edited dataset for this browser. Bump
- * the suffix when a seed change must not be masked by a stale cache (last done
- * for the SCHEMA_VERSION 3 seed overhaul); the portable JSON file remains
- * importable regardless.
+ * The localStorage key holding the last-edited dataset for this browser,
+ * pinned to SCHEMA_VERSION so a schema or seed bump can never be masked by a
+ * stale cache. Migration note: on load the dashboard reads this key first,
+ * then falls back to LEGACY_IPO_STORAGE_KEYS in order, re-saving the parsed
+ * data under the current key and deleting the legacy one - the defensive
+ * parser accepts every older shape, so no per-version migration code is
+ * needed. The portable JSON file remains importable regardless.
  */
-export const IPO_STORAGE_KEY = "typhed:ipo:v2";
+export const IPO_STORAGE_KEY = `typhed:ipo:v${SCHEMA_VERSION}`;
+
+/** Keys older builds wrote; read once at load, then cleaned up. */
+export const LEGACY_IPO_STORAGE_KEYS = ["typhed:ipo:v2"] as const;
 
 /** Whether the issue is on the main board or the SME platform. */
 export const APPLICATION_TYPES = ["MAINBOARD", "SME"] as const;

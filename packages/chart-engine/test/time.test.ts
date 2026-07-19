@@ -41,4 +41,19 @@ describe("parseTimestamp", () => {
     expect(parseTimestamp("not a date", "auto")).toBeNull();
     expect(parseTimestamp("", "auto")).toBeNull();
   });
+
+  it("rejects locale-ambiguous date shapes instead of guessing", () => {
+    expect(parseTimestamp("01/02/2024", "auto")).toBeNull();
+    expect(parseTimestamp("5 Jan 2024", "auto")).toBeNull();
+    expect(parseTimestamp("Jan 5, 2024 09:15", "auto")).toBeNull();
+  });
+
+  it("honours explicit numeric zone offsets, with or without a colon", () => {
+    expect(parseTimestamp("2024-01-01T05:30:00+05:30", "auto")).toBe(
+      EPOCH_2024,
+    );
+    expect(parseTimestamp("2024-01-01 05:30:00+0530", "auto")).toBe(
+      EPOCH_2024,
+    );
+  });
 });

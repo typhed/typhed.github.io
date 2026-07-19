@@ -5,13 +5,24 @@ const EXCEL_EPOCH_OFFSET_DAYS = 25569;
 const SECONDS_PER_DAY = 86400;
 
 /**
+ * The only date-time string shape accepted: ISO-8601 `yyyy-mm-dd`, optionally
+ * followed by a `T`- or space-separated `hh:mm[:ss[.fff]]` and an optional
+ * zone (`Z` or `+/-hh[:]mm`). Everything else - `01/02/2024`, `5 Jan 2024`,
+ * RFC-2822 - is rejected rather than guessed: those shapes are either
+ * locale-ambiguous (MM/DD vs DD/MM) or parse differently per JS engine, and
+ * decision-grade candles must never depend on the machine that parsed them.
+ */
+const ISO_DATE_TIME =
+  /^\d{4}-\d{2}-\d{2}([T ]\d{2}:\d{2}(:\d{2})?(\.\d+)?(z|[+-]\d{2}:?\d{2})?)?$/i;
+
+/**
  * Parse one timestamp cell into UNIX seconds (UTC), or null if unparseable.
  *
  * Determinism note: a date-time string WITHOUT an explicit timezone is treated
- * as UTC, not local time. Native `Date.parse("2024-01-01 09:15:00")` is
- * local-time and implementation-defined; we normalise such strings to append a
- * `Z` so the same file yields the same candles on every machine. The assumed
- * timezone is surfaced to the user in the Data Integrity panel.
+ * as UTC, not local time, and only the ISO shape above is accepted at all -
+ * so the same file yields the same candles on every machine, or a clear
+ * per-row error. The assumed timezone is surfaced in the Data Integrity
+ * panel.
  */
 export function parseTimestamp(
   raw: unknown,
@@ -33,8 +44,20 @@ export function parseTimestamp(
     return parseNumeric(Number(text), format);
   }
 
-  const iso = normaliseToUtcIso(text);
-  const ms = Date.parse(iso);
+  if (!ISO_DATE_TIME.test(text)) return null;
+
+  const isoish = text.replace(" ", "T");
+  const hasTime = isoish.includes("T");
+  const hasZone = /(?:z|[+-]\d{2}:?\d{2})$/i.test(isoish);
+  const normalised = !hasTime
+    ? `${isoish}T00:00:00Z`
+    : hasZone
+      ? // Zone offsets without a colon ("+0530") parse inconsistently across
+        // engines; normalise to "+05:30".
+        isoish.replace(/([+-]\d{2})(\d{2})$/, "$1:$2")
+      : `${isoish}Z`;
+
+  const ms = Date.parse(normalised);
   return Number.isNaN(ms) ? null : Math.floor(ms / 1000);
 }
 
@@ -67,20 +90,3 @@ function parseNumeric(value: number, format: TimeFormat): UTCTimestamp | null {
   }
 }
 
-/**
- * Normalise a date-time string toward an ISO-8601 UTC string. If it already
- * carries a `Z` or a numeric offset it is returned unchanged; otherwise a `Z`
- * is appended (and a space between date and time becomes `T`).
- */
-function normaliseToUtcIso(text: string): string {
-  const hasZone = /(?:z|[+-]\d{2}:?\d{2})$/i.test(text);
-  if (hasZone) return text;
-
-  const isoish = text.replace(" ", "T");
-  // Only append Z when it looks like an ISO date or date-time; leave other
-  // formats (e.g. "01/02/2024") to Date.parse, which stays best-effort.
-  if (/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}(:\d{2})?(\.\d+)?)?$/.test(isoish)) {
-    return `${isoish}Z`;
-  }
-  return text;
-}

@@ -35,6 +35,10 @@ export function MnwsDashboard() {
   const [hydrated, setHydrated] = React.useState(false);
   const [importError, setImportError] = React.useState<string | null>(null);
   const importRef = React.useRef<HTMLInputElement>(null);
+  // Only a real edit/import should persist (mirrors the IPO dashboard):
+  // writing the untouched seed on first visit would mask every future seed
+  // update behind a stale cache.
+  const dirtyRef = React.useRef(false);
 
   // Client-only: set today and restore the last-edited plan from this browser.
   React.useEffect(() => {
@@ -57,7 +61,7 @@ export function MnwsDashboard() {
 
   // Persist every edit to this browser (the JSON file remains the portable copy).
   React.useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || !dirtyRef.current) return;
     try {
       window.localStorage.setItem(MNWS_STORAGE_KEY, serializeMnwsDataset(data));
     } catch {
@@ -65,12 +69,21 @@ export function MnwsDashboard() {
     }
   }, [data, hydrated]);
 
+  /** Route every user mutation through here so persistence sees it as an edit. */
+  const applyEdit = React.useCallback(
+    (updater: (prev: MnwsDataset) => MnwsDataset) => {
+      dirtyRef.current = true;
+      setData(updater);
+    },
+    [],
+  );
+
   const result = React.useMemo(() => computeMnws(data, today), [data, today]);
 
   const patchMeta = (patch: Partial<MnwsMeta>) =>
-    setData((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
+    applyEdit((prev) => ({ ...prev, meta: { ...prev.meta, ...patch } }));
   const patchSettings = (patch: Partial<MnwsSettings>) =>
-    setData((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
+    applyEdit((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }));
 
   function handleDownload() {
     const blob = new Blob([serializeMnwsDataset(data)], {
@@ -88,7 +101,7 @@ export function MnwsDashboard() {
     try {
       const parsed = safeParseMnwsDataset(JSON.parse(await file.text()));
       if (parsed.ok) {
-        setData(parsed.data);
+        applyEdit(() => parsed.data);
         setImportError(null);
       } else {
         setImportError(parsed.error);
@@ -106,9 +119,9 @@ export function MnwsDashboard() {
     ) {
       return;
     }
-    // The persist effect writes the blank plan to storage, so a reload stays
-    // blank instead of restoring the seed dataset.
-    setData(blankMnwsDataset());
+    // Clearing is an edit: the persist effect writes the blank plan to
+    // storage, so a reload stays blank instead of restoring the seed.
+    applyEdit(() => blankMnwsDataset());
     setImportError(null);
   }
 
@@ -200,9 +213,11 @@ export function MnwsDashboard() {
         today={today}
         onMetaChange={patchMeta}
         onSalariesChange={(salaries) =>
-          setData((prev) => ({ ...prev, salaries }))
+          applyEdit((prev) => ({ ...prev, salaries }))
         }
-        onBonusesChange={(bonuses) => setData((prev) => ({ ...prev, bonuses }))}
+        onBonusesChange={(bonuses) =>
+          applyEdit((prev) => ({ ...prev, bonuses }))
+        }
         onSettingsChange={patchSettings}
       />
 

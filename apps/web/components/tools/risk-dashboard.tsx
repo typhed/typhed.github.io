@@ -13,7 +13,7 @@ import {
   stdev,
 } from "@typhed/risk-toolkit";
 
-import { fmtPercent } from "@/lib/format";
+import { fmtNumber, fmtPercent } from "@/lib/format";
 import { StatTile, ToolCard } from "@/components/tools/controls";
 
 /**
@@ -60,7 +60,7 @@ export function RiskDashboard({
   return (
     <ToolCard
       title="Risk summary"
-      description={`Computed on ${stats.samples.toLocaleString()} ${timeframeLabel} returns. Annualised figures assume ${Math.round(periodsPerYear).toLocaleString()} periods per year.`}
+      description={`Computed on ${fmtNumber(stats.samples, 0)} ${timeframeLabel} returns. Annualised figures assume ${fmtNumber(Math.round(periodsPerYear), 0)} periods per year.`}
     >
       <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <StatTile label="Volatility (per bar)" value={fmtPercent(stats.periodVol)} />

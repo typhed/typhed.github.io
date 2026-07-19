@@ -59,7 +59,10 @@ export interface MapRowIssue {
 
 export interface MapResult {
   candles: Candle[];
-  /** Rows dropped because a value could not be parsed. */
+  /**
+   * Rows dropped (timestamp / OHLC unparseable) or degraded (volume
+   * unparseable - the bar is kept with volume blanked).
+   */
   issues: MapRowIssue[];
 }
 
@@ -82,7 +85,11 @@ export function toCandles(table: ParsedTable, mapping: ColumnMapping): MapResult
   table.rows.forEach((row, index) => {
     const time = parseTimestamp(row[mapping.time], mapping.timeFormat);
     if (time === null) {
-      issues.push({ row: index, reason: "unparseable timestamp" });
+      issues.push({
+        row: index,
+        reason:
+          "unparseable timestamp (accepted: ISO 8601, unix seconds/ms, Excel serial)",
+      });
       return;
     }
 
@@ -100,8 +107,12 @@ export function toCandles(table: ParsedTable, mapping: ColumnMapping): MapResult
     if (mapping.volume !== null) {
       volume = toNumber(row[mapping.volume]);
       if (volume === null) {
-        issues.push({ row: index, reason: "unparseable volume" });
-        return;
+        // A bad volume cell must not cost the whole OHLC bar: keep the bar,
+        // blank the volume, and report what happened.
+        issues.push({
+          row: index,
+          reason: "unparseable volume (bar kept, volume blanked)",
+        });
       }
     }
 

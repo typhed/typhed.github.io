@@ -4,7 +4,7 @@ import * as React from "react";
 import { Download, Pencil, RotateCcw, Upload, X } from "lucide-react";
 
 import type { IpoDataset, IpoMeta } from "@/lib/ipo/types";
-import { IPO_STORAGE_KEY } from "@/lib/ipo/types";
+import { IPO_STORAGE_KEY, LEGACY_IPO_STORAGE_KEYS } from "@/lib/ipo/types";
 import { DEFAULT_IPO_DATASET, defaultIpoDataset } from "@/lib/ipo/defaults";
 import { deriveIpoMetrics } from "@/lib/ipo/analytics";
 import { deriveAllApplications, subscriptionByCategory } from "@/lib/ipo/applications";
@@ -48,6 +48,24 @@ export function IpoDashboard() {
       if (raw) {
         const parsed = safeParseIpoDataset(JSON.parse(raw));
         if (parsed.ok) setData(parsed.data);
+      } else {
+        // One-time migration from keys older builds wrote: the defensive
+        // parser accepts every older shape, so re-save under the current
+        // key and clean the legacy one up.
+        for (const legacyKey of LEGACY_IPO_STORAGE_KEYS) {
+          const legacyRaw = window.localStorage.getItem(legacyKey);
+          if (!legacyRaw) continue;
+          const parsed = safeParseIpoDataset(JSON.parse(legacyRaw));
+          if (parsed.ok) {
+            setData(parsed.data);
+            window.localStorage.setItem(
+              IPO_STORAGE_KEY,
+              serializeIpoDataset(parsed.data),
+            );
+          }
+          window.localStorage.removeItem(legacyKey);
+          break;
+        }
       }
     } catch {
       // Ignore unreadable storage - fall back to the seed dataset.
