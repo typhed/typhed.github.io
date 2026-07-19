@@ -10,7 +10,15 @@
  */
 
 import * as React from "react";
-import { ChevronDown, ChevronUp, Plus, RotateCcw, Trash2 } from "lucide-react";
+import {
+  ArrowDownNarrowWide,
+  ArrowDownWideNarrow,
+  ChevronDown,
+  ChevronUp,
+  Plus,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -205,16 +213,60 @@ export function ReorderButtons({
 }
 
 /** A red ghost button that clears a section back to its blank state. */
-export function ResetButton({ onClick, label }: { onClick: () => void; label: string }) {
+export function ResetButton({
+  onClick,
+  label,
+}: {
+  onClick: () => void;
+  label: string;
+}) {
   return (
     <Button
       variant="ghost"
       size="sm"
       onClick={onClick}
-      className="mt-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
+      className="text-destructive hover:bg-destructive/10 hover:text-destructive mt-3"
     >
       <RotateCcw className="h-4 w-4" />
       {label}
+    </Button>
+  );
+}
+
+/**
+ * An outline button that sorts date-keyed rows on demand, alternating between
+ * oldest-first (ascending) and newest-first (descending) per click. It hands
+ * the direction to the caller, which rewrites the stored row order - a
+ * one-shot sort rather than a persistent view sort, so rows never move while
+ * a cell is being edited.
+ */
+export function SortRowsButton({
+  onSort,
+  label,
+}: {
+  onSort: (direction: "asc" | "desc") => void;
+  /** What gets sorted, for the accessible label, e.g. "salary rows". */
+  label: string;
+}) {
+  const [direction, setDirection] = React.useState<"asc" | "desc">("asc");
+  const oldestFirst = direction === "asc";
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      aria-label={`Sort ${label} by date, ${oldestFirst ? "oldest" : "newest"} first`}
+      onClick={() => {
+        onSort(direction);
+        setDirection(oldestFirst ? "desc" : "asc");
+      }}
+      className="mt-3"
+    >
+      {oldestFirst ? (
+        <ArrowDownNarrowWide className="h-4 w-4" />
+      ) : (
+        <ArrowDownWideNarrow className="h-4 w-4" />
+      )}
+      Sort {oldestFirst ? "oldest" : "newest"} first
     </Button>
   );
 }

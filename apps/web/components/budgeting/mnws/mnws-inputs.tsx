@@ -21,12 +21,32 @@ import {
   NumberCell,
   patchRow,
   RemoveRowButton,
+  SortRowsButton,
   TextCell,
 } from "@/components/tools/editable-table";
 
-/** Newest-first display order; edits still key off the row id, so it re-sorts. */
-function byDateDesc<T extends { date: string }>(rows: T[]): T[] {
-  return [...rows].sort((a, b) => compareIso(b.date, a.date));
+/** The rows sorted by date in the given direction; equal dates keep their order. */
+function sortByDate<T extends { date: string }>(
+  rows: T[],
+  direction: "asc" | "desc",
+): T[] {
+  const sign = direction === "asc" ? 1 : -1;
+  return [...rows].sort((a, b) => sign * compareIso(a.date, b.date));
+}
+
+/**
+ * The row with the latest date, in a single pass. Rows render in stored order
+ * (sorting them for display made rows jump mid-edit), so the "current" salary
+ * for a new row has to be found by date rather than taken from the top row.
+ */
+function latestByDate<T extends { date: string }>(rows: T[]): T | undefined {
+  return rows.reduce<T | undefined>(
+    (latest, row) =>
+      latest === undefined || compareIso(row.date, latest.date) > 0
+        ? row
+        : latest,
+    undefined,
+  );
 }
 
 /**
@@ -61,7 +81,6 @@ function SalaryEditor({
   today: string;
   onChange: (next: SalaryEntry[]) => void;
 }) {
-  const ordered = byDateDesc(salaries);
   return (
     <div>
       <div className="space-y-2">
@@ -71,7 +90,7 @@ function SalaryEditor({
           <span>Note</span>
           <span className="sr-only">Remove</span>
         </div>
-        {ordered.map((row) => (
+        {salaries.map((row) => (
           <div
             key={row.id}
             className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[150px_1fr_1.5fr_auto]"
@@ -106,20 +125,26 @@ function SalaryEditor({
           </div>
         ))}
       </div>
-      <AddRowButton
-        label="Add salary / increment"
-        onClick={() => {
-          const latest = ordered[0];
-          onChange([
-            ...salaries,
-            makeSalaryEntry({
-              date: today || "2016-01-31",
-              amount: latest?.amount ?? 0,
-              note: "",
-            }),
-          ]);
-        }}
-      />
+      <div className="flex flex-wrap items-center gap-2">
+        <AddRowButton
+          label="Add salary / increment"
+          onClick={() => {
+            const latest = latestByDate(salaries);
+            onChange([
+              ...salaries,
+              makeSalaryEntry({
+                date: today || "2016-01-31",
+                amount: latest?.amount ?? 0,
+                note: "",
+              }),
+            ]);
+          }}
+        />
+        <SortRowsButton
+          label="salary rows"
+          onSort={(direction) => onChange(sortByDate(salaries, direction))}
+        />
+      </div>
     </div>
   );
 }
@@ -134,7 +159,6 @@ function BonusEditor({
   today: string;
   onChange: (next: BonusEntry[]) => void;
 }) {
-  const ordered = byDateDesc(bonuses);
   return (
     <div>
       <div className="space-y-2">
@@ -147,7 +171,7 @@ function BonusEditor({
           <span>Note</span>
           <span className="sr-only">Remove</span>
         </div>
-        {ordered.map((row) => (
+        {bonuses.map((row) => (
           <div
             key={row.id}
             className="grid grid-cols-1 items-start gap-2 lg:grid-cols-[150px_1fr_5rem_5rem_5rem_1.3fr_auto] lg:items-center"
@@ -218,12 +242,18 @@ function BonusEditor({
           </div>
         ))}
       </div>
-      <AddRowButton
-        label="Add bonus / windfall"
-        onClick={() =>
-          onChange([...bonuses, blankBonusEntry(today || "2016-01-31")])
-        }
-      />
+      <div className="flex flex-wrap items-center gap-2">
+        <AddRowButton
+          label="Add bonus / windfall"
+          onClick={() =>
+            onChange([...bonuses, blankBonusEntry(today || "2016-01-31")])
+          }
+        />
+        <SortRowsButton
+          label="bonus rows"
+          onSort={(direction) => onChange(sortByDate(bonuses, direction))}
+        />
+      </div>
     </div>
   );
 }
@@ -254,7 +284,7 @@ export function MnwsInputs({
     <div className="space-y-6">
       <ToolCard
         title="Salary history"
-        description="Enter every salary and increment. Each applies from the following month and carries forward until the next entry; rows sort newest-first automatically."
+        description="Enter every salary and increment. Each applies from the following month and carries forward until the next entry; rows stay put while you edit - use the sort button to order them by date."
       >
         <SalaryEditor
           salaries={salaries}
