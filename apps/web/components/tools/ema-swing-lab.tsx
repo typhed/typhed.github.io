@@ -19,6 +19,7 @@ import {
   StatTile,
   ToolCard,
 } from "@/components/tools/controls";
+import { EmaLabDetail } from "@/components/tools/ema-lab-detail";
 import { cn } from "@/lib/utils";
 
 const TEMPLATE_OPTIONS: ReadonlyArray<{
@@ -70,16 +71,7 @@ function clamp(value: number, min: number, max: number): number {
  * (not spike) selection, and a 70/30 walk-forward with a degradation
  * warning.
  */
-export function EmaSwingLab({
-  candles,
-  onSelect,
-  selectedPeriod,
-}: {
-  candles: readonly Candle[];
-  /** ES3: chart-overlay selection hook-up; optional so ES2 stands alone. */
-  onSelect?: (row: SweepRow | null) => void;
-  selectedPeriod?: number | null;
-}) {
+export function EmaSwingLab({ candles }: { candles: readonly Candle[] }) {
   const [template, setTemplate] = React.useState<StrategyTemplate>("pullback");
   const [minPeriod, setMinPeriod] = React.useState(5);
   const [maxPeriod, setMaxPeriod] = React.useState(50);
@@ -90,8 +82,12 @@ export function EmaSwingLab({
   const [riskPct, setRiskPct] = React.useState(1);
   const [sortKey, setSortKey] = React.useState<SortKey>("emaPeriod");
   const [sortDir, setSortDir] = React.useState<1 | -1>(1);
+  const [selected, setSelected] = React.useState<SweepRow | null>(null);
 
   const { status, progress, sweep, error, run, cancel } = useSweep();
+
+  // A new sweep invalidates the old selection's parameters.
+  React.useEffect(() => setSelected(null), [sweep]);
 
   const params = React.useMemo<SweepParams>(() => {
     const lo = clamp(Math.round(minPeriod) || 5, 2, 200);
@@ -249,23 +245,20 @@ export function EmaSwingLab({
               {sortedRows.map((row) => {
                 const cell = row.cell;
                 const isBest = sweep.best?.emaPeriod === row.emaPeriod;
-                const isSelected = selectedPeriod === row.emaPeriod;
+                const isSelected = selected?.emaPeriod === row.emaPeriod;
                 return (
                   <tr
                     key={row.emaPeriod}
-                    onClick={() => onSelect?.(isSelected ? null : row)}
+                    onClick={() => setSelected(isSelected ? null : row)}
                     className={cn(
-                      "border-b border-border/40 transition-colors",
-                      onSelect && "cursor-pointer hover:bg-accent/50",
+                      "cursor-pointer border-b border-border/40 transition-colors hover:bg-accent/50",
                       cell.lowSample && "text-muted-foreground/60",
                       isSelected && "bg-accent/60",
                     )}
                     title={
                       cell.lowSample
                         ? `Too few trades (< ${sweep.minTrades}) - not eligible for the badge`
-                        : onSelect
-                          ? "Click to overlay this EMA on the chart"
-                          : undefined
+                        : "Click to see this EMA on the price chart"
                     }
                   >
                     <td className="px-2 py-1.5 font-medium">
@@ -314,6 +307,10 @@ export function EmaSwingLab({
             </tbody>
           </table>
         </div>
+      )}
+
+      {selected && (
+        <EmaLabDetail candles={candles} row={selected} sweepParams={params} />
       )}
 
       <p className="mt-6 text-xs text-muted-foreground">
