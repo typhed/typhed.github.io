@@ -47,6 +47,7 @@ export {
 export {
   createSimulation,
   simulate,
+  tradeLogReturns,
   FAN_PERCENTILES,
   type DataDrivenMode,
   type SimulateInput,

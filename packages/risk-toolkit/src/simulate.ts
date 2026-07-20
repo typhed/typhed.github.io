@@ -404,3 +404,22 @@ export function createSimulation(input: SimulateInput): Simulation {
 export function simulate(input: SimulateInput): SimulationSummary {
   return createSimulation(input).finalize();
 }
+
+/**
+ * Map a trade R-multiple list to per-trade log returns at a given risk
+ * fraction: r = log(1 + f*R), with the growth factor floored at 1e-6 so a
+ * worse-than-total-loss trade caps at -100% instead of producing NaN.
+ * Feeding the result to "iid" mode turns the engine into a trade-sequence
+ * bootstrap: each simulated step is one resampled trade.
+ */
+export function tradeLogReturns(
+  rMultiples: readonly number[],
+  riskFraction: number,
+): number[] {
+  if (!(riskFraction > 0)) {
+    throw new Error(`riskFraction must be positive, got ${riskFraction}.`);
+  }
+  return rMultiples.map((r) =>
+    Math.log(Math.max(1e-6, 1 + riskFraction * r)),
+  );
+}

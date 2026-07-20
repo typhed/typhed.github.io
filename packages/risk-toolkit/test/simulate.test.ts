@@ -9,6 +9,7 @@ import {
   optimalBlockLength,
   simulate,
   stdev,
+  tradeLogReturns,
 } from "../src";
 
 /**
@@ -230,6 +231,45 @@ function lag1Autocorr(xs: readonly number[]): number {
   }
   return den === 0 ? 0 : num / den;
 }
+
+describe("tradeLogReturns (trade-sequence bootstrap transform)", () => {
+  it("maps R-multiples through log(1 + f*R) and floors total loss", () => {
+    const rs = [2, -1, 0.5, -150];
+    const mapped = tradeLogReturns(rs, 0.01);
+    expect(mapped[0]).toBeCloseTo(Math.log(1.02), 12);
+    expect(mapped[1]).toBeCloseTo(Math.log(0.99), 12);
+    expect(mapped[2]).toBeCloseTo(Math.log(1.005), 12);
+    // -150R at 1% risk = -150% -> floored at total loss, never NaN.
+    expect(mapped[3]).toBe(Math.log(1e-6));
+    expect(Number.isFinite(mapped[3]!)).toBe(true);
+  });
+
+  it("rejects a non-positive risk fraction", () => {
+    expect(() => tradeLogReturns([1, -1], 0)).toThrow(/riskFraction/);
+  });
+
+  it("drives the iid engine as a deterministic trade-sequence bootstrap", () => {
+    const rs = [2.1, -1, -1, 0.4, 3.2, -0.5, -1, 1.1, -1, 0.9, 2.4, -0.8];
+    const summary = simulate({
+      logReturns: tradeLogReturns(rs, 0.01),
+      mode: "iid",
+      horizon: 100,
+      paths: 5000,
+      seed: 42,
+      startValue: 100000,
+      collectTerminals: true,
+    });
+
+    // Per-step mean log return converges to the list's own mean.
+    const expected = mean(tradeLogReturns(rs, 0.01));
+    const perStep =
+      mean(Array.from(summary.terminals!, (w) => Math.log(w / 100000))) / 100;
+    expect(Math.abs(perStep - expected)).toBeLessThan(5e-4);
+
+    // Golden seed for the trade mode.
+    expect(summary.terminal.p50).toMatchInlineSnapshot(`147352.99011377792`);
+  });
+});
 
 describe("simulate (block bootstrap and Student-t modes)", () => {
   const AR_RETURNS = ar1Returns(2000, 0.7, 17);

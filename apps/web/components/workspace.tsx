@@ -36,6 +36,7 @@ import { PositionSizer } from "@/components/tools/position-sizer";
 import { RiskDashboard } from "@/components/tools/risk-dashboard";
 import { MonteCarlo } from "@/components/tools/monte-carlo";
 import { MonteCarloLab } from "@/components/tools/monte-carlo-lab";
+import { TradeSequenceMonteCarlo } from "@/components/tools/trade-sequence-mc";
 import { EmaSwingLab } from "@/components/tools/ema-swing-lab";
 import { AdvancedAnalytics } from "@/components/tools/advanced-analytics";
 import { SavedAnalyses } from "@/components/tools/saved-analyses";
@@ -282,6 +283,7 @@ export function Workspace() {
           <Entitled feature="montecarlo">
             <div className="space-y-4">
               <MonteCarloLab candles={dataset.candles} />
+              <TradeSequenceMonteCarlo />
               <MonteCarlo />
             </div>
           </Entitled>
