@@ -42,10 +42,13 @@ export function EmaLabDetail({
   candles,
   row,
   sweepParams,
+  onSendTrades,
 }: {
   candles: readonly Candle[];
   row: SweepRow;
   sweepParams: SweepParams;
+  /** In-session hand-off to the trade-sequence Monte Carlo. */
+  onSendTrades?: (label: string, rMultiples: number[]) => void;
 }) {
   const params = React.useMemo<BacktestParams>(
     () => ({
@@ -98,16 +101,34 @@ export function EmaLabDetail({
           {row.cell.slowEmaPeriod !== null && `/${row.cell.slowEmaPeriod}`} -{" "}
           {result.trades.length} trades, cap {params.holdingCapBars} bars
         </h3>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleExport}
-          disabled={result.trades.length === 0}
-          title="Export the trade R-multiples as JSON - the Monte Carlo trade-sequence mode consumes this file."
-        >
-          <Download className="h-4 w-4" />
-          Export trade list
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {onSendTrades && (
+            <Button
+              variant="brand"
+              size="sm"
+              disabled={result.trades.length === 0}
+              onClick={() =>
+                onSendTrades(
+                  `EMA ${params.emaPeriod} (${result.trades.length} trades)`,
+                  result.trades.map((t) => t.rMultiple),
+                )
+              }
+              title="Send this trade list straight to the trade-sequence Monte Carlo."
+            >
+              Send to Monte Carlo
+            </Button>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExport}
+            disabled={result.trades.length === 0}
+            title="Export the trade R-multiples as JSON - the Monte Carlo trade-sequence mode consumes this file."
+          >
+            <Download className="h-4 w-4" />
+            Export trade list
+          </Button>
+        </div>
       </div>
 
       <PricePanel candles={candles} result={result} />

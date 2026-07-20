@@ -88,6 +88,11 @@ export function Workspace() {
     DEFAULT_INDICATOR_STATE,
   );
   const [view, setView] = React.useState<WorkspaceView>("chart");
+  // The EMA lab's in-session hand-off to the trade-sequence Monte Carlo.
+  const [handoffTrades, setHandoffTrades] = React.useState<{
+    label: string;
+    rMultiples: number[];
+  } | null>(null);
 
   // Deep links from the tool registry (/?view=montecarlo): read once on
   // mount; the view applies as soon as data is loaded.
@@ -283,13 +288,21 @@ export function Workspace() {
           <Entitled feature="montecarlo">
             <div className="space-y-4">
               <MonteCarloLab candles={dataset.candles} />
-              <TradeSequenceMonteCarlo />
+              <TradeSequenceMonteCarlo handoff={handoffTrades} />
               <MonteCarlo />
             </div>
           </Entitled>
         )}
 
-        {view === "emalab" && <EmaSwingLab candles={dataset.candles} />}
+        {view === "emalab" && (
+          <EmaSwingLab
+            candles={dataset.candles}
+            onSendTrades={(label, rMultiples) => {
+              setHandoffTrades({ label, rMultiples });
+              setView("montecarlo");
+            }}
+          />
+        )}
 
         {view === "advanced" && (
           <Entitled feature="advanced">

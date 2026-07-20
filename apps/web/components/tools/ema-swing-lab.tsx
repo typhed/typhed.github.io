@@ -71,7 +71,14 @@ function clamp(value: number, min: number, max: number): number {
  * (not spike) selection, and a 70/30 walk-forward with a degradation
  * warning.
  */
-export function EmaSwingLab({ candles }: { candles: readonly Candle[] }) {
+export function EmaSwingLab({
+  candles,
+  onSendTrades,
+}: {
+  candles: readonly Candle[];
+  /** In-session hand-off of the selected EMA's R-multiples to the MC tool. */
+  onSendTrades?: (label: string, rMultiples: number[]) => void;
+}) {
   const [template, setTemplate] = React.useState<StrategyTemplate>("pullback");
   const [minPeriod, setMinPeriod] = React.useState(5);
   const [maxPeriod, setMaxPeriod] = React.useState(50);
@@ -310,7 +317,12 @@ export function EmaSwingLab({ candles }: { candles: readonly Candle[] }) {
       )}
 
       {selected && (
-        <EmaLabDetail candles={candles} row={selected} sweepParams={params} />
+        <EmaLabDetail
+          candles={candles}
+          row={selected}
+          sweepParams={params}
+          onSendTrades={onSendTrades}
+        />
       )}
 
       <p className="mt-6 text-xs text-muted-foreground">
@@ -357,6 +369,7 @@ function SortHeader({
 }
 
 function SweepSummary({ sweep }: { sweep: SweepResult }) {
+  const fitPct = Math.round(sweep.walkForwardSplit * 100);
   const best = sweep.best;
   if (!best) {
     return (
@@ -390,13 +403,13 @@ function SweepSummary({ sweep }: { sweep: SweepResult }) {
         note="touches resolving upward"
       />
       <StatTile
-        label="Out-of-sample"
+        label={`Out-of-sample (last ${100 - fitPct}%)`}
         value={fmtNumber(cell.outOfSampleScore, 2)}
         tone={cell.oosDegraded ? "negative" : "default"}
         note={
           cell.oosDegraded
             ? "collapsed vs in-sample - fragile"
-            : `vs ${fmtNumber(cell.inSampleScore, 2)} in-sample`
+            : `vs ${fmtNumber(cell.inSampleScore, 2)} on the first ${fitPct}%`
         }
       />
     </div>

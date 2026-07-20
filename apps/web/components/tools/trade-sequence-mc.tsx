@@ -46,12 +46,22 @@ function parseRText(text: string): number[] {
  * risk fraction; the engine, worker, seeds, and metrics are the same ones
  * behind the Monte Carlo Lab.
  */
-export function TradeSequenceMonteCarlo() {
+export function TradeSequenceMonteCarlo({
+  handoff,
+}: {
+  /** In-session trade list handed over from the EMA Swing Lab. */
+  handoff?: { label: string; rMultiples: number[] } | null;
+}) {
   const [rText, setRText] = React.useState("");
   const [imported, setImported] = React.useState<{
     label: string;
     rMultiples: number[];
   } | null>(null);
+
+  // A new hand-off from the EMA lab becomes the active list.
+  React.useEffect(() => {
+    if (handoff) setImported(handoff);
+  }, [handoff]);
   const [importError, setImportError] = React.useState<string | null>(null);
   const [tradesPerPath, setTradesPerPath] = React.useState(100);
   const [tier, setTier] = React.useState<PathTier>("10k");

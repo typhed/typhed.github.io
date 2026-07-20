@@ -62,6 +62,13 @@ export function MonteCarlo() {
         <StatTile label="Worst max DD" value={fmtPercent(result.maxDrawdown.worst)} tone="negative" />
         <StatTile label="Risk of ruin" value={fmtPercent(result.ruinProbability)} tone={ruinTone} note={`< ${ruinPct}% equity`} />
       </div>
+
+      <p className="mt-4 text-xs text-muted-foreground">
+        A what-if under a fixed win rate and per-trade returns you typed in -
+        it never reads real data, so treat it as an intuition pump. The
+        trade-sequence card above resamples real trades; prefer it for
+        decisions. Not investment advice.
+      </p>
     </ToolCard>
   );
 }
