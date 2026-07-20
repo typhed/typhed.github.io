@@ -53,3 +53,8 @@ export {
   type Simulation,
   type SimulationSummary,
 } from "./simulate";
+
+export {
+  optimalBlockLength,
+  type BlockLengthEstimate,
+} from "./blocklength";

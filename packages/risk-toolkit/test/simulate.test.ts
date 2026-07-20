@@ -6,6 +6,7 @@ import {
   mean,
   mulberry32,
   normalSampler,
+  optimalBlockLength,
   simulate,
   stdev,
 } from "../src";
@@ -193,5 +194,170 @@ describe("simulate (data-driven Monte Carlo)", () => {
     expect(gbm.maxDrawdown.median).toMatchInlineSnapshot(`0.03201816145304112`);
     expect(iid.terminal.p50).toMatchInlineSnapshot(`1.0167265258808418`);
     expect(iid.maxDrawdown.median).toMatchInlineSnapshot(`0.0323603540438482`);
+  });
+});
+
+/** Seeded AR(1) log returns with visible serial dependence. */
+function ar1Returns(n: number, rho: number, seed: number): number[] {
+  const normal = normalSampler(mulberry32(seed));
+  const out: number[] = new Array(n);
+  let x = 0;
+  for (let i = 0; i < n; i += 1) {
+    x = rho * x + 0.005 * normal();
+    out[i] = x;
+  }
+  return out;
+}
+
+/** Fat-tailed seeded returns: occasional 4x shocks lift the kurtosis. */
+function fatTailReturns(n: number, seed: number): number[] {
+  const rand = mulberry32(seed);
+  const normal = normalSampler(rand);
+  return Array.from({ length: n }, () => {
+    const shock = rand() < 0.08 ? 4 : 1;
+    return 0.0004 + 0.008 * shock * normal();
+  });
+}
+
+function lag1Autocorr(xs: readonly number[]): number {
+  const m = mean(xs);
+  let num = 0;
+  let den = 0;
+  for (let i = 0; i < xs.length; i += 1) {
+    const d = xs[i]! - m;
+    den += d * d;
+    if (i > 0) num += d * (xs[i - 1]! - m);
+  }
+  return den === 0 ? 0 : num / den;
+}
+
+describe("simulate (block bootstrap and Student-t modes)", () => {
+  const AR_RETURNS = ar1Returns(2000, 0.7, 17);
+  const FAT_RETURNS = fatTailReturns(2000, 23);
+
+  it("block mode preserves serial dependence that iid destroys", () => {
+    const config = {
+      logReturns: AR_RETURNS,
+      horizon: 4000,
+      paths: 1,
+      seed: 9,
+      samplePaths: 1,
+    } as const;
+
+    const stepReturnsOf = (path: number[]): number[] => {
+      const out: number[] = [];
+      for (let i = 1; i < path.length; i += 1) {
+        out.push(Math.log(path[i]! / path[i - 1]!));
+      }
+      return out;
+    };
+
+    const block = simulate({ ...config, mode: "block", blockLength: 20 });
+    const iid = simulate({ ...config, mode: "iid" });
+
+    const blockAcf = lag1Autocorr(stepReturnsOf(block.samplePaths[0]!));
+    const iidAcf = lag1Autocorr(stepReturnsOf(iid.samplePaths[0]!));
+
+    expect(blockAcf).toBeGreaterThan(0.4);
+    expect(Math.abs(iidAcf)).toBeLessThan(0.1);
+  });
+
+  it("defaults the block length to the automatic estimate and honours overrides", () => {
+    const auto = simulate({
+      logReturns: AR_RETURNS,
+      mode: "block",
+      horizon: 5,
+      paths: 10,
+      seed: 2,
+    });
+    expect(auto.blockLength).toBeCloseTo(
+      optimalBlockLength(AR_RETURNS).stationary,
+      10,
+    );
+
+    const overridden = simulate({
+      logReturns: AR_RETURNS,
+      mode: "block",
+      horizon: 5,
+      paths: 10,
+      seed: 2,
+      blockLength: 7,
+    });
+    expect(overridden.blockLength).toBe(7);
+  });
+
+  it("fits an integer nu from kurtosis and keeps unit-variance innovations", () => {
+    const drift = mean(FAT_RETURNS);
+    const sigma = stdev(FAT_RETURNS, 1);
+    const horizon = 50;
+    const paths = 20000;
+
+    const summary = simulate({
+      logReturns: FAT_RETURNS,
+      mode: "studentT",
+      horizon,
+      paths,
+      seed: 13,
+      collectTerminals: true,
+    });
+
+    expect(summary.nu).not.toBeNull();
+    expect(Number.isInteger(summary.nu!)).toBe(true);
+    expect(summary.nu!).toBeGreaterThanOrEqual(3);
+    expect(summary.nu!).toBeLessThan(50);
+
+    // Standardization contract: same first two moments as the GBM anchor.
+    const logTerminals = Array.from(summary.terminals!, (w) => Math.log(w));
+    const logMean = mean(logTerminals);
+    const logVariance = stdev(logTerminals, 1) ** 2;
+    const meanTolerance = (6 * sigma * Math.sqrt(horizon)) / Math.sqrt(paths);
+    expect(Math.abs(logMean - drift * horizon)).toBeLessThan(meanTolerance);
+    expect(Math.abs(logVariance - sigma ** 2 * horizon)).toBeLessThan(
+      0.15 * sigma ** 2 * horizon,
+    );
+  });
+
+  it("stays deterministic and chunk-invariant in the new modes", () => {
+    for (const mode of ["block", "studentT"] as const) {
+      const input = {
+        logReturns: FAT_RETURNS,
+        mode,
+        horizon: 30,
+        paths: 300,
+        seed: 6,
+        antithetic: mode === "studentT",
+      } as const;
+      const whole = simulate(input);
+      const chunked = createSimulation(input);
+      while (chunked.done < chunked.total) chunked.runChunk(11);
+      const viaChunks = chunked.finalize();
+      expect(viaChunks.terminal).toEqual(whole.terminal);
+      expect(viaChunks.maxDrawdown).toEqual(whole.maxDrawdown);
+    }
+  });
+
+  it("golden seeds for the new modes", () => {
+    const block = simulate({
+      logReturns: AR_RETURNS,
+      mode: "block",
+      horizon: 20,
+      paths: 1000,
+      seed: 42,
+      blockLength: 10,
+    });
+    const studentT = simulate({
+      logReturns: FAT_RETURNS,
+      mode: "studentT",
+      horizon: 20,
+      paths: 1000,
+      seed: 42,
+    });
+
+    // Captured at MC2; a change here is a contract break.
+    expect(block.terminal.p50).toMatchInlineSnapshot(`1.0131308499128626`);
+    expect(block.maxDrawdown.median).toMatchInlineSnapshot(`0.03166046369657616`);
+    expect(studentT.nu).toMatchInlineSnapshot(`5`);
+    expect(studentT.terminal.p50).toMatchInlineSnapshot(`1.0054552733598325`);
+    expect(studentT.maxDrawdown.median).toMatchInlineSnapshot(`0.042849960521986405`);
   });
 });

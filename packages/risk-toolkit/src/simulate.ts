@@ -1,3 +1,4 @@
+import { optimalBlockLength } from "./blocklength";
 import { mulberry32, normalSampler } from "./rng";
 import { historicalCVar, historicalVar } from "./risk";
 import { mean, stdev } from "./stats";
@@ -9,18 +10,56 @@ import { mean, stdev } from "./stats";
  *
  *   - "iid": resample the log returns with replacement. Distribution-free
  *     and transparent, but destroys serial dependence (vol clustering).
+ *   - "block": Politis-Romano stationary bootstrap - geometric block
+ *     lengths, circular wrap - preserving short-range dependence. The
+ *     expected block length defaults to the Patton-Politis-White automatic
+ *     selector (`optimalBlockLength`), overridable by the user.
  *   - "gbm": fit drift and sigma to the log returns and simulate normal
  *     increments. Closed-form moments make it the unit-test anchor: with
  *     drift = mean log return, E[log W_H] = drift*H and Var = sigma^2*H.
+ *   - "studentT": fat-tail variant of "gbm" - Student-t innovations with
+ *     integer nu moment-matched to the sample excess kurtosis
+ *     (nu ~ 4 + 6/kurtosis, clamped to [3, 50]; the cap keeps the
+ *     nu-squared-normals chi-square sampler affordable and is documented
+ *     in the tool's method note), standardized to unit variance by
+ *     sqrt((nu-2)/nu) so the GBM moment contract still holds.
  *
  * The engine is chunk-driven so a worker can post progress and stay
  * cancellable, and deterministic: same seed + same params = same result,
  * regardless of chunk sizes (the RNG stream lives in the simulation
- * closure). Antithetic pairing (Z, -Z) applies to parametric modes only -
- * resampling modes have no Z to mirror, so the flag is ignored there.
+ * closure). Antithetic pairing (innovation, -innovation) applies to the
+ * parametric modes only - resampling modes have nothing to mirror, so the
+ * flag is ignored there.
  */
 
-export type DataDrivenMode = "iid" | "gbm";
+export type DataDrivenMode = "iid" | "block" | "gbm" | "studentT";
+
+/** Clamp bounds for the moment-matched Student-t degrees of freedom. */
+const NU_MIN = 3;
+const NU_MAX = 50;
+
+/**
+ * Moment-matched integer Student-t degrees of freedom: the excess kurtosis
+ * of t_nu is 6/(nu-4), so nu ~ 4 + 6/kurtosis. Non-positive sample excess
+ * kurtosis (tails no fatter than normal) maps to the NU_MAX cap, where t
+ * is practically indistinguishable from normal.
+ */
+function fitNu(logReturns: readonly number[]): number {
+  const m = mean(logReturns);
+  let m2 = 0;
+  let m4 = 0;
+  for (const x of logReturns) {
+    const d = x - m;
+    const d2 = d * d;
+    m2 += d2;
+    m4 += d2 * d2;
+  }
+  m2 /= logReturns.length;
+  m4 /= logReturns.length;
+  const excess = m2 > 0 ? m4 / (m2 * m2) - 3 : 0;
+  if (excess <= 0) return NU_MAX;
+  return Math.min(NU_MAX, Math.max(NU_MIN, Math.round(4 + 6 / excess)));
+}
 
 export interface SimulateInput {
   /** Log returns of the uploaded series, one per bar. */
@@ -32,8 +71,13 @@ export interface SimulateInput {
   paths: number;
   /** RNG seed (default 1). Same seed + same params = same result. */
   seed?: number;
-  /** Pair each Z path with -Z (parametric modes only; default false). */
+  /** Pair each innovation path with its negation (parametric modes only). */
   antithetic?: boolean;
+  /**
+   * Expected block length for "block" mode. Defaults to the automatic
+   * Patton-Politis-White estimate; ignored by every other mode.
+   */
+  blockLength?: number;
   /** Starting wealth, e.g. the last close (default 1). */
   startValue?: number;
   /** Fraction of start value that counts as ruin (default 0.5). */
@@ -56,6 +100,10 @@ export interface SimulationSummary {
   /** Fitted per-step drift (mean log return) and sigma of the input. */
   drift: number;
   sigma: number;
+  /** Expected block length used ("block" mode; null otherwise). */
+  blockLength: number | null;
+  /** Student-t degrees of freedom used ("studentT" mode; null otherwise). */
+  nu: number | null;
   terminal: {
     p05: number;
     p25: number;
@@ -138,7 +186,8 @@ export function createSimulation(input: SimulateInput): Simulation {
   const ruinFraction = input.ruinFraction ?? 0.5;
   const targetMultiple = input.targetMultiple;
   const sampleCount = input.samplePaths ?? 0;
-  const antithetic = (input.antithetic ?? false) && mode === "gbm";
+  const parametric = mode === "gbm" || mode === "studentT";
+  const antithetic = (input.antithetic ?? false) && parametric;
 
   const drift = mean(logReturns);
   const sigma = stdev(logReturns, 1);
@@ -149,6 +198,22 @@ export function createSimulation(input: SimulateInput): Simulation {
   const ruinLevel = startValue * ruinFraction;
   const targetLevel =
     targetMultiple === undefined ? null : startValue * targetMultiple;
+
+  // "block" mode: expected block length (auto unless overridden) and the
+  // per-step probability of starting a fresh block (geometric lengths).
+  const blockLength =
+    mode === "block"
+      ? Math.max(
+          1,
+          input.blockLength ?? optimalBlockLength(logReturns).stationary,
+        )
+      : null;
+  const newBlockProb = blockLength === null ? 0 : 1 / blockLength;
+
+  // "studentT" mode: integer nu moment-matched to the sample kurtosis, and
+  // the sqrt((nu-2)/nu) factor that standardizes t to unit variance.
+  const nu = mode === "studentT" ? fitNu(logReturns) : null;
+  const tScale = nu === null ? 1 : Math.sqrt((nu - 2) / nu);
 
   const finals = new Float64Array(paths);
   const maxDrawdowns = new Float64Array(paths);
@@ -164,29 +229,38 @@ export function createSimulation(input: SimulateInput): Simulation {
     () => new Float64Array(fanSampleSize),
   );
 
-  // Antithetic state: the Z vector of the previous path, to be negated.
-  let pendingZ: Float64Array | null = null;
-  const zBuffer = antithetic ? new Float64Array(horizon) : null;
+  // Antithetic state: the innovation vector of the previous path, negated.
+  let pendingInnovations: Float64Array | null = null;
+  const innovationBuffer = antithetic ? new Float64Array(horizon) : null;
 
   let done = 0;
 
-  function nextStepReturn(step: number, negate: boolean): number {
-    if (mode === "gbm") {
-      let z: number;
-      if (negate) {
-        z = -pendingZ![step]!;
-      } else {
-        z = nextNormal();
-        if (zBuffer) zBuffer[step] = z;
-      }
-      return drift + sigma * z;
+  /** One standardized Student-t innovation (unit variance). */
+  function nextStudentT(): number {
+    const z = nextNormal();
+    // Integer-nu chi-square as a sum of squared normals (the documented
+    // sampling scheme; NU_MAX keeps it affordable).
+    let chi2 = 0;
+    for (let j = 0; j < nu!; j += 1) {
+      const zj = nextNormal();
+      chi2 += zj * zj;
     }
-    // iid bootstrap: resample one observed log return.
-    return logReturns[Math.floor(rand() * n)]!;
+    return (z / Math.sqrt(chi2 / nu!)) * tScale;
+  }
+
+  function nextParametricReturn(step: number, negate: boolean): number {
+    let innovation: number;
+    if (negate) {
+      innovation = -pendingInnovations![step]!;
+    } else {
+      innovation = mode === "gbm" ? nextNormal() : nextStudentT();
+      if (innovationBuffer) innovationBuffer[step] = innovation;
+    }
+    return drift + sigma * innovation;
   }
 
   function runPath(index: number): void {
-    const negate = antithetic && pendingZ !== null;
+    const negate = antithetic && pendingInnovations !== null;
     let wealth = startValue;
     let peak = startValue;
     let maxDd = 0;
@@ -197,8 +271,27 @@ export function createSimulation(input: SimulateInput): Simulation {
     const fanColumn = index < fanSampleSize;
     if (fanColumn) fanColumns[0]![index] = startValue;
 
+    // "block" mode read position: a fresh block starts at step 0 and then
+    // with probability 1/blockLength; continuation wraps circularly
+    // (Politis-Romano stationary bootstrap).
+    let blockIndex = -1;
+
     for (let step = 0; step < horizon; step += 1) {
-      wealth *= Math.exp(nextStepReturn(step, negate));
+      let stepReturn: number;
+      if (parametric) {
+        stepReturn = nextParametricReturn(step, negate);
+      } else if (mode === "block") {
+        if (blockIndex < 0 || rand() < newBlockProb) {
+          blockIndex = Math.floor(rand() * n);
+        } else {
+          blockIndex = (blockIndex + 1) % n;
+        }
+        stepReturn = logReturns[blockIndex]!;
+      } else {
+        // iid bootstrap: resample one observed log return.
+        stepReturn = logReturns[Math.floor(rand() * n)]!;
+      }
+      wealth *= Math.exp(stepReturn);
       if (wealth > peak) peak = wealth;
       else underwaterSteps += 1;
       const dd = peak > 0 ? (peak - wealth) / peak : 0;
@@ -219,7 +312,9 @@ export function createSimulation(input: SimulateInput): Simulation {
     if (keepPath) spaghetti.push(keepPath);
 
     if (antithetic) {
-      pendingZ = negate ? null : Float64Array.from(zBuffer!);
+      pendingInnovations = negate
+        ? null
+        : Float64Array.from(innovationBuffer!);
     }
   }
 
@@ -273,6 +368,8 @@ export function createSimulation(input: SimulateInput): Simulation {
         startValue,
         drift,
         sigma,
+        blockLength,
+        nu,
         terminal: {
           p05: p05!,
           p25: p25!,
