@@ -36,6 +36,7 @@ import { PositionSizer } from "@/components/tools/position-sizer";
 import { RiskDashboard } from "@/components/tools/risk-dashboard";
 import { MonteCarlo } from "@/components/tools/monte-carlo";
 import { MonteCarloLab } from "@/components/tools/monte-carlo-lab";
+import { EmaSwingLab } from "@/components/tools/ema-swing-lab";
 import { AdvancedAnalytics } from "@/components/tools/advanced-analytics";
 import { SavedAnalyses } from "@/components/tools/saved-analyses";
 import { Entitled } from "@/components/entitlement-gate";
@@ -47,13 +48,20 @@ import {
 
 const SECONDS_PER_YEAR = 31557600; // 365.25 days
 
-type WorkspaceView = "chart" | "risk" | "sizing" | "montecarlo" | "advanced";
+type WorkspaceView =
+  | "chart"
+  | "risk"
+  | "sizing"
+  | "montecarlo"
+  | "emalab"
+  | "advanced";
 
 const VIEW_OPTIONS: ReadonlyArray<{ value: WorkspaceView; label: string }> = [
   { value: "chart", label: "Chart" },
   { value: "risk", label: "Risk" },
   { value: "sizing", label: "Position sizer" },
   { value: "montecarlo", label: "Monte Carlo" },
+  { value: "emalab", label: "EMA Lab" },
   { value: "advanced", label: "Advanced (Python)" },
 ];
 
@@ -278,6 +286,8 @@ export function Workspace() {
             </div>
           </Entitled>
         )}
+
+        {view === "emalab" && <EmaSwingLab candles={dataset.candles} />}
 
         {view === "advanced" && (
           <Entitled feature="advanced">

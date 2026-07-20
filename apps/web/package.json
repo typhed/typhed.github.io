@@ -15,6 +15,7 @@
   "dependencies": {
     "@clerk/react": "^6.12.4",
     "@radix-ui/react-slot": "^1.1.1",
+    "@typhed/backtest": "workspace:*",
     "@typhed/chart-engine": "workspace:*",
     "@typhed/risk-toolkit": "workspace:*",
     "class-variance-authority": "^0.7.1",

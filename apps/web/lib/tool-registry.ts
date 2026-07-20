@@ -31,6 +31,15 @@ export const TOOL_CATEGORIES: ReadonlyArray<{
 
 export const TOOLS: readonly Tool[] = [
   {
+    id: "emalab",
+    name: "EMA Swing Lab",
+    blurb:
+      "Find the EMA a security actually respects: sweep the grid, score every period with overfitting guards on, and simulate a simple 2-20 bar swing around the winner.",
+    route: "/?view=emalab",
+    category: "tools",
+    status: "live",
+  },
+  {
     id: "montecarlo",
     name: "Monte Carlo Lab",
     blurb:
