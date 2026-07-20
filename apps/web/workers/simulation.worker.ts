@@ -38,8 +38,10 @@ ctx.onmessage = (event) => {
       ctx.postMessage({ id, kind: "progress", done: sim.done, total: sim.total });
     }
     const summary = sim.finalize();
-    // The raw terminals buffer (up to 100k float64s) moves, not copies.
-    const transfer = summary.terminals ? [summary.terminals.buffer] : [];
+    // The raw per-path buffers (up to 100k float64s each) move, not copy.
+    const transfer: Transferable[] = [];
+    if (summary.terminals) transfer.push(summary.terminals.buffer);
+    if (summary.maxDrawdowns) transfer.push(summary.maxDrawdowns.buffer);
     ctx.postMessage({ id, kind: "result", summary }, transfer);
   } catch (error) {
     ctx.postMessage({

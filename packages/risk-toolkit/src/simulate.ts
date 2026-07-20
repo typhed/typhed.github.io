@@ -86,7 +86,10 @@ export interface SimulateInput {
   targetMultiple?: number;
   /** Full equity paths to keep for spaghetti display (default 0). */
   samplePaths?: number;
-  /** Also return the raw terminal-wealth array (default false). */
+  /**
+   * Also return the raw per-path arrays (terminal wealth and max drawdown)
+   * for distribution displays (default false).
+   */
   collectTerminals?: boolean;
 }
 
@@ -133,6 +136,8 @@ export interface SimulationSummary {
   samplePaths: number[][];
   /** Raw terminal wealth per path (present when collectTerminals). */
   terminals?: Float64Array;
+  /** Raw max drawdown per path (present when collectTerminals). */
+  maxDrawdowns?: Float64Array;
 }
 
 export interface Simulation {
@@ -389,7 +394,7 @@ export function createSimulation(input: SimulateInput): Simulation {
         fan,
         fanSampleSize,
         samplePaths: spaghetti,
-        ...(input.collectTerminals ? { terminals: finals } : {}),
+        ...(input.collectTerminals ? { terminals: finals, maxDrawdowns } : {}),
       };
     },
   };

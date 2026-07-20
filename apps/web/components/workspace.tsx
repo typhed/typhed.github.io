@@ -35,6 +35,7 @@ import { Segmented } from "@/components/tools/controls";
 import { PositionSizer } from "@/components/tools/position-sizer";
 import { RiskDashboard } from "@/components/tools/risk-dashboard";
 import { MonteCarlo } from "@/components/tools/monte-carlo";
+import { MonteCarloLab } from "@/components/tools/monte-carlo-lab";
 import { AdvancedAnalytics } from "@/components/tools/advanced-analytics";
 import { SavedAnalyses } from "@/components/tools/saved-analyses";
 import { Entitled } from "@/components/entitlement-gate";
@@ -78,6 +79,15 @@ export function Workspace() {
     DEFAULT_INDICATOR_STATE,
   );
   const [view, setView] = React.useState<WorkspaceView>("chart");
+
+  // Deep links from the tool registry (/?view=montecarlo): read once on
+  // mount; the view applies as soon as data is loaded.
+  React.useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("view");
+    if (requested && VIEW_OPTIONS.some((o) => o.value === requested)) {
+      setView(requested as WorkspaceView);
+    }
+  }, []);
 
   function toggleIndicator(id: IndicatorId) {
     setIndicatorState((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -262,7 +272,10 @@ export function Workspace() {
 
         {view === "montecarlo" && (
           <Entitled feature="montecarlo">
-            <MonteCarlo />
+            <div className="space-y-4">
+              <MonteCarloLab candles={dataset.candles} />
+              <MonteCarlo />
+            </div>
           </Entitled>
         )}
 

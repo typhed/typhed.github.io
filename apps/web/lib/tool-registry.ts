@@ -31,6 +31,15 @@ export const TOOL_CATEGORIES: ReadonlyArray<{
 
 export const TOOLS: readonly Tool[] = [
   {
+    id: "montecarlo",
+    name: "Monte Carlo Lab",
+    blurb:
+      "Simulate forward from your own uploaded series - IID and block bootstrap, GBM, and Student-t fat tails - with percentile fans, drawdown odds, and ruin probability. Pro.",
+    route: "/?view=montecarlo",
+    category: "tools",
+    status: "live",
+  },
+  {
     id: "ipo",
     name: "IPO Dashboard",
     blurb:
