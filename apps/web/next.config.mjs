@@ -16,6 +16,10 @@ const nextConfig = {
   reactStrictMode: true,
   // GitHub Pages serves directories, so emit `route/index.html` files.
   trailingSlash: true,
+  // The shared packages ship TypeScript source with no build step, so Next
+  // compiles them as part of this app. Without this the first .tsx from
+  // @typhed/ui arrives untranspiled and the build fails.
+  transpilePackages: ["@typhed/ui", "@typhed/brand"],
   // The export build has no Image Optimization server.
   images: {
     unoptimized: true,

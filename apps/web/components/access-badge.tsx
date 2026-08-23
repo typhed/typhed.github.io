@@ -1,5 +1,5 @@
 import { ACCESS_CATEGORIES, type AccessCategory } from "@/lib/constants"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Pill showing a post's access tier: 👥 Public or 🔓 Freemium. Server

@@ -10,7 +10,7 @@ import { type AccessLink, hasAccessLinks } from "@/lib/access-links"
 import { type AccessCategory, CLERK_ENABLED } from "@/lib/constants"
 import type { PostMeta } from "@/lib/posts"
 import type { TocItem } from "@/lib/rehype-collect-headings"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Post layout with the article in the middle, the frontmatter panel on the left

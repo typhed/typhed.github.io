@@ -11,7 +11,7 @@ import {
   previousScale,
   readStoredScale,
 } from "@/lib/text-size"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Site-wide text-size control: a smaller "A" that shrinks and a larger "A" that

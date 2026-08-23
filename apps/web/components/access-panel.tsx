@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { resolvePlatform } from "@/components/platform-icons"
 import type { AccessLink } from "@/lib/access-links"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Right-rail "Trade With" panel driven by a post's `links` frontmatter block.

@@ -2,7 +2,7 @@
 
 import { useEffect, type CSSProperties } from "react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * A single AdSense ad slot. Drop it anywhere in a post or page. Renders nothing

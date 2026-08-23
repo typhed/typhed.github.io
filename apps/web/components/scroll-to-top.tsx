@@ -3,7 +3,7 @@
 import * as React from "react"
 import { ArrowUp } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Floating "back to top" control, pinned to the bottom-center of the viewport.

@@ -1,34 +1,37 @@
 /**
- * Single source of truth for brand strings, URLs, and navigation.
+ * Blog-only constants.
  *
- * Trimmed from the main typhed.com `@typhed/ui/lib/constants`. Change copy,
- * the canonical URL, or links here rather than in markup. Every metadata,
- * canonical, sitemap, robots, and JSON-LD value derives from `SITE`.
+ * Anything brand-level - the brand name, the tagline, the legal entity, the
+ * canonical brand URL, the contact address, the copyright lines - comes from
+ * `@typhed/brand` in the `shared.documents` submodule, so a change there
+ * reaches every TyPhed property. Only what is genuinely specific to
+ * blog.typhed.com is declared here: this site's own name, URL, description and
+ * author, its access tiers, and its Clerk wiring.
+ *
+ * Every metadata, canonical, sitemap, robots, and JSON-LD value derives from
+ * `SITE`.
  */
+import { CONTACT_EMAIL, COPYRIGHT, SITE as BRAND } from "@typhed/brand"
+
+export { CONTACT_EMAIL, COPYRIGHT }
+
 export const SITE = {
   /** Human-facing site name (used in titles and the title template). */
-  name: "TyPhed Blog",
+  name: `${BRAND.name} Blog`,
   /** Parent brand / Organization name for JSON-LD. */
-  brand: "TyPhed",
-  tagline: "Engineering Tomorrow",
-  legalEntity: "Debmalya Pramanik HUF",
+  brand: BRAND.name,
+  tagline: BRAND.tagline,
+  legalEntity: BRAND.legalEntity,
   /** Canonical origin of the blog. Drives metadataBase and all absolute URLs. */
   url: "https://blog.typhed.com",
   /** The main brand homepage this blog belongs to. */
-  mainSiteUrl: "https://typhed.com",
+  mainSiteUrl: BRAND.url,
   description:
     "Notes, essays, and deep dives from TyPhed - Engineering Tomorrow. Writing on engineering, data, and the craft of building, by Debmalya Pramanik HUF.",
   locale: "en_US",
   /** Default author for posts that do not set one in frontmatter. */
   author: "Debmalya Pramanik",
 } as const
-
-export const COPYRIGHT = {
-  line1: `Copyright © ${new Date().getFullYear()} TyPhed - Engineering Tomorrow`,
-  line2: "This Brand is Maintained and Owned by Debmalya Pramanik HUF",
-} as const
-
-export const CONTACT_EMAIL = "pramanik.huf@gmail.com" as const
 
 /**
  * Clerk publishable key, shared with the main typhed.com site so a session on
@@ -40,28 +43,6 @@ export const CONTACT_EMAIL = "pramanik.huf@gmail.com" as const
  */
 export const CLERK_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ""
 export const CLERK_ENABLED = CLERK_PUBLISHABLE_KEY.length > 0
-
-export type SocialIcon = "github" | "mail" | "external"
-
-export type SocialLink = {
-  label: string
-  href: string
-  icon: SocialIcon
-  external: boolean
-}
-
-export const SOCIAL_LINKS: readonly SocialLink[] = [
-  { label: "GitHub", href: "https://github.com/typhed", icon: "github", external: true },
-  { label: "Main Site", href: SITE.mainSiteUrl, icon: "external", external: true },
-  { label: "Contact", href: `mailto:${CONTACT_EMAIL}`, icon: "mail", external: false },
-] as const
-
-export type NavLink = { label: string; href: string; external?: boolean }
-
-export const NAV_LINKS: readonly NavLink[] = [
-  { label: "Home", href: "/" },
-  { label: "Main Site", href: SITE.mainSiteUrl, external: true },
-] as const
 
 /** Access tier a post declares in its frontmatter. */
 export type AccessCategory = "public" | "freemium"
@@ -80,6 +61,9 @@ export type AccessCategoryMeta = {
  * on the index, the post header, and the sign-in gate. A post without an
  * `accessCategory` defaults to `public`. Paid tiers are deliberately absent
  * until they exist.
+ *
+ * This is blog-only: no other TyPhed property gates content this way, so it
+ * does not belong in the shared brand contract.
  */
 export const ACCESS_CATEGORIES: Record<AccessCategory, AccessCategoryMeta> = {
   public: {

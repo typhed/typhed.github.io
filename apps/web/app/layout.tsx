@@ -1,17 +1,24 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Space_Grotesk } from "next/font/google"
 
+// The brand palette, generated from shared/documents/brand/tokens/colors.json
+// by sync-shared.mjs before every dev run and build. It must come first: it
+// declares the custom properties that globals.css and every token utility read.
+import "./theme.css"
 import "./globals.css"
 import "katex/dist/katex.min.css"
+
+import { AbstractBackground } from "@typhed/ui/components/abstract-background"
+import { SiteFooter } from "@typhed/ui/components/site-footer"
+import { SiteHeader } from "@typhed/ui/components/site-header"
+import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 
 import { GoogleAdSense } from "@/components/analytics/google-adsense"
 import { GoogleAnalytics } from "@/components/analytics/google-analytics"
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity"
-import { AbstractBackground } from "@/components/abstract-background"
+import { AuthButtons } from "@/components/auth-buttons"
 import { ClerkAuthProvider } from "@/components/clerk-provider"
-import { SiteFooter } from "@/components/site-footer"
-import { SiteHeader } from "@/components/site-header"
-import { ThemeProvider } from "@/components/theme-provider"
+import { TextSizeToggle } from "@/components/text-size-toggle"
 import { SITE } from "@/lib/constants"
 import { textSizeInitScript } from "@/lib/text-size"
 
@@ -152,7 +159,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           >
             <AbstractBackground />
             <div className="relative z-10 flex min-h-dvh flex-col">
-              <SiteHeader />
+              {/* The blog's own reader controls ride in on the header's
+                  documented auth slots, so @typhed/ui needs no change to carry
+                  them. Both slots get their own instances: the desktop bar and
+                  the mobile menu render independently. */}
+              <SiteHeader
+                authSlot={
+                  <>
+                    <TextSizeToggle />
+                    <AuthButtons />
+                  </>
+                }
+                mobileAuthSlot={
+                  <>
+                    <TextSizeToggle />
+                    <AuthButtons />
+                  </>
+                }
+              />
               <main className="flex-1">{children}</main>
               <SiteFooter />
             </div>

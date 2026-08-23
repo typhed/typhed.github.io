@@ -17,12 +17,15 @@ experience. Follow the sections in order and copy each command exactly.
   * [pnpm](https://pnpm.io) - the easiest way to get it is to run `corepack enable` once
     (Corepack ships with Node).
   * Access to the DNS settings for `typhed.com` (wherever the domain is registered).
+  * [Git](https://git-scm.com) - the brand layer arrives as two git submodules, so a plain
+    download of the source will not build.
 
 To confirm the tools are present, run:
 
 ```shell
 $ node --version
 $ pnpm --version
+$ git --version
 ```
 
 ## Create The GitHub Repository
@@ -35,7 +38,7 @@ $ pnpm --version
 ```shell
 $ git init
 $ git add .
-$ git commit -m "Initial commit: TyPhed blog scaffold"
+$ git commit -m "Initial commit: TyPhed blog"
 $ git branch -M main
 $ git remote add origin https://github.com/<your-name>/blog.git
 $ git push -u origin main
@@ -43,26 +46,60 @@ $ git push -u origin main
 
 ## Run It Locally
 
-  1. Install dependencies:
+The blog does not carry its own copy of the TyPhed header, footer, colours, or logo. Those
+come from two shared repositories mounted as git submodules under `shared/`, and their
+packages are part of this pnpm workspace. **They have to be present before the first
+install.** If `shared/` is empty, pnpm resolves the workspace first, fails with
+`ERR_PNPM_WORKSPACE_PKG_NOT_FOUND`, and never reaches the script that would have fixed it.
+
+  1. Make sure the submodules are checked out. If you cloned with `--recurse-submodules`
+     they already are; otherwise run:
+
+```shell
+$ git submodule update --init --recursive
+```
+
+  2. Install dependencies:
 
 ```shell
 $ pnpm install
 ```
 
-  2. Start the dev server:
+  3. Start the dev server:
 
 ```shell
 $ pnpm dev
 ```
 
-  3. Open [http://localhost:3000](http://localhost:3000). You should see the sample posts,
-     a working light/dark toggle, and math rendered on the "Hello, World" post. Press
+  4. Open [http://localhost:3000](http://localhost:3000). You should see the posts, the
+     TyPhed header and footer, a working light/dark toggle, and rendered math. Press
      `Ctrl + C` in the terminal to stop.
+
+Starting the dev server also runs `sync:shared`, which copies the brand artwork into
+`apps/web/public/brand/` and writes `apps/web/app/theme.css` from the shared colour tokens.
+Both are generated and gitignored: edit them in `shared/documents/`, never in `apps/web/`.
+
+### Keeping The Shared Layer Current
+
+A git submodule pins one commit and does not follow a branch on its own, so shared changes
+do not appear locally until you ask for them.
+
+| Command | What It Does |
+| :---: | --- |
+| `pnpm shared:update` | Fast-forward both submodules to their branch tip and reinstall. |
+| `pnpm shared:status` | Show uncommitted or unpushed work inside either submodule. |
+
+The deploy workflow floats both submodules to their branch tip on every release build, so
+the live site always compiles the newest shared code even when the recorded pointer is
+behind. If shared code looks stale on your machine but correct in production, that is why.
+
+Editing anything under `shared/` changes every TyPhed property. Commit it inside the
+submodule directory and push it there before it can reach any other site.
 
 ## Point blog.typhed.com At GitHub Pages
 
 This has two halves: a DNS record at your domain host, and the Pages setting on GitHub. The
-file [public/CNAME](public/CNAME) already contains `blog.typhed.com`, which is how the build
+file [apps/web/public/CNAME](apps/web/public/CNAME) already contains `blog.typhed.com`, which is how the build
 tells GitHub that this repository owns that subdomain. Leave it alone.
 
 One rule trips almost everyone up. **A CNAME target is a bare hostname, never a URL.** No
@@ -131,7 +168,7 @@ whether HTTPS works.
   1. Go to [adsense.google.com](https://adsense.google.com) and add the site
      `blog.typhed.com`.
   2. Copy your **Publisher ID** - it looks like `ca-pub-0000000000000000`.
-  3. Open [public/ads.txt](public/ads.txt) and replace `pub-0000000000000000` with your
+  3. Open [apps/web/public/ads.txt](apps/web/public/ads.txt) and replace `pub-0000000000000000` with your
      real publisher number (keep the `pub-` prefix and the rest of the line unchanged).
      This file is how AdSense confirms you own the ad inventory.
   4. To show an ad, add an `AdUnit` to any page or post with a slot id from your AdSense
@@ -204,10 +241,10 @@ go in **Variables**, not **Secrets**.
   1. On your machine, copy the example file and fill in the ids you collected:
 
 ```shell
-$ cp .env.example .env.local
+$ cp apps/web/.env.example apps/web/.env.local
 ```
 
-  2. Edit `.env.local` so it reads like this (blanks are fine for anything you skip):
+  2. Edit `apps/web/.env.local` so it reads like this (blanks are fine for anything you skip):
 
 ```text
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
@@ -235,7 +272,8 @@ Run workflow**.
 
 ## Writing Your Next Post
 
-  1. Create a file in `content/blog/`, for example `content/blog/my-first-real-post.mdx`.
+  1. Create a file in `apps/web/content/blog/`, for example
+     `apps/web/content/blog/my-first-real-post.mdx`.
   2. Start it with frontmatter and write below it:
 
 ```mdx

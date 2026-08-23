@@ -3,7 +3,7 @@
 import * as React from "react"
 
 import type { TocItem } from "@/lib/rehype-collect-headings"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Sticky "On this page" navigation built from the headings collected at build

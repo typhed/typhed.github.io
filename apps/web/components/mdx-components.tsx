@@ -4,7 +4,7 @@ import type { MDXComponents } from "mdx/types"
 
 import { Chart } from "@/components/chart"
 import { Mermaid } from "@/components/mermaid"
-import { cn } from "@/lib/utils"
+import { cn } from "@typhed/ui/lib/utils"
 
 /**
  * Element overrides passed to `compileMDX`. Headings, links, lists, tables, and
