@@ -17,10 +17,19 @@ site and its redirects ship in a single Pages deployment.
 
 Detail lives in [docs/](docs/), not in this file. Consult it before touching the relevant area:
 
+  * [docs/architecture.md](docs/architecture.md) - how the system is built and why. The static export model, the task
+    graph, shared packages, theming, auth, the redirect generator, the deploy pipeline, and the constraints that hold
+    them together.
   * [docs/components/README.md](docs/components/README.md) - the component library reference (props, variants,
     accessibility, do's and don'ts). One page per durable component.
   * [docs/design/colors.yml](docs/design/colors.yml) - the color system: every theme token, its hex, where it is used,
     and the rules for changing colors. This is the source of truth for any color work.
+  * [docs/design/spacing.yml](docs/design/spacing.yml) - the layout system: the step scale, the container and its
+    gutters, breakpoints, the fluid vertical rhythm of the full-height sections, fixed component sizes, and the radius
+    map. Read it before changing any padding, margin, gap, or width.
+  * [docs/design/typography.yml](docs/design/typography.yml) - the type system: the two loaded fonts and how they reach
+    the browser, the size scale, weights, tracking, heading semantics, and the baked-in type that cannot follow the
+    theme. Read it before changing any font, size, or heading level.
 
 ## Commands
 
@@ -45,49 +54,19 @@ production build. Requires Node 20+ (CI builds on Node 22).
 
 ## Architecture
 
-### Static export model
+The architecture reference is [docs/architecture.md](docs/architecture.md). Read it before changing build configuration,
+the package graph, theming, authentication, or the deploy workflow, rather than inferring the design from the code. Do
+not restate it here; keep new architectural detail in that file. It covers:
 
-`apps/web` builds with `output: "export"` (see [next.config.mjs](apps/web/next.config.mjs)), so there is no server at
-runtime. Two consequences shape most decisions: `trailingSlash: true` emits `route/index.html` directories for Pages, and
-`images.unoptimized` is required because no Image Optimization server exists. Anything that needs a server (API routes,
-SSR, `next start`) will not work; treat the output as plain files.
-
-### Shared packages consumed from source
-
-The shared package `@typhed/ui` ([packages/ui](packages/ui)) is not pre-built. The web app lists it under
-`transpilePackages`, so Next compiles it from `.tsx` source on every build. Edits to components take effect directly with
-no separate build step. Two config packages back the apps: `@typhed/tailwind-config` (the shared Tailwind preset) and
-`@typhed/tsconfig`. Import paths follow the package export map: `@typhed/ui/components/<name>` and `@typhed/ui/lib/<name>`.
-
-### Theming and color tokens
-
-Colors are HSL CSS variables defined in [apps/web/app/globals.css](apps/web/app/globals.css): light theme ("Aurora
-Glass") under `:root`, dark theme ("Midnight Indigo", the default) under `.dark`. The shared Tailwind preset
-([packages/config-tailwind/tailwind.config.js](packages/config-tailwind/tailwind.config.js)) maps each token to a utility
-via `hsl(var(--token))`, so components use classes like `bg-brand` and never raw hex. `next-themes` toggles the `.dark`
-class. Static raster assets (favicon, OG image, logo, manifest) carry their own hardcoded hex that must be kept in sync by
-hand. The full token tables and the sync rules are in [docs/design/colors.yml](docs/design/colors.yml).
-
-### Single source of truth for content
-
-Brand strings, the launch date, and contact links live in [packages/ui/lib/constants.ts](packages/ui/lib/constants.ts).
-Every app and component reads from there. Change copy, the launch target, or social links in that one file rather than in
-markup.
-
-### Permalink redirect generator
-
-[permalink/src/build.py](permalink/src/build.py) reads [permalink/config/links.toml](permalink/config/links.toml) (a
-`[links."<output>.html"]` table per redirect, each with a `target` and optional `label`) and renders one self-contained
-HTML page per entry from [redirect.jinja](permalink/src/templates/redirect.jinja). Targets are validated as absolute
-`http`/`https` URLs at build time. Each page redirects via canonical link, `meta refresh`, and a `location.replace`
-fallback, and carries `noindex, nofollow`. To add a redirect, add a table to `links.toml`; no code change is needed.
-
-### Deployment
-
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml) runs on a published GitHub Release or manual
-`workflow_dispatch`. It builds the web app (`pnpm --filter web build`), then generates the redirect pages directly into
-`apps/web/out/permalink/`, and deploys that combined directory to GitHub Pages. There is no push-to-deploy on `master`;
-publishing a Release is what ships the site.
+  * The static export model: no runtime, `trailingSlash`, `images.unoptimized`, and which Next.js features are therefore
+    unavailable.
+  * The pnpm workspace layout and the Turborepo task graph, including what is cached and what depends on what.
+  * Shared packages consumed from source: `@typhed/ui`, its export map, and the tsconfig and Tailwind preset chain.
+  * Theming and color tokens, the page shell, the scroll model, and the Server / Client component boundary.
+  * The content single source of truth in [packages/ui/lib/constants.ts](packages/ui/lib/constants.ts).
+  * Client-side Clerk authentication and where the publishable key comes from in local development and in CI.
+  * The permalink redirect generator and the release-triggered deployment pipeline.
+  * The load bearing constraints a change must not break, and how to extend the workspace with a new app or package.
 
 ## Conventions
 
@@ -97,6 +76,11 @@ publishing a Release is what ships the site.
     permanent product architecture.
   * **Colors go through tokens.** Never hardcode a hex value in a component. Edit the token in `globals.css`, and when a
     change affects a static asset, update its hardcoded hex too (see [colors.yml](docs/design/colors.yml)).
+  * **Spacing and type come from the system.** Stay on the Tailwind step scale and the documented type scale instead of
+    reaching for arbitrary values; the two sanctioned exceptions, the fluid `clamp()` rhythm inside full-height sections
+    and the fluid page headlines, are documented in [spacing.yml](docs/design/spacing.yml) and
+    [typography.yml](docs/design/typography.yml). The header height and `scroll-padding-top` in `globals.css` are a sync
+    pair: change one and you must change the other.
   * **Markdown and commits are skill-governed.** This repo carries skills that own `*.md` formatting (`markdown-format`)
     and commit messages (`git-commiter`, which requires an emoji-prefixed subject). Follow them when editing docs or
     committing.
