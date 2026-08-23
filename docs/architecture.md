@@ -205,7 +205,7 @@ text, which is what keeps the header, the footer, the page metadata, and the str
 | `SITE` | Name, tagline, legal entity, canonical URL, description |
 | `LAUNCH_DATE`, `LAUNCH_START_DATE`, `LAUNCH_LABEL` | The countdown target and the progress bar's zero point, in UTC |
 | `NAV_LINKS`, `LOGIN_CTA` | Header navigation and the primary call to action |
-| `FOOTER_COLUMNS`, `COMPANY_LINKS`, `PRODUCT_LINKS`, `RESOURCE_LINKS`, `PRIVACY_LINK` | Footer link groups |
+| `FOOTER_COLUMNS`, `PRODUCT_LINKS`, `RESOURCE_LINKS`, `PRIVACY_LINK` | Footer link groups |
 | `SOCIAL_LINKS`, `CONTACT_EMAIL`, `COPYRIGHT` | Contact row, address, and copyright lines |
 
 `SITE` fans out further than it looks. [layout.tsx](../apps/web/app/layout.tsx) builds the Metadata object, the Open
@@ -215,6 +215,12 @@ robots host, and the schema identifiers in one edit.
 
 The launch dates are stored as UTC instants with the IST offset already applied, for example `2027-03-31T18:30:00Z` for
 01 April 2027 00:00 IST. Keep that convention so the countdown reads correctly from any timezone.
+
+The footer link groups carry the cross-product handoff described in [PRD.md](../PRD.md), so several of their entries
+point off this domain: `trading.typhed.com`, `blog.typhed.com`, and the LinkedIn company page that serves as the
+career page. Marking such an entry `external: true` is the whole mechanism. The footer reads that one flag to add
+`target="_blank"`, the safe `rel`, the trailing arrow glyph, and the screen reader note, so pointing a link at a new
+subdomain stays a data change and never a markup change.
 
 ## Page Shell & Scroll Model
 
@@ -354,6 +360,7 @@ These hold the system together. Each one has already caused, or would immediatel
 | `CNAME` and `.nojekyll` stay in `apps/web/public` | They carry the custom domain, and they stop Jekyll from deleting `_next`. |
 | Colors resolve from tokens, never a hex literal in a component | Both themes have to move together. See [colors.yml](design/colors.yml). |
 | Copy, dates, and links come from `constants.ts` | Header, footer, metadata, and JSON-LD all read the same values. |
+| Off-domain footer links carry `external: true` | That flag, not the markup, gives them the new tab, the safe `rel`, and the arrow. |
 | Tailwind `content` globs cover every scanned source directory | An unscanned file renders with its classes silently missing. |
 | Auth stays in `apps/web`, injected into `SiteHeader` as a slot | Keeps `@typhed/ui` reusable by future sites with different auth. |
 | Redirect targets are absolute `http` or `https` URLs | Validated at build time; anything else raises `ValueError`. |

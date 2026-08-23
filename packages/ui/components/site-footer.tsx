@@ -1,5 +1,6 @@
 import * as React from "react"
 import {
+  ArrowUpRight,
   Facebook,
   Github,
   Instagram,
@@ -11,7 +12,6 @@ import {
 } from "lucide-react"
 
 import {
-  COMPANY_LINKS,
   CONTACT_EMAIL,
   COPYRIGHT,
   FOOTER_COLUMNS,
@@ -41,11 +41,15 @@ const SOCIAL_ICONS: Record<SocialLink["icon"], LucideIcon> = {
 const SOCIAL_ICON_LINKS = SOCIAL_LINKS.filter((link) => link.icon !== "mail")
 
 /**
- * The site footer: a brand block beside the navigation columns
- * (`FOOTER_COLUMNS`) and a Contact column (email link + social icon row),
- * over a bottom bar carrying the ownership copyright and the privacy link.
- * The legal entity name lives in the copyright bar as visible text, so it
- * still contributes to search relevance for "Debmalya Pramanik HUF".
+ * The site footer: four columns on large screens, split 20 / 30 / 30 / 20 —
+ * the brand lockup, the two navigation columns from `FOOTER_COLUMNS`, and a
+ * Contact column (email link + social icon row) — over a bottom bar carrying
+ * the ownership copyright and the privacy link. The legal entity name lives
+ * in the copyright bar as visible text, so it still contributes to search
+ * relevance for "Debmalya Pramanik HUF".
+ *
+ * A link marked `external` in constants leaves the site: it opens in a new
+ * tab and carries a trailing ↗ so the visitor sees that before clicking.
  *
  * It is a Server Component. Columns, copy, and the social row come from
  * `lib/constants.ts`; colours come only from theme tokens (a faint brand
@@ -60,32 +64,15 @@ export function SiteFooter({ className }: { className?: string }) {
       )}
     >
       <div className="container py-16">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="sm:col-span-2 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-10">
+          <div className="flex items-center sm:col-span-2 lg:col-span-2">
             {/* The official lockup: mark + wordmark + "Engineering Tomorrow"
                 tagline, in the theme-matched artwork. */}
             <BrandLockup className="w-48 sm:w-56" />
-            <nav
-              aria-label="Company"
-              className="mt-6 flex flex-col gap-3"
-            >
-              {COMPANY_LINKS.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  {...(link.external
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                  className="text-sm text-muted-foreground transition-colors hover:text-brand"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </nav>
           </div>
 
           {FOOTER_COLUMNS.map((column) => (
-            <div key={column.heading}>
+            <div key={column.heading} className="lg:col-span-3">
               <h2 className="text-sm font-semibold text-foreground">
                 {column.heading}
               </h2>
@@ -100,16 +87,25 @@ export function SiteFooter({ className }: { className?: string }) {
                     {...(link.external
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}
-                    className="text-sm text-muted-foreground transition-colors hover:text-brand"
+                    className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-brand"
                   >
                     {link.label}
+                    {link.external ? (
+                      <>
+                        <ArrowUpRight
+                          className="h-3.5 w-3.5"
+                          aria-hidden="true"
+                        />
+                        <span className="sr-only">(opens in a new tab)</span>
+                      </>
+                    ) : null}
                   </a>
                 ))}
               </nav>
             </div>
           ))}
 
-          <div>
+          <div className="lg:col-span-2">
             <h2 className="text-sm font-semibold text-foreground">Contact Us</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}

@@ -54,14 +54,20 @@ export type SocialLink = {
  * component change is needed. (The `mail` entry is the contact address; the
  * footer renders it as a text link, not an icon, to avoid duplication.)
  *
- * Example: { label: "LinkedIn", href: "https://linkedin.com/company/typhed",
- *            icon: "linkedin", external: true }
+ * Example: { label: "YouTube", href: "https://youtube.com/@typhed",
+ *            icon: "youtube", external: true }
  */
 export const SOCIAL_LINKS: readonly SocialLink[] = [
   {
     label: "GitHub",
     href: "https://github.com/typhed",
     icon: "github",
+    external: true,
+  },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/typhed/",
+    icon: "linkedin",
     external: true,
   },
   {
@@ -76,9 +82,10 @@ export const SOCIAL_LINKS: readonly SocialLink[] = [
 export const CONTACT_EMAIL = "pramanik.huf@gmail.com" as const
 
 /**
- * A navigable link. `external` opens in a new tab with safe rel attributes.
- * Placeholder destinations use `href: "#"` until the real route or section
- * exists, so markup and intent stay in one place.
+ * A navigable link. `external` opens in a new tab with safe rel attributes,
+ * and the footer marks such a link with a trailing ↗ glyph. Placeholder
+ * destinations use `href: "#"` until the real route or section exists, so
+ * markup and intent stay in one place.
  */
 export type NavLink = {
   label: string
@@ -99,29 +106,27 @@ export type FooterColumn = {
   links: readonly NavLink[]
 }
 
-/** Primary links shown beneath the brand in the footer's first column. */
-export const COMPANY_LINKS: readonly NavLink[] = [
-  { label: "About Us", href: "/about" },
-  { label: "Our Products", href: "#" },
-] as const
-
+/** The products the brand layer points visitors at. Each live product sits on
+ * its own subdomain, so those entries are external; pricing is a page on this
+ * site and stays a placeholder until it exists. */
 export const PRODUCT_LINKS: readonly NavLink[] = [
-  { label: "Overview", href: "#" },
-  { label: "Features", href: "#" },
-  { label: "Integrations", href: "#" },
-  { label: "Pricing", href: "#" },
-  { label: "Roadmap", href: "#" },
+  { label: "TyPhed Trading", href: "https://trading.typhed.com/", external: true },
+  { label: "Products Pricing", href: "#" },
 ] as const
 
+/** Reading, evidence, and hiring. The blog runs on its own subdomain and the
+ * career page is the LinkedIn company page, so both leave the site. */
 export const RESOURCE_LINKS: readonly NavLink[] = [
-  { label: "Blog", href: "#" },
-  { label: "Documentation", href: "#" },
+  { label: "TyPhed BLOG", href: "https://blog.typhed.com/", external: true },
   { label: "Case Studies", href: "#" },
-  { label: "FAQs", href: "#" },
-  { label: "Support", href: "#" },
+  {
+    label: "Career Page",
+    href: "https://www.linkedin.com/company/typhed/",
+    external: true,
+  },
 ] as const
 
-/** Middle footer columns. The brand column (logo + COMPANY_LINKS) and the
+/** The two middle footer columns. The brand column (the lockup alone) and the
  * Contact column are rendered separately, as they hold non-list content. */
 export const FOOTER_COLUMNS: readonly FooterColumn[] = [
   { heading: "PRODUCTS", links: PRODUCT_LINKS },

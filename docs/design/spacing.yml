@@ -57,11 +57,12 @@ scale:
   step: "0.25rem (4px)"
   in_use:
     "0.5": "0.125rem / 2px   - hover lift (-translate-y-0.5) on the ScrollToTop chevron"
-    "1": "0.25rem / 4px    - gap-1 (mobile menu link stack), px-1 (theme toggle track inset), space-y-1 (copyright lines)"
+    "1": "0.25rem / 4px    - gap-1 (mobile menu link stack, footer link to its external arrow), px-1 (theme toggle track inset), space-y-1 (copyright lines)"
     "1.5": "0.375rem / 6px   - gap-1.5 (countdown tiles on mobile), space-y-1.5 (CardHeader)"
     "2": "0.5rem / 8px     - mt-2, mb-2, py-2 - the default micro gap between a label and what it labels"
     "2.5": "0.625rem / 10px  - h-2.5 (launch progress track height)"
     "3": "0.75rem / 12px   - gap-3 (footer link stacks, social row, BrandMark), px-3, mt-3"
+    "3.5": "0.875rem / 14px  - h-3.5 w-3.5 (the footer external link arrow, sized to its 14px label)"
     "4": "1rem / 16px      - gap-4 (header row), py-4 (mobile panel), px-4, mt-4"
     "6": "1.5rem / 24px    - gap-6 (desktop nav), p-6 (Card), py-6 (footer bottom bar), mt-6, bottom-6"
     "8": "2rem / 32px      - px-8 (Button size lg)"
@@ -120,7 +121,7 @@ container:
 breakpoints:
   sm: "640px   - the main size step-up: gaps, tile sizes, font sizes, footer grid to 2 columns"
   md: "768px   - the navigation switch: desktop nav and auth slot appear, hamburger disappears"
-  lg: "1024px  - footer grid to 5 columns"
+  lg: "1024px  - footer grid to its ten track 20 / 30 / 30 / 20 split"
   xl: "1280px  - unused on the site today"
   "2xl": "1536px  - unused as a variant; 1400px is the container cap, a different number"
   responsive_pattern: >
@@ -146,13 +147,18 @@ horizontal:
 
   footer_grid:
     file: "packages/ui/components/site-footer.tsx"
-    grid: "grid-cols-1 -> sm:grid-cols-2 -> lg:grid-cols-5"
+    grid: "grid-cols-1 -> sm:grid-cols-2 -> lg:grid-cols-10"
     gap: "gap-10 (2.5rem) both axes"
-    brand_column: "sm:col-span-2 lg:col-span-2 - the lockup block always takes two tracks"
+    lg_split: >
+      20 / 30 / 30 / 20, written as spans of ten equal tracks: brand
+      lg:col-span-2, each of the two nav columns lg:col-span-3, contact
+      lg:col-span-2. The ten tracks exist only to make those percentages
+      exact. Move the split by editing the spans, never by adding a width.
+    brand_column: "sm:col-span-2 lg:col-span-2, flex items-center - the lockup centres against the taller nav columns"
     column_internals:
       heading_to_links: "mt-4 (1rem)"
-      brand_lockup_to_links: "mt-6 (1.5rem)"
       link_stack: "flex flex-col gap-3 (0.75rem)"
+      link_row: "inline-flex w-fit items-center gap-1 (0.25rem) - w-fit keeps the hover target on the text"
       contact_to_social_block: "mt-6 (1.5rem)"
       social_row: "flex items-center gap-3 (0.75rem)"
     bottom_bar: "container flex flex-col gap-4 py-6, sm:flex-row sm:items-center sm:justify-between"
@@ -289,6 +295,11 @@ sizes:
     file: "packages/ui/components/site-footer.tsx"
     button: "h-9 w-9 (36px) rounded-full"
     icon: "h-4 w-4 (16px)"
+
+  external_link_arrow:
+    file: "packages/ui/components/site-footer.tsx"
+    icon: "h-3.5 w-3.5 (14px) ArrowUpRight, gap-1 (4px) after the label"
+    why: "14px matches the text-sm label, so the glyph reads as part of the words rather than as a separate control."
 
   measure_caps:
     hero_paragraph: "max-w-xl (36rem / 576px) - wip-landing.tsx, about/page.tsx"

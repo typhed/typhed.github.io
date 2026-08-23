@@ -23,9 +23,9 @@ positioning, the product ecosystem overview, SEO and marketing content, company 
 product information, legal and compliance pages, and cross-product navigation. Each product runs on its own subdomain
 and is free to choose its own architecture, UX, and design. Those subdomains are maintained in separate repositories and
 may not be visible from this one at all, so do not expect to find product code here: `blog.typhed.com` is already live,
-carrying the blog, product notes, and example documentation. Build the path from discovery to trust to product selection
-here, and leave the product experience to the product subdomain. A feature that belongs to one product does not belong
-in this repository.
+carrying the blog, product notes, and example documentation, and the footer sends visitors on to `trading.typhed.com`
+for the trading product. Build the path from discovery to trust to product selection here, and leave the product
+experience to the product subdomain. A feature that belongs to one product does not belong in this repository.
 
 One brand principle has teeth for the code: TyPhed is built on privacy, with no user data tracking or sharing. Adding an
 analytics script, a tracking pixel, or any third-party tag that observes visitors is therefore a brand decision, not a
