@@ -13,10 +13,30 @@ A pnpm + Turborepo monorepo that builds two independent artifacts and publishes 
 The two are stitched together at deploy time: the redirect pages are generated into the web app's export output, so the
 site and its redirects ship in a single Pages deployment.
 
+## What This Product Is
+
+[PRD.md](PRD.md) is the product requirements document and the source of truth for scope. Read it before adding a page, a
+route, or a feature: most "does this belong here?" questions are answered there and nowhere in the code.
+
+`typhed.com` is the **brand and acquisition layer** for the TyPhed ecosystem, not a product host. It owns brand
+positioning, the product ecosystem overview, SEO and marketing content, company and about information, high-level
+product information, legal and compliance pages, and cross-product navigation. Each product runs on its own subdomain
+and is free to choose its own architecture, UX, and design. Those subdomains are maintained in separate repositories and
+may not be visible from this one at all, so do not expect to find product code here: `blog.typhed.com` is already live,
+carrying the blog, product notes, and example documentation. Build the path from discovery to trust to product selection
+here, and leave the product experience to the product subdomain. A feature that belongs to one product does not belong
+in this repository.
+
+One brand principle has teeth for the code: TyPhed is built on privacy, with no user data tracking or sharing. Adding an
+analytics script, a tracking pixel, or any third-party tag that observes visitors is therefore a brand decision, not a
+routine one. Raise it rather than wiring it in.
+
 ## Reference Docs (Read Before Editing)
 
-Detail lives in [docs/](docs/), not in this file. Consult it before touching the relevant area:
+Detail lives in [PRD.md](PRD.md) and [docs/](docs/), not in this file. Consult the relevant one before touching an area:
 
+  * [PRD.md](PRD.md) - the product requirements document: what the site is for, what belongs on it, the domain and
+    subdomain model, and the brand principles behind them.
   * [docs/architecture.md](docs/architecture.md) - how the system is built and why. The static export model, the task
     graph, shared packages, theming, auth, the redirect generator, the deploy pipeline, and the constraints that hold
     them together.
@@ -72,8 +92,8 @@ not restate it here; keep new architectural detail in that file. It covers:
 
   * **The current landing page is temporary.** `apps/web` renders a work-in-progress holding page. Its WIP-only
     components (`WipLanding`, `CountdownTimer`, `LaunchProgress`) are deliberately excluded from
-    [docs/components/](docs/components/) and are slated for replacement. Do not document them or treat them as the
-    permanent product architecture.
+    [docs/components/](docs/components/) and are slated for replacement by the brand hub described in [PRD.md](PRD.md).
+    Do not document them or treat them as the permanent product architecture.
   * **Colors go through tokens.** Never hardcode a hex value in a component. Edit the token in `globals.css`, and when a
     change affects a static asset, update its hardcoded hex too (see [colors.yml](docs/design/colors.yml)).
   * **Spacing and type come from the system.** Stay on the Tailwind step scale and the documented type scale instead of

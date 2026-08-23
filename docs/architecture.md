@@ -13,6 +13,11 @@ authentication, or the deploy workflow. Routine copy edits and component work do
 
 The source code is the truth. When this page and the code disagree, fix the page.
 
+Scope is a separate question from architecture. What belongs on this site at all, and what belongs on a product
+subdomain instead, is settled by [PRD.md](../PRD.md): `typhed.com` is the brand and acquisition layer, and each product
+ships on its own subdomain with its own architecture. This page describes how the brand layer is built, not what it is
+allowed to contain.
+
 ## What To Read Before You Change Something
 
 | If You Are Changing | Read | Primary Source |
@@ -369,6 +374,12 @@ Adding a second app or a shared package follows the existing shape:
 A second static site would also need its own deploy path. The current workflow uploads a single directory,
 `apps/web/out`, as the Pages artifact.
 
+Before adding one, check that it belongs here at all. [PRD.md](../PRD.md) puts each product and the blog on its own
+subdomain, maintained in a separate repository rather than inside this deployment, and `blog.typhed.com` already runs
+that way. A product that needs a server could not live in this export regardless. [setup.md](../setup.md) works through
+the hosting options for a subdomain, including the Clerk satellite-domain setup that keeps one sign-in valid across all
+of them.
+
 ## Related References
 
   * [docs/components/README.md](components/README.md) - the component library: props, variants, anatomy, and
@@ -378,6 +389,8 @@ A second static site would also need its own deploy path. The current workflow u
     component sizes, and radius.
   * [docs/design/typography.yml](design/typography.yml) - the type system: fonts and how they load, the scale, weights,
     tracking, and heading semantics.
+  * [PRD.md](../PRD.md) - the product requirements document: what the site is for, what belongs on it, and the domain
+    and subdomain model around it.
   * [CLAUDE.md](../CLAUDE.md) - repository conventions and the command table.
   * [README.md](../README.md) - project overview and local development.
   * [setup.md](../setup.md) - one-time hosting setup: GitHub Pages, the custom domain, HTTPS, DNS, and Clerk.

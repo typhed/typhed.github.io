@@ -21,6 +21,11 @@ Pramanik HUF. It is a `pnpm` monorepo containing two things that build to static
 an animated "work in progress" landing page with a live launch countdown, and a self-hosted permanent redirect service served
 under `typhed.com/permalink/`. The workspace is laid out so additional product sites can be added later without restructuring.
 
+`typhed.com` is the brand, marketing, SEO, and informational hub for the wider TyPhed ecosystem rather than a home for the products
+themselves. Each product runs on its own subdomain and is maintained in a separate repository, so it may not be visible from this
+one at all; `blog.typhed.com` is already live, carrying the blog, product notes, and example documentation. What the site is for
+and what belongs on it are set out in the [product requirements document](PRD.md).
+
 The one-time hosting setup - GitHub Pages, the custom domain, HTTPS, and Cloudflare DNS - is documented in the [hosting guide](setup.md).
 
 ## 🧠 What Is Inside
