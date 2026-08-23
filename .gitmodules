@@ -1,0 +1,6 @@
+[submodule "shared/documents"]
+	path = shared/documents
+	url = https://github.com/typhed/shared.documents.git
+[submodule "shared/components"]
+	path = shared/components
+	url = https://github.com/typhed/shared.components.git
