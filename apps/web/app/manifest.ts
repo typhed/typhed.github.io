@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-import { SITE } from "@typhed/ui/lib/constants"
+import { SITE } from "@typhed/brand"
 
 export const dynamic = "force-static"
 

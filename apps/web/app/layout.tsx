@@ -6,11 +6,12 @@ import { ScrollToTop } from "@typhed/ui/components/scroll-to-top"
 import { SiteFooter } from "@typhed/ui/components/site-footer"
 import { SiteHeader } from "@typhed/ui/components/site-header"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
-import { SITE } from "@typhed/ui/lib/constants"
+import { SITE } from "@typhed/brand"
 
 import { AuthControls } from "../components/auth-controls"
 import { ClerkClientProvider } from "../components/clerk-provider"
 
+import "./theme.css"
 import "./globals.css"
 
 const inter = Inter({

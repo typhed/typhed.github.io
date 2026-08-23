@@ -323,16 +323,19 @@ A subdomain is not something you buy or register with a registrar. You already o
 
 GitHub Pages serves one website per repository, and each repository can carry only one custom domain through its `CNAME` file. So `typhed.com` is served by this repository, and a product site at `products.typhed.com` needs its own repository with its own `CNAME` file containing `products.typhed.com`. This is the standard pattern, and it is why a `products` host under `github.io` itself is not possible.
 
-The recommended professional setup keeps a single source monorepo (this one) and lets the build send each app to its own GitHub Pages repository. The source stays together, while the published sites stay independent.
+Each site therefore gets its own repository. What they share is not a repository but two of them: `typhed/shared.documents` holds the brand text, links, colours and logo files, and `typhed/shared.components` holds the reusable React components. Every site borrows both as git submodules under `shared/`, so the header, the footer and the brand stay identical everywhere while each site keeps its own deploy, its own domain, and its own hosting.
+
+The practical payoff: fix the footer once, in `shared.components`, and every site picks it up on its next build. Nobody copies a component between repositories.
 
 ### Steps To Add products.typhed.com Later
 
 When you have real product content, do this.
 
-  1. In this monorepo, create `apps/products` as a copy of `apps/web`. Have its page import from `@typhed/ui` so it reuses the same components. Put `products.typhed.com` in its `public/CNAME`.
-  2. Create a second GitHub repository, for example `typhed/typhed-products`, and turn on GitHub Pages with **Source** set to **GitHub Actions**.
-  3. Add a deploy step that publishes the built `apps/products/out` into that second repository. The action `JamesIves/github-pages-deploy-action` does this with a deploy key or token.
-  4. In Cloudflare DNS, add one record, DNS only at first.
+  1. Create a new GitHub repository, for example `typhed/typhed-products`, and turn on GitHub Pages with **Source** set to **GitHub Actions**.
+  2. Copy the bootstrap files from [templates/nextjs-subdomain](shared/documents/templates/nextjs-subdomain) in the shared documents repository. They carry the submodule wiring, the workspace settings, the deploy workflow, and a starting `CLAUDE.md`.
+  3. Add the two shared repositories as submodules, then build the app inside `apps/`. It imports `@typhed/ui` and `@typhed/brand` exactly the way this repository does, so the new site looks like a TyPhed site from its first commit. The full checklist is in [MIGRATION.md](shared/documents/MIGRATION.md).
+  4. Put `products.typhed.com` in `apps/<app>/public/CNAME`, and keep the empty `.nojekyll` file beside it.
+  5. In Cloudflare DNS, add one record, DNS only at first.
 
 | Field | Value |
 | :---: | --- |
@@ -341,14 +344,13 @@ When you have real product content, do this.
 | Target | `typhed.github.io` |
 | Proxy status | DNS only (grey cloud) |
 
-  5. In the second repository's **Pages** settings, set the custom domain to `products.typhed.com`, wait for the certificate, and enforce HTTPS, exactly as in Parts 2 and 4.
+  6. In the new repository's **Pages** settings, set the custom domain to `products.typhed.com`, wait for the certificate, and enforce HTTPS, exactly as in Parts 2 and 4.
 
 ### A Simpler Alternative
 
-If managing two repositories feels heavy, two other paths exist.
+If a whole repository feels heavy for a small section, serve it path based instead: put the products pages at `typhed.com/products`, inside this repository. There is no second repository and no extra DNS record. The cost is the address, which is a path rather than a subdomain, and the ceiling: anything that needs a server cannot live in a static export, whichever address it sits at.
 
-  * **Path based.** Serve the products section at `typhed.com/products` from this single repository. No second repository and no extra DNS, but the address is a path, not a subdomain.
-  * **Cloudflare Pages.** Cloudflare can build the monorepo directly and host multiple projects, each on its own subdomain, from this one repository. Since you already use Cloudflare, this is the cleanest way to get true subdomains without juggling GitHub repositories.
+Use a subdomain when the thing is a product with its own life. Use a path when it is a section of the brand site.
 
 ### Single Sign-On Across Subdomains With Clerk
 

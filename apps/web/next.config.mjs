@@ -10,7 +10,7 @@ const nextConfig = {
     unoptimized: true,
   },
   // Compile the shared workspace UI package from source.
-  transpilePackages: ["@typhed/ui"],
+  transpilePackages: ["@typhed/ui", "@typhed/brand"],
 }
 
 export default nextConfig

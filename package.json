@@ -14,7 +14,10 @@
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
+    "shared:update": "git submodule update --remote --merge && pnpm install",
+    "shared:status": "git submodule foreach --quiet \"echo [] && git status --short --branch\"",
+    "postinstall": "git submodule update --init --recursive"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

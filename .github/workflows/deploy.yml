@@ -23,6 +23,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # actions/checkout restores each submodule at the commit this repository
+      # has recorded, which goes stale as soon as a shared repository moves. The
+      # --remote update fast-forwards both to their branch tip, so every release
+      # build compiles the newest shared code with no pointer bump anywhere. The
+      # explicit fetch is required because checkout clones submodules shallow.
+      - name: Follow the shared branches
+        run: |
+          git submodule foreach git fetch --tags origin
+          git submodule update --remote --merge
+          git submodule status
 
       # Version is read from the "packageManager" field in package.json.
       - name: Setup Package Manager (pnpm)
@@ -34,8 +47,12 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      # Not --frozen-lockfile: floating the submodules above can introduce a
+      # dependency this lockfile has never seen, and a frozen install fails on
+      # exactly that. Reproducibility is traded for propagation deliberately;
+      # see MIGRATION.md in shared.documents for the reasoning and the way back.
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: Build apps/web for Release
         # Public Clerk publishable key, injected from a repository Variable

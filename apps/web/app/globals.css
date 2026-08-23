@@ -2,61 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The theme palettes are NOT declared here. Both Aurora Glass (light, :root)
+   and Midnight Indigo (dark, .dark) are emitted into the base layer by the
+   shared Tailwind preset, which reads their HSL triplets from
+   shared/documents/brand/tokens/colors.json. Editing a colour there recolours
+   every TyPhed property on its next build.
+
+   What stays in this file is the app-level CSS that is not part of the brand
+   contract: the single-page scroll model, scrollbar hiding, and the selection
+   colour. */
+
 @layer base {
-  :root {
-    /* Aurora Glass - light theme */
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 239 84% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 220 14% 96%;
-    --accent-foreground: 222 47% 11%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 239 84% 67%;
-    --brand: 239 84% 67%;
-    --brand-foreground: 0 0% 100%;
-    --brand-2: 188 86% 47%;
-    --radius: 0.85rem;
-  }
-
-  .dark {
-    /* Midnight Indigo - dark theme (default) */
-    --background: 226 57% 7%;
-    --foreground: 213 31% 91%;
-    --card: 224 47% 12%;
-    --card-foreground: 213 31% 91%;
-    --popover: 224 47% 10%;
-    --popover-foreground: 213 31% 91%;
-    --primary: 188 86% 53%;
-    --primary-foreground: 226 57% 7%;
-    --secondary: 224 40% 18%;
-    --secondary-foreground: 213 31% 91%;
-    --muted: 224 35% 16%;
-    --muted-foreground: 217 18% 65%;
-    --accent: 224 40% 18%;
-    --accent-foreground: 213 31% 91%;
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 224 33% 20%;
-    --input: 224 33% 20%;
-    --ring: 188 86% 53%;
-    --brand: 188 86% 53%;
-    --brand-foreground: 226 57% 7%;
-    --brand-2: 248 90% 70%;
-    --radius: 0.85rem;
-  }
-
   * {
     @apply border-border;
     /* Hide scrollbars (Firefox + legacy Edge/IE) while keeping scroll usable */
@@ -80,7 +36,8 @@
        visitor scrolls down to the footer. `proximity` (not `mandatory`) never
        traps the user on a sub-viewport section. */
     scroll-snap-type: y proximity;
-    /* Offset snap targets and #anchor jumps by the sticky header height. */
+    /* Offset snap targets and #anchor jumps by the sticky header height.
+       Sync pair: change this and the h-16 header height together. */
     scroll-padding-top: 4rem;
   }
 

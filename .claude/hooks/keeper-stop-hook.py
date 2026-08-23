@@ -17,7 +17,13 @@ config-only, and no-change turns are left alone.
 :NOTE: Every failure path (no git, malformed input, non-zero git status) allows
     the stop silently, so the hook can never wedge a session. It fails open.
 
+:NOTE: The shared documentation lives in git submodules under shared/. A
+    change inside one surfaces here as a single gitlink path such as
+    shared/components, which is deliberately NOT ignored: a change to a
+    shared component is exactly when the docs need reconciling.
+
 .. versionadded:: 2026-06-28 Add Keeper Documentation Reconciliation Hook
+.. versionchanged:: 2026-08-23 Document Submodule Gitlink Behaviour
 """
 
 import json
@@ -25,7 +31,8 @@ import subprocess
 import sys
 
 # paths under these prefixes never need a docs reconciliation nudge: docs/ is
-# what keeper edits, and .claude/ is local agent and hook configuration.
+# what keeper edits, and .claude/ is local agent and hook configuration. The
+# shared/ submodules are absent on purpose - a shared source change must nudge.
 IGNORED_PREFIXES = ("docs/", ".claude/")
 
 

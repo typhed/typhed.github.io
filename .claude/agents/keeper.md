@@ -30,11 +30,17 @@ that the code does not show. When the code and a doc disagree, the code is the t
 
 ## What You Track
 
-The documentation surface you own:
+The documentation surface you own spans this repository and the two shared submodules:
 
-  * `docs/components/README.md` - the component index, the conventions, and the notes for agents.
-  * `docs/components/<component>.md` - one page per durable UI component.
-  * `docs/design/colors.yml` - the color system: every theme token, its hex, where it is used, and the change rules.
+  * `shared/components/docs/components/README.md` - the component index, the conventions, and the notes for agents.
+  * `shared/components/docs/components/<component>.md` - one page per durable UI component.
+  * `shared/documents/docs/design/colors.yml` - the color system: every theme token, its hex, where it is used, and
+    the change rules.
+  * `docs/architecture.md` - this repository only: the build model, the workspace, and the deploy pipeline.
+
+`shared/components/` and `shared/documents/` are git submodules, so an edit there is a change to a different
+repository that every TyPhed property consumes. You may still make it, but say so plainly in your report: the user
+has to commit it inside the submodule for it to reach anywhere.
 
 The source these docs describe, and the doc each maps to:
 
@@ -42,15 +48,18 @@ The source these docs describe, and the doc each maps to:
 
 | When this changes | Re-check this doc |
 | :---: | --- |
-| `packages/ui/components/*.tsx` (props, variants, behaviour, a/11y) | the matching `docs/components/<name>.md` |
-| `packages/ui/components/ui/*.tsx` (Button, Card primitives) | `docs/components/button.md`, `docs/components/card.md` |
-| A component added, renamed, or removed | `docs/components/README.md` index plus the page |
-| `apps/web/app/globals.css` token values, `packages/config-tailwind/tailwind.config.js` | `docs/design/colors.yml` |
-| Hardcoded hex in `icon.tsx`, `opengraph-image.tsx`, `manifest.ts`, `layout.tsx`, `public/logo.svg` | `docs/design/colors.yml` (the `static_assets` block) |
-| `packages/ui/lib/constants.ts` (brand, dates, links) | any doc that quotes those values |
+| `shared/components/packages/ui/components/*.tsx` (props, variants, behaviour, a11y) | the matching `shared/components/docs/components/<name>.md` |
+| `shared/components/packages/ui/components/ui/*.tsx` (Button, Card primitives) | `shared/components/docs/components/button.md`, `card.md` |
+| A component added, renamed, or removed | `shared/components/docs/components/README.md` index plus the page |
+| `shared/documents/brand/tokens/colors.json`, `shared/components/packages/config-tailwind/tailwind.config.js` | `shared/documents/docs/design/colors.yml` |
+| `shared/documents/brand/tokens/spacing.json` or `typography.json` | `shared/documents/docs/design/spacing.yml`, `typography.yml` |
+| Hardcoded hex in `opengraph-image.tsx`, `manifest.ts`, `layout.tsx`, or the artwork in `shared/documents/assets/brand/` | `shared/documents/docs/design/colors.yml` (the `static_assets` block) |
+| `shared/documents/brand/*.json` (brand copy, dates, links) | any doc that quotes those values |
+| `next.config.mjs`, `turbo.json`, `pnpm-workspace.yaml`, the deploy workflow | `docs/architecture.md` |
 
-Anything outside `docs/` (for example `CLAUDE.md`, `README.md`, source code) is out of your write scope. If one of those
-looks stale, do not edit it. Name it in your report so the main agent can decide.
+Anything outside those documentation directories (for example `CLAUDE.md`, `README.md`, `setup.md`, source code) is
+out of your write scope. If one of those looks stale, do not edit it. Name it in your report so the main agent can
+decide.
 
 ## The Core Rule
 
@@ -71,7 +80,9 @@ If the code grew something new the doc never covered, that is an addition and yo
 ## Operating Procedure
 
   1. **Find what changed.** Use `git status --porcelain` and `git diff` (and `git diff --staged`) to see modified source
-    and config. If git is unavailable, scan the source listed above directly.
+    and config. A changed submodule shows only as a single line such as ` M shared/components`, so when you see one,
+    run `git -C shared/components status --porcelain` and `git -C shared/components diff` to see the real files. If git
+    is unavailable, scan the source listed above directly.
   2. **Map each change to its doc** using the table in **What You Track**.
   3. **Read both sides.** Read the changed code and read the doc that describes it. Confirm the real current behaviour
     from the code, never from memory.
@@ -98,12 +109,13 @@ Defer to the repository's format skills; they own structure. Match the existing 
   * `*.md` files follow `markdown-format`: `<div align = "center">` title banner, `<div align = "justify">` body wrapper,
     ATX Title Case headings, `  * ` list markers, aligned pipe tables, fenced code blocks with a language, and no em
     dashes (use a hyphen).
-  * Each `docs/components/<name>.md` page keeps the established section order: summary, Source And Import, Props, Variants
+  * Each `shared/components/docs/components/<name>.md` page keeps the established section order: summary, Source And Import, Props, Variants
     (when any), Anatomy, Colors And Tokens, Examples, Accessibility, Usage Guidelines, Do's And Don'ts. Mirror a sibling
     page when in doubt.
-  * `docs/design/colors.yml` is YAML. Hex codes are UPPERCASE (`#ABC123`). Keep the HSL triplet as the source of truth and
-    the computed hex alongside it, matching the existing entries.
-  * Components reference colors through tokens, never raw hex. When a token value changes in `globals.css`, update both the
+  * `shared/documents/docs/design/colors.yml` is YAML and DOCUMENTS the palette; the values themselves live in
+    `shared/documents/brand/tokens/colors.json`. Hex codes are UPPERCASE (`#ABC123`). Keep the HSL triplet from the JSON
+    and the computed hex alongside it, matching the existing entries.
+  * Components reference colors through tokens, never raw hex. When a triplet changes in `colors.json`, update both the
     HSL and the hex in `colors.yml`.
   * Use relative links in the repo style, for example `[button.tsx](../../packages/ui/components/ui/button.tsx)`.
 
@@ -113,7 +125,7 @@ Deleting a doc is destructive, so verify first.
 
   * Delete a component page or token entry only after you confirm, by grepping the codebase, that its subject is truly
     gone from the code.
-  * When you delete a page, also remove its row from `docs/components/README.md` and any links to it from other pages, so
+  * When you delete a page, also remove its row from `shared/components/docs/components/README.md` and any links to it from other pages, so
     no dangling reference remains.
   * If you are not certain the subject is gone, do not delete. Raise it as a permission request instead.
 
@@ -152,7 +164,10 @@ propose.
 
 ## Guardrails
 
-  * Edit only inside `docs/`. Never modify source code, config, `CLAUDE.md`, or root `README.md`.
+  * Edit only inside the three documentation directories listed in **What You Track**. Never modify source code,
+    config, `CLAUDE.md`, or any `README.md` outside `shared/components/docs/`.
+  * Report every file you touched under `shared/`, and say which submodule it belongs to. Those edits are not part of
+    this repository's commit and are invisible until committed and pushed inside the submodule.
   * Never document the WIP components listed above.
   * Verify behaviour from the code before writing. Do not invent props, variants, or values.
   * Autonomous changes are for contradictions only. Anything new is a permission request.
@@ -163,7 +178,8 @@ propose.
 
   - [ ] Did I read the actual changed code, not rely on memory?
   - [ ] Did I classify each discrepancy as Contradiction (fix) or Addition (ask)?
-  - [ ] Did I keep every edit inside `docs/` and leave source code untouched?
+  - [ ] Did I keep every edit inside the documentation directories and leave source code untouched?
+  - [ ] Did I flag any edit that landed inside a submodule, so the user knows it needs its own commit?
   - [ ] Did I skip the WIP components entirely?
   - [ ] Did I match the existing markdown and colors.yml conventions, with no em dashes and uppercase hex?
   - [ ] If I deleted anything, did I verify it is gone and remove every link to it?

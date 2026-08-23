@@ -454,3 +454,13 @@ $RECYCLE.BIN/
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+
+# Both are generated from the shared.documents submodule before every dev run
+# and build (see the sync:shared script in apps/web). Edit the artwork and the
+# colour tokens in shared/documents, never these copies.
+apps/web/public/brand/
+apps/web/app/theme.css
+
+# The two shared repository archives handed over for bootstrapping. Delete
+# them once shared.documents and shared.components are pushed.
+*.zip

@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { SITE } from "@typhed/ui/lib/constants"
+import { SITE } from "@typhed/brand"
 
 export const metadata: Metadata = {
   title: "About Us",

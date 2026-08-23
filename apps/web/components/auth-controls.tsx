@@ -3,7 +3,7 @@
 import { Show, SignInButton, UserButton } from "@clerk/react"
 
 import { Button } from "@typhed/ui/components/ui/button"
-import { LOGIN_CTA } from "@typhed/ui/lib/constants"
+import { LOGIN_CTA } from "@typhed/brand"
 
 /**
  * The Clerk-backed auth control for the header. Signed out, it renders the

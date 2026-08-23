@@ -24,16 +24,17 @@ under `typhed.com/permalink/`. The workspace is laid out so additional product s
 `typhed.com` is the brand, marketing, SEO, and informational hub for the wider TyPhed ecosystem rather than a home for the products
 themselves. Each product runs on its own subdomain and is maintained in a separate repository, so it may not be visible from this
 one at all; `blog.typhed.com` is already live, carrying the blog, product notes, and example documentation. What the site is for
-and what belongs on it are set out in the [product requirements document](PRD.md).
+and what belongs on it are set out in the [product requirements document](shared/documents/docs/brand/PRD.md).
 
 The one-time hosting setup - GitHub Pages, the custom domain, HTTPS, and Cloudflare DNS - is documented in the [hosting guide](setup.md).
 
 ## 🧠 What Is Inside
 
   * The live website (`apps/web`) that renders the work in progress landing page.
-  * A shared component library (`packages/ui`) holding the countdown, animated background, theme switch, and branding - the
-    parts reused by future product sites.
-  * Shared TypeScript and Tailwind configuration packages so every app builds against the same settings.
+  * Two **shared repositories**, borrowed into this one as git submodules under `shared/`, holding everything that every
+    TyPhed site has in common: the components (countdown, animated background, theme switch, header, footer), the brand
+    text and links, the colours, and the logo files. Change one of those in the shared repository and every TyPhed site
+    picks it up. See [Shared Code](#-shared-code) below.
   * A redirect generator (`permalink`) that renders zero-cost permanent redirects from a single TOML file into static HTML,
     served under `typhed.com/permalink/`.
   * A GitHub Actions workflow that builds the site, generates the redirects, and publishes both to GitHub Pages in one deploy.
@@ -45,6 +46,21 @@ in the top right.
 
 The frontend requires **Node.js 20+** and **pnpm** (package manager), enabled through Corepack. The redirect generator requires
 **Python 3.13** and **Jinja2** (templating engine).
+
+Clone the repository **with its submodules**. The `--recurse-submodules` flag is what fills in the `shared/` folder; a
+plain clone leaves it empty and nothing builds:
+
+```shell
+$ git clone --recurse-submodules https://github.com/typhed/typhed.github.io.git
+```
+
+If you already cloned it the plain way, this fixes it:
+
+```shell
+$ git submodule update --init --recursive
+```
+
+Then install:
 
 ```shell
 $ corepack enable
@@ -96,12 +112,16 @@ typhed.github.io/
     web/                 the live website served at typhed.com
       app/               pages, layout, SEO routes (robots, sitemap, icons)
       public/            CNAME and static files copied as is to the site
-  packages/
-    ui/                  shared, reusable components (the @typhed/ui package)
-      components/        countdown, background, theme toggle, footer, landing
-      lib/               brand text, the launch date, and helpers
-    config-tailwind/     the shared color and design tokens
-    config-typescript/   the shared TypeScript settings
+  shared/                <-- BORROWED. Two other repositories live here.
+    documents/           github.com/typhed/shared.documents
+      brand/             the brand text, links, dates and colours (JSON)
+      assets/brand/      the logo, the mark and the favicons
+      docs/              the PRD and the colour / spacing / type references
+      claude/            shared notes loaded by Claude Code in every repo
+    components/          github.com/typhed/shared.components
+      packages/ui/       the reusable components (the @typhed/ui package)
+      packages/config-*  the shared Tailwind and TypeScript settings
+      docs/components/   one reference page per component
   permalink/             the permanent redirect generator
     src/                 build.py and the redirect.jinja template
     config/              links.toml, the single source of truth for redirects
@@ -109,8 +129,33 @@ typhed.github.io/
   .github/workflows/     the automated build and deploy to GitHub Pages
 ```
 
-The single most useful file to know is [constants.ts](packages/ui/lib/constants.ts); it holds the brand name, the tagline,
-the launch date, and the contact links in one place.
+The single most useful folder to know is [shared/documents/brand](shared/documents/brand); it holds the brand name, the
+tagline, the launch date, the footer links, and the colours in one place, as plain JSON files you can edit by hand.
+
+## 🔁 Shared Code
+
+Everything under `shared/` belongs to a **different repository**. Git calls this a submodule: the files sit in this
+folder, but they are checked out from somewhere else and are not part of this repository.
+
+| Folder | Repository | What it holds |
+| :---: | :---: | --- |
+| `shared/documents` | [typhed/shared.documents](https://github.com/typhed/shared.documents) | Brand text, links, colours, logo files, brand docs |
+| `shared/components` | [typhed/shared.components](https://github.com/typhed/shared.components) | The reusable React components and build settings |
+
+This is what makes one edit reach every TyPhed site. Change the footer in `shared/components` once, and `typhed.com`,
+`blog.typhed.com`, and `trading.typhed.com` all get it: each site rebuilds against the latest shared code automatically.
+
+Two things follow from that, and both matter:
+
+  * **A change under `shared/` affects every site, not just this one.** Make sure it is right for the brand as a whole.
+  * **A change under `shared/` needs its own commit, inside that folder.** Committing here does not save it. Run
+    `pnpm shared:status` to see whether either folder has work you have not committed or pushed yet.
+
+To pull the latest shared code into your own copy:
+
+```shell
+$ pnpm shared:update
+```
 
 ## 🔗 Permanent Redirects
 
@@ -134,15 +179,20 @@ target = "https://github.com/typhed/.github/blob/master/.github/CODE_OF_CONDUCT.
 
 ## 🎨 Common Changes You Might Want
 
-  * **Change the launch date.** Edit `LAUNCH_DATE` and `LAUNCH_LABEL` in [constants.ts](packages/ui/lib/constants.ts). The
-    value is UTC; the current `2027-03-31T18:30:00.000Z` is `01 April 2027, 00:00 IST`.
-  * **Change the brand text or contact links.** Edit `SITE`, `SOCIAL_LINKS`, and `CONTACT_EMAIL` in the same file.
-  * **Change the menu bar or footer links.** Edit `NAV_LINKS`, `LOGIN_CTA`, `FOOTER_COLUMNS` (and the
-    `PRODUCT_LINKS` / `RESOURCE_LINKS` arrays behind it), and `PRIVACY_LINK` in
-    [constants.ts](packages/ui/lib/constants.ts). Give any link that leaves `typhed.com` an `external: true`, which is
-    what opens it in a new tab and marks it with a trailing arrow.
-  * **Change the colors.** The two themes are CSS variables in [globals.css](apps/web/app/globals.css) - light under `:root`,
-    dark under `.dark`.
+Almost all of these are edits to a **shared** file, so remember the two rules above: the change reaches every TyPhed
+site, and it needs its own commit inside `shared/`.
+
+  * **Change the launch date.** Edit [launch.json](shared/documents/brand/launch.json). The value is UTC; the current
+    `2027-03-31T18:30:00.000Z` is `01 April 2027, 00:00 IST`.
+  * **Change the brand text.** Edit [site.json](shared/documents/brand/site.json) for the name, tagline, legal entity,
+    and description.
+  * **Change the menu bar, footer links, social accounts, or contact email.** Edit
+    [navigation.json](shared/documents/brand/navigation.json). Give any link that leaves `typhed.com` an
+    `"external": true`, which is what opens it in a new tab and marks it with a trailing arrow.
+  * **Change the colors.** Edit [colors.json](shared/documents/brand/tokens/colors.json), which holds both themes. Do
+    not add colours to `globals.css`; the shared setup builds them from that one file.
+  * **Change the logo or favicon.** Replace the files in [shared/documents/assets/brand](shared/documents/assets/brand).
+    They are copied into the site automatically before every build.
   * **Add or change a redirect.** Edit [links.toml](permalink/config/links.toml); see **Permanent Redirects** above for the table format.
 
 ## 🧱 Build And Preview The Final Site
@@ -181,6 +231,8 @@ The one-time setup of GitHub Pages, the custom domain, HTTPS, and Cloudflare DNS
 | `pnpm lint` | Checks the code for common mistakes. |
 | `pnpm typecheck` | Verifies all TypeScript types. |
 | `pnpm format` | Formats every file with Prettier. |
+| `pnpm shared:update` | Pulls the latest shared components and brand files into your copy. |
+| `pnpm shared:status` | Shows uncommitted or unpushed work inside the `shared/` folders. |
 | `python permalink/src/build.py` | Generates the redirect pages from `links.toml`. |
 
 ## ⚖️ Project Release Names Disclaimer

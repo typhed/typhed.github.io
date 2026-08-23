@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-import { LAUNCH_LABEL, SITE } from "@typhed/ui/lib/constants"
+import { LAUNCH_LABEL, SITE } from "@typhed/brand"
 
 export const dynamic = "force-static"
 export const size = { width: 1200, height: 630 }

@@ -8,10 +8,14 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .next out .turbo node_modules"
+    "clean": "rimraf .next out .turbo node_modules",
+    "predev": "pnpm run sync:shared",
+    "prebuild": "pnpm run sync:shared",
+    "sync:shared": "node ../../shared/documents/scripts/sync-shared.mjs --assets public/brand --theme app/theme.css"
   },
   "dependencies": {
     "@clerk/react": "^6.11.1",
+    "@typhed/brand": "workspace:*",
     "@typhed/ui": "workspace:*",
     "next": "^15.1.6",
     "react": "^19.0.0",
