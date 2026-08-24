@@ -187,8 +187,11 @@ site, and it needs its own commit inside `shared/`.
   * **Change the brand text.** Edit [site.json](shared/documents/brand/site.json) for the name, tagline, legal entity,
     and description.
   * **Change the menu bar, footer links, social accounts, or contact email.** Edit
-    [navigation.json](shared/documents/brand/navigation.json). Give any link that leaves `typhed.com` an
-    `"external": true`, which is what opens it in a new tab and marks it with a trailing arrow.
+    [navigation.json](shared/documents/brand/navigation.json). Write a page this site hosts as its path with a leading
+    slash, such as `/about/` or `/permalink/conduct.html`; the shared contract turns that into the full
+    `https://typhed.com/...` URL, so the same header and footer still work on `blog.typhed.com` and
+    `trading.typhed.com`. Write anything else as a full URL and give it an `"external": true`, which is what opens it in
+    a new tab and marks it with a trailing arrow.
   * **Change the colors.** Edit [colors.json](shared/documents/brand/tokens/colors.json), which holds both themes. Do
     not add colours to `globals.css`; the shared setup builds them from that one file.
   * **Change the logo or favicon.** Replace the files in [shared/documents/assets/brand](shared/documents/assets/brand).

@@ -302,6 +302,7 @@ Those files surface through these exports:
 | `NAV_LINKS`, `LOGIN_CTA` | Header navigation and the primary call to action |
 | `FOOTER_COLUMNS`, `PRODUCT_LINKS`, `RESOURCE_LINKS`, `PRIVACY_LINK` | Footer link groups |
 | `SOCIAL_LINKS`, `CONTACT_EMAIL`, `COPYRIGHT` | Contact row, address, and copyright lines |
+| `resolveBrandHref` | Expands a brand-layer path into the absolute URL every property can use |
 
 `COPYRIGHT.line1` stamps the current year at module load from a template in `navigation.json`, so the footer needs no
 annual maintenance.
@@ -319,6 +320,15 @@ point off this domain: `trading.typhed.com`, `blog.typhed.com`, and the LinkedIn
 career page. Marking such an entry `external: true` is the whole mechanism. The footer reads that one flag to add
 `target="_blank"`, the safe `rel`, the trailing arrow glyph, and the screen reader note, so pointing a link at a new
 subdomain stays a data change and never a markup change.
+
+A link that stays on this site needs the same care for the opposite reason. `navigation.json` stores it as the path it
+has here, such as `/about/` or `/permalink/conduct.html`, and `index.ts` runs it through `resolveBrandHref`, which
+expands it against `SITE.url` before any component sees it. The header and the footer render on the product subdomains
+too, and a root-relative path there resolves against the subdomain and reaches a page that was never deployed. The
+expansion is what keeps the About and Code of Conduct links pointing at the one copy that exists. Full URLs, `mailto:`
+links, and the `#` placeholders pass through untouched, and `resolveBrandHref` is exported so a subdomain can build its
+own brand link without writing the domain down a second time. The header logo is the deliberate exception: its `/`
+stays relative, because the home page of the property doing the rendering is always the right destination.
 
 ## Page Shell & Scroll Model
 
