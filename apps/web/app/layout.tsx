@@ -18,9 +18,7 @@ import { GoogleAnalytics } from "@/components/analytics/google-analytics"
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity"
 import { AuthButtons } from "@/components/auth-buttons"
 import { ClerkAuthProvider } from "@/components/clerk-provider"
-import { TextSizeToggle } from "@/components/text-size-toggle"
 import { SITE } from "@/lib/constants"
-import { textSizeInitScript } from "@/lib/text-size"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -147,9 +145,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
     >
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        {/* Apply the reader's saved text size before paint, so there is no flash
-            of default-sized text on reload. Runs synchronously ahead of content. */}
-        <script dangerouslySetInnerHTML={{ __html: textSizeInitScript() }} />
         <ClerkAuthProvider>
           <ThemeProvider
             attribute="class"
@@ -159,23 +154,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           >
             <AbstractBackground />
             <div className="relative z-10 flex min-h-dvh flex-col">
-              {/* The blog's own reader controls ride in on the header's
-                  documented auth slots, so @typhed/ui needs no change to carry
-                  them. Both slots get their own instances: the desktop bar and
-                  the mobile menu render independently. */}
+              {/* The sign-in control rides in on the header's documented auth
+                  slots, which is how @typhed/ui stays free of any auth
+                  dependency. The text-size and theme controls are the header's
+                  own; it mounts them itself. */}
               <SiteHeader
-                authSlot={
-                  <>
-                    <TextSizeToggle />
-                    <AuthButtons />
-                  </>
-                }
-                mobileAuthSlot={
-                  <>
-                    <TextSizeToggle />
-                    <AuthButtons />
-                  </>
-                }
+                authSlot={<AuthButtons />}
+                mobileAuthSlot={<AuthButtons />}
               />
               <main className="flex-1">{children}</main>
               <SiteFooter />

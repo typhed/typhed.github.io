@@ -76,7 +76,7 @@ export function AccessPanel({ links }: { links: Record<string, AccessLink> }) {
                     {label}
                   </span>
                   {entry.type ? (
-                    <span className="block truncate text-[10px] leading-tight text-muted-foreground/70">
+                    <span className="block truncate text-[calc(10px*var(--font-scale,1))] leading-tight text-muted-foreground/70">
                       {entry.type}
                     </span>
                   ) : null}

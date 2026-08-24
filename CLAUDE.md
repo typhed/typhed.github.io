@@ -76,8 +76,15 @@ checked out under a directory named `[GitHub] [TyPhed] ...`, and an absolute pat
 pattern, where a globber reads them as character classes and silently matches nothing - shared components then render
 with their styles absent while the build still succeeds.
 
-`app/globals.css` deliberately keeps two token groups that are **not** brand-level: `--chart-1` through `--chart-4`,
-read at runtime by `components/chart-inner.tsx`, and `--font-scale`, driven by the reader text-size control.
+`app/globals.css` keeps one token group that is **not** brand-level: `--chart-1` through `--chart-4`, read at runtime
+by `components/chart-inner.tsx`. It declares no palette and no type scale.
+
+The reader's text-size control is the shared layer's, not this repo's. `@typhed/ui`'s `SiteHeader` mounts `FontSizeToggle`
+and inlines the pre-paint script itself, and the preset emits `--font-scale-setting` / `--font-scale` on `:root` and
+opens the reading scope on `main`. The blog only has to keep the header and footer **outside** `<main>`, which
+`app/layout.tsx` does. Two arbitrary sizes in the rails opt into the scale explicitly - `text-[calc(10px*var(--font-scale,1))]`
+in `components/access-panel.tsx` and the `11px` equivalent in `components/related-posts.tsx` - because an arbitrary
+`text-[...]` value bypasses the scale by default.
 
 `lib/constants.ts` holds blog-only values and imports the brand-level ones from `@typhed/brand`.
 
@@ -192,8 +199,8 @@ in `next.config.mjs` because the site is served at the domain root, not a subpat
 Only what differs from, or adds to, the shared conventions:
 
   * **The blog's own components live in `apps/web/components/`.** Reach for `@typhed/ui` first; add here only what is
-    specific to this property. `scroll-to-top.tsx` is deliberately a local variant of the shared one - it honours
-    `prefers-reduced-motion`.
+    specific to this property. The header, footer, background, theme provider and toggle, `ScrollToTop` and
+    `FontSizeToggle` all come from the shared package - nothing here shadows them.
   * **Baked hex is confined to four files.** `app/layout.tsx`, `app/manifest.ts`, `app/opengraph-image.tsx`, and the
     pre-hydration fallback in `components/chart-inner.tsx` carry literal hex because a PWA manifest, a `themeColor` meta
     tag, and an `ImageResponse` cannot read a CSS variable. Every one of them is listed in the `static_assets` block of

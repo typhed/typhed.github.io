@@ -14,8 +14,8 @@
     "lint": "pnpm --filter web lint",
     "typecheck": "pnpm -r --if-present typecheck",
     "clean": "pnpm --filter web clean",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,css}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,css}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md,mdx}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md,mdx}\"",
     "shared:update": "git submodule update --remote --merge && pnpm install",
     "shared:status": "git submodule foreach --quiet \"echo [$name] && git status --short --branch\"",
     "postinstall": "git submodule update --init --recursive"

@@ -154,8 +154,9 @@ utility, so components use classes like `bg-brand` and never raw hex. Change a c
 in the JSON and every TyPhed property picks it up.
 
 [apps/web/app/globals.css](apps/web/app/globals.css) keeps only what is blog-specific:
-the `--chart-1` to `--chart-4` series tokens, the `--font-scale` text-size multiplier, and
-the KaTeX and code-block styling.
+the `--chart-1` to `--chart-4` series tokens and the KaTeX and code-block styling. The reader's
+text-size control belongs to the shared layer: `SiteHeader` mounts it, and the preset scopes it
+to `main` so the chrome never resizes.
 
 ## 🗂️ Project Structure
 

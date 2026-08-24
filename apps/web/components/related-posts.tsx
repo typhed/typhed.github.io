@@ -28,7 +28,7 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
                 <span className="block font-medium leading-snug text-foreground transition-colors group-hover:text-brand">
                   {post.title}
                 </span>
-                <span className="mt-1 block text-[11px] text-muted-foreground">
+                <span className="mt-1 block text-[calc(11px*var(--font-scale,1))] text-muted-foreground">
                   <span aria-hidden="true">{access.emoji}</span>{" "}
                   <span className="sr-only">{access.label}. </span>
                   {post.readingTimeText}
