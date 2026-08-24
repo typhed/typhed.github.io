@@ -36,7 +36,7 @@ covers the rules and the commands.
 ## Scope
 
 This repository is the **brand and acquisition layer** described in the imported brand context, and
-[PRD.md](shared/documents/docs/brand/PRD.md) is the source of truth for what belongs on it. Read it before adding a page,
+[docs/PRD.md](docs/PRD.md) is the source of truth for what belongs on it. Read it before adding a page,
 a route, or a feature.
 
 ## Reference Docs (Read Before Editing)
@@ -44,7 +44,9 @@ a route, or a feature.
   * [docs/architecture.md](docs/architecture.md) - how *this* repository is built and why: the static export model, the
     task graph, the shared submodule layer, theming, auth, the redirect generator, the deploy pipeline, and the
     constraints that hold them together.
-  * [PRD.md](shared/documents/docs/brand/PRD.md) - what the site is for and what belongs on it.
+  * [docs/PRD.md](docs/PRD.md) - what this site is for and what belongs on it. It governs `typhed.com` only; every
+    other TyPhed property keeps its own PRD in its own repository, and the shared
+    [subdomain-model.md](shared/documents/docs/brand/subdomain-model.md) covers how they are laid out.
   * [shared/components/docs/components/README.md](shared/components/docs/components/README.md) - the component library
     reference (props, variants, accessibility, do's and don'ts). One page per durable component.
   * [shared/documents/docs/design/](shared/documents/docs/design/) - the colour, spacing, and typography references. The

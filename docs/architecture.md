@@ -14,7 +14,7 @@ authentication, or the deploy workflow. Routine copy edits and component work do
 The source code is the truth. When this page and the code disagree, fix the page.
 
 Scope is a separate question from architecture. What belongs on this site at all, and what belongs on a product
-subdomain instead, is settled by [PRD.md](../shared/documents/docs/brand/PRD.md): `typhed.com` is the brand and acquisition layer, and each product
+subdomain instead, is settled by [PRD.md](PRD.md): `typhed.com` is the brand and acquisition layer, and each product
 ships on its own subdomain with its own architecture. This page describes how the brand layer is built, not what it is
 allowed to contain.
 
@@ -315,7 +315,7 @@ robots host, and the schema identifiers in one edit.
 The launch dates are stored as UTC instants with the IST offset already applied, for example `2027-03-31T18:30:00Z` for
 01 April 2027 00:00 IST. Keep that convention so the countdown reads correctly from any timezone.
 
-The footer link groups carry the cross-product handoff described in [PRD.md](../shared/documents/docs/brand/PRD.md), so several of their entries
+The footer link groups carry the cross-product handoff described in [PRD.md](PRD.md), so several of their entries
 point off this domain: `trading.typhed.com`, `blog.typhed.com`, and the LinkedIn company page that serves as the
 career page. Marking such an entry `external: true` is the whole mechanism. The footer reads that one flag to add
 `target="_blank"`, the safe `rel`, the trailing arrow glyph, and the screen reader note, so pointing a link at a new
@@ -496,7 +496,7 @@ Adding a second app or a shared package follows the existing shape:
 A second static site would also need its own deploy path. The current workflow uploads a single directory,
 `apps/web/out`, as the Pages artifact.
 
-Before adding one, check that it belongs here at all. [PRD.md](../shared/documents/docs/brand/PRD.md) puts each product
+Before adding one, check that it belongs here at all. [PRD.md](PRD.md) puts each product
 and the blog on its own subdomain, maintained in a separate repository rather than inside this deployment, and
 `blog.typhed.com` already runs that way. A product that needs a server could not live in this export regardless.
 
@@ -514,8 +514,10 @@ side, including the Clerk satellite-domain setup that keeps one sign-in valid ac
     vertical rhythm, component sizes, and radius.
   * [typography.yml](../shared/documents/docs/design/typography.yml) - the type system: fonts and how they load, the
     scale, weights, tracking, and heading semantics.
-  * [PRD.md](../shared/documents/docs/brand/PRD.md) - the product requirements document: what the site is for, what
-    belongs on it, and the domain and subdomain model around it.
+  * [PRD.md](PRD.md) - this site's product requirements document: what `typhed.com` is for and what belongs on it.
+    Each TyPhed property keeps its own, in its own repository.
+  * [subdomain-model.md](../shared/documents/docs/brand/subdomain-model.md) - the shared domain and subdomain model:
+    DNS, one repository per property, custom domains, and single sign-on across them.
   * [MIGRATION.md](../shared/documents/MIGRATION.md) - how a repository joins the shared layer, and the trade-offs that
     come with it.
   * [CLAUDE.md](../CLAUDE.md) - repository conventions and the command table.

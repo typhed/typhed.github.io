@@ -24,7 +24,8 @@ under `typhed.com/permalink/`. The workspace is laid out so additional product s
 `typhed.com` is the brand, marketing, SEO, and informational hub for the wider TyPhed ecosystem rather than a home for the products
 themselves. Each product runs on its own subdomain and is maintained in a separate repository, so it may not be visible from this
 one at all; `blog.typhed.com` is already live, carrying the blog, product notes, and example documentation. What the site is for
-and what belongs on it are set out in the [product requirements document](shared/documents/docs/brand/PRD.md).
+and what belongs on it are set out in this repository's own [product requirements document](docs/PRD.md); every other
+TyPhed property keeps its own, in its own repository.
 
 The one-time hosting setup - GitHub Pages, the custom domain, HTTPS, and Cloudflare DNS - is documented in the [hosting guide](setup.md).
 
@@ -116,7 +117,7 @@ typhed.github.io/
     documents/           github.com/typhed/shared.documents
       brand/             the brand text, links, dates and colours (JSON)
       assets/brand/      the logo, the mark and the favicons
-      docs/              the PRD and the colour / spacing / type references
+      docs/              the subdomain model and the colour / spacing / type references
       claude/            shared notes loaded by Claude Code in every repo
     components/          github.com/typhed/shared.components
       packages/ui/       the reusable components (the @typhed/ui package)
