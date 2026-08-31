@@ -6,7 +6,7 @@
 
 <div align = "justify">
 
-This document is the build plan and architecture record for the TyPhed website. It explains what was built, why each decision was made, and how to extend the project to product subdomains later. The website is the brand homepage of Debmalya Pramanik HUF, served from GitHub Pages on the Cloudflare domain `typhed.com`.
+This document is the build plan and architecture record for the TyPhed website. It explains what was built, why each decision was made, and how to extend the project to product subdomains later. The website is the brand homepage of TyPhed, an autonomous technology brand, served from GitHub Pages on the Cloudflare domain `typhed.com`.
 
 ## Context
 
@@ -70,15 +70,15 @@ Adding a product site later means creating `apps/products` that imports `WipLand
   * **Countdown.** The target is a single constant in [packages/ui/lib/constants.ts](../packages/ui/lib/constants.ts). The component renders zeros on the server and during the first client render so the markup matches, then fills in real values after mount and ticks every second. When the date passes it shows a launch message instead.
   * **Theme.** The root element carries `suppressHydrationWarning`, and next-themes is set to default dark with system support. The two palettes are CSS variables in `globals.css`, and every shadcn token maps to them, so both themes stay consistent.
   * **Background.** A soft brand glow, a faint masked grid, and three drifting blurred orbs. It is pure CSS animation and is disabled automatically for visitors who prefer reduced motion.
-  * **Copyright.** The footer renders the exact two ownership lines, and the legal entity name is real text rather than an image so it helps search relevance.
+  * **Copyright.** The footer renders a single ownership line - the brand copyright - as real text rather than an image, so it helps search relevance.
 
 ## Search Visibility
 
-The aim is modest and specific. A person searching for "Debmalya Pramanik HUF" should find this site. That is achieved with on page relevance and structured data rather than heavy optimization.
+The aim is modest and specific. A person searching for "TyPhed" should find this site. That is achieved with on page relevance and structured data rather than heavy optimization.
 
-  * Page metadata names both TyPhed and Debmalya Pramanik HUF, sets a canonical URL, and provides Open Graph and Twitter cards using the generated share image.
+  * Page metadata names TyPhed, sets a canonical URL, and provides Open Graph and Twitter cards using the generated share image.
   * A JSON-LD `Organization` block declares the legal name, and a `WebSite` block links to it.
-  * `robots.txt` and `sitemap.xml` are generated at build, and the footer repeats the legal entity name as visible text.
+  * `robots.txt` and `sitemap.xml` are generated at build, and the footer repeats the brand name as visible text.
 
 After the domain is live, submit `typhed.com` and its sitemap to Google Search Console. That step is in [setup.md](setup.md).
 
@@ -93,7 +93,7 @@ The following all pass on this build.
   * `pnpm install` completes cleanly.
   * `pnpm build` produces `apps/web/out` containing `index.html`, `_next`, `CNAME`, `.nojekyll`, `robots.txt`, `sitemap.xml`, the manifest, the favicon, and the share image.
   * `pnpm typecheck` and `pnpm lint` report no errors.
-  * The home page HTML contains the JSON-LD, the canonical link, the Open Graph image, and the visible "Debmalya Pramanik HUF" text.
+  * The home page HTML contains the JSON-LD, the canonical link, the Open Graph image, and the visible brand copyright line.
 
 ## Open Items For Later
 
