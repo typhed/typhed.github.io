@@ -91,7 +91,7 @@ These steps are nice to have once the site works.
 
 ## Part 6 - Help People Find It
 
-To make a search for "Debmalya Pramanik HUF" return your site, tell Google it exists.
+To make a search for "TyPhed" return your site, tell Google it exists.
 
   1. Open [Google Search Console](https://search.google.com/search-console) and add `typhed.com` as a property.
   2. Verify ownership. The DNS TXT record method is easiest, since you already control Cloudflare DNS.

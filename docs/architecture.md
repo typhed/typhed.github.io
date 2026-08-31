@@ -288,7 +288,7 @@ is the typed view that TypeScript consumers import. Edit the JSON, never the Typ
 
 | File | Holds |
 | :---: | --- |
-| `site.json` | Name, tagline, legal entity, canonical URL, description |
+| `site.json` | Name, tagline, canonical URL, description |
 | `launch.json` | The countdown target and the progress bar's zero point, in UTC |
 | `navigation.json` | Header nav, login CTA, footer columns, social links, contact email, privacy link, copyright |
 | `tokens/*.json` | The colour, spacing, and typography values the preset consumes |
@@ -297,11 +297,11 @@ Those files surface through these exports:
 
 | Export | Holds |
 | :---: | --- |
-| `SITE` | Name, tagline, legal entity, canonical URL, description |
+| `SITE` | Name, tagline, canonical URL, description |
 | `LAUNCH_DATE`, `LAUNCH_START_DATE`, `LAUNCH_LABEL` | The countdown target and the progress bar's zero point, in UTC |
 | `NAV_LINKS`, `LOGIN_CTA` | Header navigation and the primary call to action |
 | `FOOTER_COLUMNS`, `PRODUCT_LINKS`, `RESOURCE_LINKS`, `PRIVACY_LINK` | Footer link groups |
-| `SOCIAL_LINKS`, `CONTACT_EMAIL`, `COPYRIGHT` | Contact row, address, and copyright lines |
+| `SOCIAL_LINKS`, `CONTACT_EMAIL`, `COPYRIGHT` | Contact row, address, and the copyright line |
 | `resolveBrandHref` | Expands a brand-layer path into the absolute URL every property can use |
 
 `COPYRIGHT.line1` stamps the current year at module load from a template in `navigation.json`, so the footer needs no

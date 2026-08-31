@@ -16,8 +16,8 @@
 
 <div align = "justify">
 
-This repository holds the brand homepage for **TyPhed - Engineering Tomorrow**, a brand maintained and owned by Debmalya
-Pramanik HUF. It is a `pnpm` monorepo containing two things that build to static files and publish to GitHub Pages together:
+This repository holds the brand homepage for **TyPhed - Engineering Tomorrow**, an autonomous technology brand. It is a
+`pnpm` monorepo containing two things that build to static files and publish to GitHub Pages together:
 an animated "work in progress" landing page with a live launch countdown, and a self-hosted permanent redirect service served
 under `typhed.com/permalink/`. The workspace is laid out so additional product sites can be added later without restructuring.
 
@@ -185,8 +185,8 @@ site, and it needs its own commit inside `shared/`.
 
   * **Change the launch date.** Edit [launch.json](shared/documents/brand/launch.json). The value is UTC; the current
     `2027-03-31T18:30:00.000Z` is `01 April 2027, 00:00 IST`.
-  * **Change the brand text.** Edit [site.json](shared/documents/brand/site.json) for the name, tagline, legal entity,
-    and description.
+  * **Change the brand text.** Edit [site.json](shared/documents/brand/site.json) for the name, tagline, canonical
+    URL, and description.
   * **Change the menu bar, footer links, social accounts, or contact email.** Edit
     [navigation.json](shared/documents/brand/navigation.json). Write a page this site hosts as its path with a leading
     slash, such as `/about/` or `/permalink/conduct.html`; the shared contract turns that into the full
@@ -253,7 +253,6 @@ property of their respective owners.
 
 ```text
 Copyright © 2026 TyPhed - Engineering Tomorrow
-This brand is maintained and owned by Debmalya Pramanik HUF
 ```
 
 </div>

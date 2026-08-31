@@ -4,7 +4,7 @@ import { SITE } from "@typhed/brand"
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: `About ${SITE.name} - ${SITE.tagline}. ${SITE.legalEntity}.`,
+  description: `About ${SITE.name} - ${SITE.tagline}.`,
   alternates: { canonical: "/about/" },
 }
 
@@ -19,8 +19,8 @@ export default function AboutPage() {
       </h1>
 
       <p className="mt-[clamp(0.75rem,2.5vh,1.75rem)] max-w-xl animate-fade-up text-balance text-base text-muted-foreground sm:text-lg">
-        Our story is being written. {SITE.tagline} — more about{" "}
-        {SITE.legalEntity} is coming soon.
+        Our story is being written. {SITE.tagline} — more about {SITE.name} is
+        coming soon.
       </p>
     </section>
   )

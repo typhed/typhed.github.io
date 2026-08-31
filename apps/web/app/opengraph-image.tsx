@@ -7,6 +7,10 @@ export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 export const alt = `${SITE.name} - ${SITE.tagline}`
 
+// The canonical host, without its scheme: the card names the brand, never an
+// owning entity, so the domain is what sits opposite the launch label.
+const SITE_HOST = SITE.url.replace(/^https?:\/\//, "").replace(/\/+$/, "")
+
 // Social share card, generated at build time for the static export.
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -83,7 +87,7 @@ export default function OpengraphImage() {
             color: "#94a3b8",
           }}
         >
-          <div style={{ display: "flex" }}>{SITE.legalEntity}</div>
+          <div style={{ display: "flex" }}>{SITE_HOST}</div>
           <div style={{ display: "flex", color: "#22d3ee" }}>Launching {LAUNCH_LABEL}</div>
         </div>
       </div>

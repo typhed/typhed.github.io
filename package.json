@@ -2,7 +2,7 @@
   "name": "typhed-monorepo",
   "version": "0.1.0",
   "private": true,
-  "description": "TyPhed - Engineering Tomorrow. Brand homepage and product sites owned by Debmalya Pramanik HUF.",
+  "description": "TyPhed - Engineering Tomorrow. The brand homepage and the product sites of the TyPhed brand.",
   "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": ">=20"
