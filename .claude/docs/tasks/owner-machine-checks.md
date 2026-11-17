@@ -7,7 +7,7 @@
 <div align = "justify">
 
 Checks that the restricted development machine could not run, kept for the owner's full machine. The owner's machine ran
-the toolchain and gate checks on 2026-11-17. Two dependency updates follow on 2026-11-18, and the first runs on GitHub
+the toolchain and gate checks on 2026-11-17. The wrangler update follows on 2026-11-18, and the first runs on GitHub
 wait for the push in the [go-live checklist](cloudflare-cutover.md).
 
 ## 1. Toolchain
@@ -41,19 +41,20 @@ and `wrangler deploy --dry-run` passes for all three apps, with and without the 
   - [ ] The first CI run sets up pnpm 12.21.0 and Node.js 26.13.1 through `pnpm/setup@v3` and passes every gate.
   - [ ] Dependabot's next monthly run opens its npm pull request against the pnpm 12 lockfile.
 
-## 4. Updates Due On 2026-11-18
+## 4. Dependency Updates
 
-pnpm installs a release only once it is a day old. Two updates therefore wait until wrangler 4.164.0 turns a day old,
-at 11:15 UTC (16:45 IST) on 2026-11-18. Run them together, then check everything again.
+pnpm installs a release only once it is a day old, so each update below waits for its release to age.
 
-  - [ ] `pnpm update typescript-eslint "@typescript-eslint/*"` moves typescript-eslint, which `eslint-config-next`
-    brings in, from 8.72.2 to 8.73.0. Its parser then needs minimatch 11, which clears the moderate GHSA-g3hv-75wg-m249
-    that `pnpm audit` reports against minimatch 10.2.6. Confirm the root `package.json` gains no entry.
-  - [ ] `pnpm update wrangler` moves wrangler from 4.163.0 to 4.164.0 and writes the new range into the root
-    `package.json`.
-  - [ ] `pnpm outdated` lists only the TypeScript and KaTeX holds, and `pnpm audit` only the KaTeX advisory recorded in
-    [architecture.md](../../../docs/architecture.md).
-  - [ ] Rerun every gate and the preview check from step 2, then tick these items with the versions installed.
+  - [x] `pnpm update typescript-eslint "@typescript-eslint/*"` moved typescript-eslint, which `eslint-config-next`
+    brings in, from 8.72.2 to 8.73.0 on 2026-11-17. Its parser now uses minimatch 11, which clears the moderate
+    GHSA-g3hv-75wg-m249 against minimatch 10.2.6. The root `package.json` is unchanged, and every gate passes again.
+  - [ ] From 11:15 UTC (16:45 IST) on 2026-11-18, when wrangler 4.164.0 is a day old, `pnpm update wrangler` moves it
+    from 4.163.0 and writes the new range into the root `package.json`. Then rerun every gate and the preview check
+    from step 2.
+  - [ ] `pnpm audit` also reports the high-severity GHSA-fc5q-39xc-vjpf, a ReDoS in picomatch up to 4.0.7, which the
+    lint tooling pulls in through `eslint-config-next`. Nothing that ships uses it, and no fixed release exists yet
+    (checked 2026-11-17). Update once one is out. `pnpm outdated` should still list only the TypeScript and KaTeX holds,
+    and `pnpm audit` only this and the KaTeX advisory in [architecture.md](../../../docs/architecture.md).
 
 ## Known Local-Only Issue
 
