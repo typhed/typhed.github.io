@@ -1,0 +1,52 @@
+{
+  "_comment": "One entry per deployed property, keyed by the folder name of its app under apps/. Each app reads its own entry through getProperty() for its name, canonical URL, description and keywords, and the shared shell renders the optional sidebar groups as the property's left-hand product menu. Adding a subdomain is one entry here plus an app folder.",
+  "properties": {
+    "web": {
+      "id": "web",
+      "url": "https://typhed.com",
+      "name": "TyPhed",
+      "description": "TyPhed - Engineering Tomorrow. Something precise and ambitious is under construction.",
+      "keywords": ["TyPhed", "Engineering Tomorrow", "TyPhed technology", "TyPhed launch"],
+      "sidebar": []
+    },
+    "trading": {
+      "id": "trading",
+      "url": "https://trading.typhed.com",
+      "name": "TyPhed Trading",
+      "description": "Upload your own market data and answer the questions retail charts skip - how much quantity, how much risk, how to size and allocate capital.",
+      "keywords": [],
+      "sidebar": [
+        {
+          "links": [{ "label": "Workspace", "href": "/" }]
+        },
+        {
+          "label": "Tools",
+          "links": [
+            { "label": "EMA Swing Lab", "href": "/?view=emalab" },
+            { "label": "Monte Carlo Lab", "href": "/?view=montecarlo" },
+            { "label": "IPO Dashboard", "href": "/tools/ipo/" }
+          ]
+        },
+        {
+          "label": "Budgeting",
+          "links": [{ "label": "Modified 50-30-20 Rule", "href": "/budgeting/mnws/" }]
+        }
+      ]
+    },
+    "blogging": {
+      "id": "blogging",
+      "url": "https://blog.typhed.com",
+      "name": "TyPhed Blog",
+      "description": "Notes, essays, and deep dives from TyPhed - Engineering Tomorrow. Writing on engineering, data, and the craft of building, by Debmalya Pramanik HUF.",
+      "keywords": [
+        "TyPhed",
+        "TyPhed Blog",
+        "Debmalya Pramanik",
+        "Debmalya Pramanik HUF",
+        "Engineering Tomorrow",
+        "engineering blog"
+      ],
+      "sidebar": []
+    }
+  }
+}

@@ -73,3 +73,25 @@ export type ColorTokens = {
     dark: ThemeTokens
   }
 }
+
+/** The id of a deployed property: the folder name of its app under apps/. */
+export type PropertyId = "web" | "trading" | "blogging"
+
+/** A group of links in a property's left-hand product menu. */
+export type SidebarGroup = {
+  /** Group heading; a group without one renders its links ungrouped. */
+  label?: string
+  links: readonly NavLink[]
+}
+
+/** One deployed property, as recorded in properties.json. */
+export type Property = {
+  id: PropertyId
+  /** Canonical origin of the property, without a trailing slash. */
+  url: string
+  name: string
+  description: string
+  keywords: readonly string[]
+  /** The property's product menu; empty when it has none. */
+  sidebar: readonly SidebarGroup[]
+}

@@ -12,10 +12,22 @@
 
 import launchData from "./launch.json"
 import navigationData from "./navigation.json"
+import propertiesData from "./properties.json"
 import siteData from "./site.json"
-import type { Copyright, FooterColumnGroup, NavLink, Site, SocialLink } from "./types"
+import type {
+  Copyright,
+  FooterColumnGroup,
+  NavLink,
+  Property,
+  PropertyId,
+  Site,
+  SocialLink,
+} from "./types"
 
 export type {
+  Property,
+  PropertyId,
+  SidebarGroup,
   ColorTokens,
   Copyright,
   FooterColumn,
@@ -164,3 +176,16 @@ export const FOOTER_COLUMN_GROUPS: readonly FooterColumnGroup[] = [
     { heading: navigationData.footer.community.heading, links: COMMUNITY_LINKS },
   ],
 ]
+
+/**
+ * The deployed properties, one per app under apps/. Each app reads its own
+ * entry for its name, canonical URL, description and keywords, and the shared
+ * shell renders the entry's sidebar groups as the property's product menu.
+ */
+export const PROPERTIES: Readonly<Record<PropertyId, Property>> =
+  propertiesData.properties as Record<PropertyId, Property>
+
+/** One property by id. */
+export function getProperty(id: PropertyId): Property {
+  return PROPERTIES[id]
+}
