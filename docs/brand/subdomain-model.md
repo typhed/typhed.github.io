@@ -42,10 +42,9 @@ runs no script:
 
 </div>
 
-Each app's `wrangler.jsonc` names its Worker and keeps it on its `workers.dev` address,
-`https://typhed-<app>.typhed-main.workers.dev`. The routes in the table arrive with branch `cutover/routes` at go-live.
-Until then, the hostnames' proxied records in the Cloudflare zone still reach GitHub Pages. At go-live, a Cloudflare
-Redirect Rule also takes over the 301 from `www.typhed.com` to `https://typhed.com/` that GitHub Pages answers today.
+Each app's `wrangler.jsonc` names its Worker and its route, and keeps the Worker on its `workers.dev` address too,
+`https://typhed-<app>.typhed-main.workers.dev`. The hostnames are proxied records in the Cloudflare zone, and
+`www.typhed.com` answers a 301 to `https://typhed.com/` through a Cloudflare Redirect Rule.
 
 ## One Login Across Every Subdomain
 

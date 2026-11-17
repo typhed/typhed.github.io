@@ -10,6 +10,8 @@
     // Serve out/404.html for unknown paths.
     "not_found_handling": "404-page"
   },
+  // The live hostname. The proxied DNS record for it stays in the typhed.com zone.
+  "routes": [{ "pattern": "blog.typhed.com/*", "zone_name": "typhed.com" }],
   "workers_dev": true,
   "preview_urls": false,
   "observability": { "enabled": true }

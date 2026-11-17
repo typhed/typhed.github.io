@@ -277,9 +277,9 @@ repository Variable, fails when the Clerk key is missing, builds the app, and ru
 
 Each `wrangler.jsonc` describes an assets-only Worker named `typhed-<app>`: assets from `./out`,
 `html_handling: "auto-trailing-slash"` for the trailing-slash export, `not_found_handling: "404-page"` for the exported
-404 page, and `workers_dev: true`, so the Worker answers at `https://typhed-<app>.typhed-main.workers.dev`. Branch
-`cutover/routes` adds the route of each hostname on the `typhed.com` zone and merges at go-live. At go-live, a
-Cloudflare Redirect Rule also takes over the 301 from `www.typhed.com` to the apex that GitHub Pages answers today.
+404 page, the route of its hostname on the `typhed.com` zone, and `workers_dev: true`, so the Worker also answers at
+`https://typhed-<app>.typhed-main.workers.dev`. `www.typhed.com` redirects to the apex through a Cloudflare Redirect
+Rule.
 
 ## Quality Gates
 
