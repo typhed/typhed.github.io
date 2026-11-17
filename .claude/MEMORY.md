@@ -5,12 +5,16 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 
 ## Owner Preferences
 
-  * Keep all Claude context in this repository: memory here, plans and progress in `.claude/docs/tasks/`, decisions in
-    `.claude/docs/decisions/`, old plans in `.claude/docs/archive/`. Never write any of it under `~/.claude/`.
+  * Keep all Claude context in this repository: memory here, plans and progress in `.claude/docs/tasks/`, old plans in
+    `.claude/docs/archive/`. Never write any of it under `~/.claude/`.
+  * Architecture decisions go to `docs/adr/` as dated records (`YYYY-MM-DD-<slug>.md`: Status, Context, Decision,
+    Consequences), listed in `docs/adr/README.md`.
   * Never squash, rebase, amend, or rewrite history; imported commits keep their SHA, message, author, and date.
   * Never invent logos, icons, artwork, or copy. Take values from `packages/brand` and existing app strings; record
     anything missing in `.claude/docs/gaps.md` and ask.
-  * Docs describe the repository as it is, in present tense. Rationale goes only to `.claude/docs/decisions/`.
+  * Docs describe the repository as it is, in present tense. Rationale goes only to `docs/adr/`.
+  * Every Markdown edit applies `markdown-format`, `humanize-text`, and `flaunt-product` (the last only to
+    product-facing prose, never to commands, config, or the technical reference).
   * Do not tune the code or config to one machine; fix the environment instead or record a TODO for the owner.
   * Tokens are costly: no speculative research or agent fan-out; use known facts and verify locally.
   * Commits follow the `git-commiter` skill; Markdown follows `markdown-format` and `humanize-text`.
@@ -23,7 +27,7 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 ## Decisions And Changes
 
   * 2026-11-17: five repositories merged into this monorepo with full history; see
-    `.claude/docs/tasks/monorepo-merge.md` and `.claude/docs/decisions/`.
+    `.claude/docs/tasks/monorepo-merge.md` and `docs/adr/`.
 
 ## Open Items
 
