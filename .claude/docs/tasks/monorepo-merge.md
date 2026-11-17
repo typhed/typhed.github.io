@@ -60,8 +60,11 @@ there is no Cloudflare access).
 
   - [ ] `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build`
     with no environment workarounds.
-  - [ ] `pnpm --filter <app> preview` for each app: same header and footer everywhere, trading sidebar expanded by
-    default and collapsible, blogging serves `/ads.txt`.
+  - [x] Browser check (headless Chrome, 2026-11-17, on the production previews and on `next dev` for web): the theme
+    toggle switches and remembers both themes on all three apps; header and footer render everywhere; the trading
+    sidebar starts expanded and stays collapsed after a reload; `/about/`, `/tools/ipo/`, `/budgeting/mnws/` load
+    with no console errors; unknown paths return the 404 page; `/permalink/conduct.html` answers 302; blogging
+    serves `/ads.txt`; the OG images are `image/png`.
   - [ ] Sign-in with a Clerk development key on localhost for all three apps.
   - [ ] First `deploy.yml` run publishes three Workers on `workers.dev`; then the cutover checklist.
 
