@@ -3,4 +3,7 @@ node_modules
 out
 dist
 .turbo
+.wrangler
 pnpm-lock.yaml
+apps/*/app/theme.css
+apps/*/public/brand
