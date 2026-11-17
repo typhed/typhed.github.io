@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "typhed-brand-sync && next dev --port 3000",
-    "build": "typhed-brand-sync && next build",
+    "build": "typhed-brand-sync && next build && python ../../permalink/src/build.py --output out/permalink --redirects out/_redirects",
     "preview": "wrangler dev --port 8787",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
