@@ -1,15 +1,16 @@
+#!/usr/bin/env node
 /**
- * Prepare a consuming app to build against the shared brand layer.
+ * Prepare an app to build against the shared brand layer.
  *
  * Two jobs, both run before every `dev` and every `build`:
  *
  *   1. Copy the brand artwork into the app's `public/brand`, so a rebrand is
  *      one commit here rather than one per property.
- *   2. Generate the theme stylesheet from `brand/tokens/*.json`, so a colour
- *      changes in one JSON file and every property picks it up.
+ *   2. Generate the theme stylesheet from `tokens/*.json`, so a colour changes
+ *      in one JSON file and every property picks it up.
  *
- * Both destinations are generated and gitignored. Edit the sources in this
- * repository, never the copies in an app.
+ * Both destinations are generated and gitignored. Edit the sources in
+ * packages/brand, never the copies in an app.
  *
  * Why the theme is a generated CSS file rather than a Tailwind plugin: a
  * bundler tracks the CSS files it compiles and rebuilds when their content
@@ -19,25 +20,24 @@
  * A real stylesheet is part of the module graph, so the cache invalidates
  * exactly when it should.
  *
- * Usage, from a consuming repository:
+ * Usage, from an app directory (the flags default to the layout every app
+ * uses, so a bare `typhed-brand-sync` is enough):
  *
- *   node shared/documents/scripts/sync-shared.mjs \
- *     --assets apps/web/public/brand \
- *     --theme  apps/web/app/theme.css
+ *   typhed-brand-sync --assets public/brand --theme app/theme.css
  *
  * The script fails loudly when a source is missing, because the alternative is
  * a site that deploys successfully with no logo and no colours.
  */
 
 import { cp, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises"
-import { dirname, resolve } from "node:path"
+import { basename, dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, "..")
-const ASSET_SOURCE = resolve(ROOT, "assets", "brand")
-const COLORS = resolve(ROOT, "brand", "tokens", "colors.json")
-const SPACING = resolve(ROOT, "brand", "tokens", "spacing.json")
+const ASSET_SOURCE = resolve(ROOT, "assets")
+const COLORS = resolve(ROOT, "tokens", "colors.json")
+const SPACING = resolve(ROOT, "tokens", "spacing.json")
 
 /**
  * Read `--flag <path>` from argv, falling back to the layout every TyPhed app
@@ -52,7 +52,7 @@ function option(flag, fallback) {
   const value = at === -1 ? fallback : process.argv[at + 1]
 
   if (!value) {
-    console.error(`sync-shared: ${flag} was given with no path after it.`)
+    console.error(`typhed-brand-sync: ${flag} was given with no path after it.`)
     process.exit(1)
   }
 
@@ -61,7 +61,7 @@ function option(flag, fallback) {
 
 /**
  * Fail with an actionable message rather than a stack trace. A missing source
- * almost always means the submodule was never checked out.
+ * means packages/brand is incomplete in this checkout.
  *
  * @param {string} path
  */
@@ -70,9 +70,8 @@ async function requireSource(path) {
     await stat(path)
   } catch {
     console.error(
-      `sync-shared: cannot read ${path}\n` +
-        "The shared.documents submodule is probably not checked out. Run:\n" +
-        "  git submodule update --init --recursive",
+      `typhed-brand-sync: cannot read ${path}\n` +
+        "packages/brand is incomplete in this checkout; restore it from git.",
     )
     process.exit(1)
   }
@@ -102,7 +101,14 @@ async function main() {
   await requireSource(ASSET_SOURCE)
   await requireSource(COLORS)
 
-  // Remove first so artwork deleted upstream does not linger in the export.
+  // The artwork folder is wiped before every copy, so refuse any target that
+  // is not a dedicated `brand` folder rather than risk deleting a whole public/.
+  if (basename(assets) !== "brand") {
+    console.error(`typhed-brand-sync: --assets must point at a folder named brand, got ${assets}`)
+    process.exit(1)
+  }
+
+  // Remove first so artwork deleted at the source does not linger in the export.
   await rm(assets, { recursive: true, force: true })
   await mkdir(dirname(assets), { recursive: true })
   await cp(ASSET_SOURCE, assets, { recursive: true })
@@ -115,8 +121,8 @@ async function main() {
   // specificity, so source order is what lets the dark theme win.
   const css = [
     "/* GENERATED FILE - DO NOT EDIT.",
-    " * Written by shared/documents/scripts/sync-shared.mjs from",
-    " * shared/documents/brand/tokens/colors.json before every dev run and build.",
+    " * Written by typhed-brand-sync (packages/brand/scripts/sync.mjs) from",
+    " * packages/brand/tokens/colors.json before every dev run and build.",
     " * Change a colour there, not here.",
     " */",
     "",
@@ -129,8 +135,8 @@ async function main() {
   await mkdir(dirname(theme), { recursive: true })
   await writeFile(theme, css, "utf8")
 
-  console.log(`sync-shared: artwork -> ${assets}`)
-  console.log(`sync-shared: theme   -> ${theme}`)
+  console.log(`typhed-brand-sync: artwork -> ${assets}`)
+  console.log(`typhed-brand-sync: theme   -> ${theme}`)
 }
 
 main()

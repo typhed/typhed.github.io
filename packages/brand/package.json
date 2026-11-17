@@ -7,17 +7,20 @@
   "description": "TyPhed brand contract: site copy, navigation, launch schedule and design tokens as stack-neutral JSON.",
   "main": "./index.ts",
   "types": "./index.ts",
+  "bin": {
+    "typhed-brand-sync": "./scripts/sync.mjs"
+  },
   "exports": {
     ".": "./index.ts",
     "./*": "./*"
   },
-  "devDependencies": {
-    "@typhed/tsconfig": "workspace:*",
-    "typescript": "^5.7.3",
-    "rimraf": "^6.0.1"
-  },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "clean": "rimraf .turbo node_modules"
+  },
+  "devDependencies": {
+    "@typhed/tsconfig": "workspace:*",
+    "rimraf": "catalog:",
+    "typescript": "catalog:"
   }
 }
