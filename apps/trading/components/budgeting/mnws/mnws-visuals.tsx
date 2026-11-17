@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { SERIES, SERIES_ORDER, type SeriesKey } from "./series";
 
 /**

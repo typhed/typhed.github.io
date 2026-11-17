@@ -3,7 +3,7 @@
 import * as React from "react";
 import { FileUp, Upload } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 
 /**
  * File drop zone for CSV / XLSX uploads. Parsing happens in the workspace; this

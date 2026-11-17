@@ -13,7 +13,7 @@ import {
 
 import { downloadJson } from "@/lib/download";
 import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import { StatTile } from "@/components/tools/controls";
 import { Distribution } from "@/components/tools/distribution";
 

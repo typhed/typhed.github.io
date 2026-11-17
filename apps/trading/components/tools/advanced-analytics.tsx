@@ -8,7 +8,7 @@ import { simpleReturns } from "@typhed/risk-toolkit";
 import { runAdvancedStats, type AdvancedStats } from "@/lib/pyodide";
 import { fmtNumber, fmtPercent } from "@/lib/format";
 import { StatTile, ToolCard } from "@/components/tools/controls";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 
 /**
  * Advanced higher-moment analytics run in the browser with numpy via Pyodide.

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 
 /**
  * Route-level error boundary: a render/runtime crash inside a page shows a

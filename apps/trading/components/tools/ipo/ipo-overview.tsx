@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { fmtInr, fmtNumber, fmtPercent, signTone } from "@/lib/format";
 import type { IpoMeta } from "@/lib/ipo/types";
 import type { IpoMetrics } from "@/lib/ipo/analytics";

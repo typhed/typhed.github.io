@@ -1,9 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useAuth } from "@clerk/react";
-
-import { CLERK_ENABLED } from "@/lib/env";
+import { CLERK_ENABLED, useAuth } from "@typhed/auth";
 import { clearAllLocalData } from "@/lib/privacy";
 
 /**

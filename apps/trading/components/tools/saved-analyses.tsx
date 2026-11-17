@@ -12,7 +12,7 @@ import {
   type SavedAnalysis,
 } from "@/lib/storage";
 import { downloadJson } from "@/lib/download";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 
 /** Hard ceiling on imported bars - beyond any real dataset, below crash territory. */
 const MAX_IMPORT_CANDLES = 2_000_000;

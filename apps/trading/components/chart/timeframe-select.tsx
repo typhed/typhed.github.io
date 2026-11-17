@@ -2,7 +2,7 @@
 
 import type { Timeframe } from "@typhed/chart-engine";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 
 /** Row of timeframe buttons, TradingView style. */
 export function TimeframeSelect({

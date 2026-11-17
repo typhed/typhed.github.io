@@ -19,7 +19,7 @@ import {
   safeParseMnwsDataset,
   serializeMnwsDataset,
 } from "@/lib/budgeting/mnws/io";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import { MnwsRuleExplainer } from "@/components/budgeting/mnws/mnws-rule-explainer";
 import {
   MnwsBottomLine,

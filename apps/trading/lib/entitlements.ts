@@ -1,8 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/react";
-
-import { CLERK_ENABLED } from "@/lib/env";
+import { useEntitlements as useAccountEntitlements, type Tier } from "@typhed/auth";
 
 export type FeatureId =
   | "chart"
@@ -13,7 +11,7 @@ export type FeatureId =
   | "advanced"
   | "risk-parity";
 
-export type Tier = "free" | "pro";
+export type { Tier };
 
 export interface FeatureMeta {
   id: FeatureId;
@@ -40,11 +38,11 @@ export interface Entitlements {
   isLoaded: boolean;
   tier: Tier;
   /** The pro feature slugs granted to this user. */
-  granted: string[];
+  granted: readonly string[];
   has: (feature: FeatureId) => boolean;
 }
 
-function grantsFor(tier: Tier, granted: string[]) {
+function grantsFor(tier: Tier, granted: readonly string[]) {
   return (feature: FeatureId): boolean => {
     if (FEATURES[feature].tier === "free") return true;
     if (tier === "pro") return true;
@@ -53,38 +51,17 @@ function grantsFor(tier: Tier, granted: string[]) {
 }
 
 /**
- * Per-user entitlements, read from Clerk `publicMetadata`. `publicMetadata` is
- * readable in the browser but only writable server-side (the Clerk Dashboard or
- * backend API), so a user cannot grant themselves a paid feature.
- *
- * When Clerk is disabled (no key) the app treats everyone as a free user, so
- * paid features render their locked state - useful for local development.
+ * Per-user entitlements: the account's tier and grants from the shared
+ * @typhed/auth hook (Clerk `publicMetadata`), resolved against this site's
+ * feature catalogue. With auth off everyone is a free user, so paid features
+ * render their locked state - useful for local development.
  *
  * Note: this is a soft gate. A paid tool's code still ships in the bundle.
- * The serverless hard gate (serverless/verify-entitlement.ts) is implemented
- * but not deployed, so until it is, Pro is a convenience tier - never
- * describe it as hard-protected.
+ * The hard gate (packages/entitlement-gate) is implemented but not deployed,
+ * so until it is, Pro is a convenience tier - never describe it as
+ * hard-protected.
  */
 export function useEntitlements(): Entitlements {
-  // CLERK_ENABLED is a build-time constant, so this branch is stable for the
-  // whole build and the hook order never changes at runtime.
-  if (!CLERK_ENABLED) {
-    return {
-      isLoaded: true,
-      tier: "free",
-      granted: [],
-      has: grantsFor("free", []),
-    };
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { isLoaded, user } = useUser();
-  const metadata = (user?.publicMetadata ?? {}) as {
-    tier?: Tier;
-    entitlements?: string[];
-  };
-  const tier: Tier = metadata.tier === "pro" ? "pro" : "free";
-  const granted = Array.isArray(metadata.entitlements) ? metadata.entitlements : [];
-
-  return { isLoaded, tier, granted, has: grantsFor(tier, granted) };
+  const { isLoaded, tier, granted } = useAccountEntitlements()
+  return { isLoaded, tier, granted, has: grantsFor(tier, granted) }
 }

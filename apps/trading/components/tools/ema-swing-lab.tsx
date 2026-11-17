@@ -12,7 +12,7 @@ import type {
 
 import { fmtNumber, fmtPercent } from "@/lib/format";
 import { useSweep } from "@/lib/use-sweep";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import {
   NumberField,
   Segmented,
@@ -20,7 +20,7 @@ import {
   ToolCard,
 } from "@/components/tools/controls";
 import { EmaLabDetail } from "@/components/tools/ema-lab-detail";
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 
 const TEMPLATE_OPTIONS: ReadonlyArray<{
   value: StrategyTemplate;

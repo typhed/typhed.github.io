@@ -24,7 +24,7 @@ import {
   type IndicatorId,
   type IndicatorState,
 } from "@/lib/indicators";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import { ChartView } from "@/components/chart/chart-view";
 import { TimeframeSelect } from "@/components/chart/timeframe-select";
 import { IndicatorPanel } from "@/components/chart/indicator-panel";

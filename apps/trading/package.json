@@ -13,27 +13,24 @@
     "clean": "rimraf .next out .turbo .wrangler node_modules"
   },
   "dependencies": {
-    "@clerk/react": "catalog:",
-    "@radix-ui/react-slot": "catalog:",
+    "@typhed/auth": "workspace:*",
     "@typhed/backtest": "workspace:*",
     "@typhed/brand": "workspace:*",
     "@typhed/chart-engine": "workspace:*",
     "@typhed/risk-toolkit": "workspace:*",
     "@typhed/ui": "workspace:*",
-    "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
     "lightweight-charts": "^5.2.0",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:",
-    "tailwind-merge": "catalog:"
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@typhed/next-config": "workspace:*",
     "@typhed/tailwind-config": "workspace:*",
     "@typhed/tsconfig": "workspace:*",
     "autoprefixer": "catalog:",

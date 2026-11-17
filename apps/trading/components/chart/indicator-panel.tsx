@@ -5,7 +5,7 @@ import {
   type IndicatorId,
   type IndicatorState,
 } from "@/lib/indicators";
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 
 /** Toggle row for showing / hiding indicators. */
 export function IndicatorPanel({

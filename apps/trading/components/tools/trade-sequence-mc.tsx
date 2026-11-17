@@ -6,7 +6,7 @@ import { tradeLogReturns, type SimulateInput } from "@typhed/risk-toolkit";
 
 import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format";
 import { useSimulation } from "@/lib/use-simulation";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import {
   NumberField,
   Segmented,

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { fmtCompact, fmtNumber, fmtPercent, signTone } from "@/lib/format";
 import { niceScale, valueRange, type FinancialDerived } from "@/lib/ipo/analytics";
 import { useElementWidth } from "@/lib/use-element-width";

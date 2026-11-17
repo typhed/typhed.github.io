@@ -4,7 +4,7 @@ import * as React from "react";
 import { X } from "lucide-react";
 
 import type { FinancialRow, GmpRow, IpoDataset, IpoMeta, Milestone } from "@/lib/ipo/types";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import {
   FinancialsEditor,
   GmpEditor,

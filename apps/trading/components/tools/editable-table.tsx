@@ -20,8 +20,8 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { cn } from "@typhed/ui/lib/utils";
+import { Button } from "@typhed/ui/components/ui/button";
 
 const cellClass =
   "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";

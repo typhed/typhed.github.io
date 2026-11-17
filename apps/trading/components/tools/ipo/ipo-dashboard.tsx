@@ -10,7 +10,7 @@ import { deriveIpoMetrics } from "@/lib/ipo/analytics";
 import { deriveAllApplications, subscriptionByCategory } from "@/lib/ipo/applications";
 import { ipoFileName, safeParseIpoDataset, serializeIpoDataset } from "@/lib/ipo/io";
 import { downloadJson } from "@/lib/download";
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 import { IpoOverview } from "@/components/tools/ipo/ipo-overview";
 import { IpoTimeline } from "@/components/tools/ipo/ipo-timeline";
 import { IpoGmp } from "@/components/tools/ipo/ipo-gmp";

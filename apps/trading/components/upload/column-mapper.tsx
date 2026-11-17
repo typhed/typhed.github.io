@@ -3,7 +3,7 @@
 import type { ColumnMapping, TimeFormat } from "@typhed/chart-engine";
 import { missingRequiredFields } from "@typhed/chart-engine";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button";
 
 const REQUIRED: Array<{ key: keyof ColumnMapping; label: string }> = [
   { key: "time", label: "Timestamp" },

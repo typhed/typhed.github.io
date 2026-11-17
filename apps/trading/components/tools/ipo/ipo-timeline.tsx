@@ -12,7 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { fmtDisplayDate } from "@/lib/format";
 import type { Milestone } from "@/lib/ipo/types";
 import { isListingMilestone, sortedTimeline } from "@/lib/ipo/analytics";

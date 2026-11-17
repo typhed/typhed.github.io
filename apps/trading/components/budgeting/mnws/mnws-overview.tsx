@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { fmtInr, fmtInrCrore, fmtPercent } from "@/lib/format";
 import type { MnwsResult } from "@/lib/budgeting/mnws/engine";
 import { ToolCard, StatTile } from "@/components/tools/controls";

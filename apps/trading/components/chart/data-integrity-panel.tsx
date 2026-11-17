@@ -4,7 +4,7 @@ import * as React from "react";
 import { AlertTriangle, CheckCircle2, ChevronDown, XCircle } from "lucide-react";
 import type { DatasetResult } from "@typhed/chart-engine";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 
 /**
  * Surfaces exactly what happened to the uploaded data: rows in and out, gaps,

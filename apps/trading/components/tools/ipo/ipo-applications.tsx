@@ -3,7 +3,7 @@
 import * as React from "react";
 import { AlertTriangle } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@typhed/ui/lib/utils";
 import { fmtInr, fmtPercent } from "@/lib/format";
 import type {
   Application,
