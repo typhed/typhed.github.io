@@ -40,25 +40,28 @@ archived as [Monorepo Merge Plan.md](../archive/Monorepo%20Merge%20Plan.md); the
     `/`, the trailing-slash redirect, two routes, and the 404 page.
   - [x] Docs: `docs/PRD.md`, `docs/architecture.md`, and `docs/brand/subdomain-model.md` rewritten; architecture
     decisions recorded as dated ADRs in `docs/adr/`; the owner's cutover checklist written.
+  - [x] Phase 5: permalink `--redirects` block and key validation, wired into the `web` build; keeper hook and the
+    analytics test path updated. `wrangler dev` answers `/permalink/conduct.html` (and the extension-less forms) with a
+    302 to the Code of Conduct; `/opengraph-image` is served as `image/png`.
+  - [x] Phase 6 tail: branch `cutover/routes` adds the three routes (one commit, merged at cutover).
+  - [x] Phase 7: root and app READMEs, component docs, design YAML paths, `setup.md` removed, keeper scoped to
+    `docs/`; `CLAUDE.md` is the router (`/init` + `/extend-init`) and `.claude/` holds harness material only.
+  - [x] Prettier pass (code only) with its SHA in `.git-blame-ignore-revs`. On this machine `format:check`,
+    `typecheck` (10/10), `lint` (3/3, no warnings), `test` (116 passed), and `build` (3/3) pass.
 
-## Pending
+## Pending (Owner)
 
-  - [ ] Phase 5: permalink `--redirects` block and key validation; keeper hook and analytics test path (`python`
-    agent); wire the generator into the `web` build.
-  - [ ] Phase 6 tail: branch `cutover/routes` with the three routes.
-  - [ ] Phase 7: root README, app READMEs, component docs, design YAML paths; delete `setup.md`; keeper agent scope;
-    `/init` then `/extend-init`.
-  - [ ] Prettier pass over the merged code with its SHA in `.git-blame-ignore-revs`.
+  - [ ] Push `monorepo` and `cutover/routes`, then follow [cloudflare-cutover.md](cloudflare-cutover.md).
 
 ## To Verify On The Full System
 
 These need a machine without this one's restrictions (TLS interception blocks Google Fonts during `next build`, and
 there is no Cloudflare access).
 
-  - [ ] `pnpm install --frozen-lockfile && pnpm lint && pnpm typecheck && pnpm test && pnpm format:check && pnpm build`
+  - [ ] `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build`
     with no environment workarounds.
   - [ ] `pnpm --filter <app> preview` for each app: same header and footer everywhere, trading sidebar expanded by
-    default and collapsible, `/permalink/conduct.html` answers 302, blogging serves `/ads.txt`, 404 page renders.
+    default and collapsible, blogging serves `/ads.txt`.
   - [ ] Sign-in with a Clerk development key on localhost for all three apps.
   - [ ] First `deploy.yml` run publishes three Workers on `workers.dev`; then the cutover checklist.
 
@@ -68,6 +71,6 @@ there is no Cloudflare access).
     without one.
   * `manifest.ts`, `robots.ts`, and `sitemap.ts` stay per app; their route lists differ, and only the page metadata
     skeleton is shared (`buildMetadata`).
-  * The `/opengraph-image` content-type header is deferred until it can be checked under `wrangler dev`.
+  * Prettier formats code only; Markdown follows its own documented conventions.
 
 </div>
