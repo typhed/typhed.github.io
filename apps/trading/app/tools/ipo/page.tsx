@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "IPO Dashboard",
   description:
     "An editable IPO dashboard - price band, lot size, timeline, financials and GMP - that renders entirely in your browser and exports to a reusable JSON file.",
+  alternates: { canonical: "/tools/ipo/" },
 }
 
 export default function IpoToolPage() {

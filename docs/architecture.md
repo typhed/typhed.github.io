@@ -93,8 +93,10 @@ Turborepo reads those links to order tasks and to find the apps a change affects
 `node_modules/.vite/<package>`. The same file lists the install scripts that may run (`esbuild` and `workerd` only).
 
 The root `package.json` also pins the toolchain: pnpm through `packageManager`, and Node.js through
-`devEngines.runtime`. pnpm downloads that Node.js release, records it in the lockfile, and runs every script with it, so
-a machine needs only pnpm to build. pnpm installs a release only once it is a day old, its default `minimumReleaseAge`.
+`devEngines.runtime`. pnpm downloads that Node.js release, records it in the lockfile, and runs every workspace script
+with it. The install's dependency build scripts (`esbuild` and `workerd`) run on the `node` already on the `PATH`,
+so a machine needs Node.js as well as pnpm. In CI, `pnpm/setup` installs the pinned release before the install. pnpm
+installs a release only once it is a day old, its default `minimumReleaseAge`.
 Three versions are held below the newest release on purpose:
 
 <div align = "center">
@@ -102,7 +104,7 @@ Three versions are held below the newest release on purpose:
 | Package | Held At | Because |
 | :---: | :---: | --- |
 | `typescript` | `~6.0` | `typescript-eslint`, which `eslint-config-next` lints with, supports TypeScript below 6.1. |
-| `katex` | `^0.16` | `rehype-katex` renders with KaTeX 0.16, and the stylesheet must match the renderer. |
+| `katex` | `^0.16` | `rehype-katex` renders with KaTeX 0.16, and the stylesheet must match the renderer. `pnpm audit` reports the low-severity GHSA-238p-pmpm-9mq7 (fixed in 0.18.2) against it: the flaw needs prototype pollution elsewhere and attacker-written math, and the blog renders only its own posts, at build time. |
 | `eslint-plugin-react`, `-import`, `-jsx-a11y` | ESLint 10 accepted | They still declare ESLint 9, which is past end of life; their rules run on ESLint 10, so `peerDependencyRules` accepts it. |
 
 </div>
@@ -275,8 +277,9 @@ repository Variable, fails when the Clerk key is missing, builds the app, and ru
 
 Each `wrangler.jsonc` describes an assets-only Worker named `typhed-<app>`: assets from `./out`,
 `html_handling: "auto-trailing-slash"` for the trailing-slash export, `not_found_handling: "404-page"` for the exported
-404 page, and the route of its hostname on the `typhed.com` zone. `www.typhed.com` redirects to the apex through a
-Cloudflare Redirect Rule.
+404 page, and `workers_dev: true`, so the Worker answers at `https://typhed-<app>.typhed-main.workers.dev`. Branch
+`cutover/routes` adds the route of each hostname on the `typhed.com` zone and merges at go-live. At go-live, a
+Cloudflare Redirect Rule also takes over the 301 from `www.typhed.com` to the apex that GitHub Pages answers today.
 
 ## Quality Gates
 

@@ -27,13 +27,17 @@ import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 It accepts the full prop set of the `next-themes` provider (`React.ComponentProps<typeof NextThemesProvider>`). The
 props the app actually sets are below.
 
+<div align = "center">
+
 | Prop | Type | App value | Description |
 | :---: | :---: | :---: | --- |
 | `children` | `React.ReactNode` | the app tree | Everything that reads the theme. |
 | `attribute` | `string` | `"class"` | Switches theme by toggling the `.dark` class on `<html>`, which the Tailwind tokens rely on. |
 | `defaultTheme` | `string` | `"dark"` | Midnight Indigo is the default theme. |
-| `enableSystem` | `boolean` | `true` | Lets a first visit follow the OS color preference. |
+| `enableSystem` | `boolean` | `true` | Allows a `"system"` theme that follows the OS color preference. No app selects it, so a first visit opens in dark. |
 | `disableTransitionOnChange` | `boolean` | `true` | Skips CSS transitions during a theme switch to avoid a flash. |
+
+</div>
 
 Any other `next-themes` prop (`storageKey`, `themes`, `forcedTheme`, and so on) passes through unchanged.
 
@@ -64,9 +68,10 @@ after hydration.
 
 ## Accessibility
 
-The provider has no UI and no direct accessibility surface. It does shape perceived behavior: `enableSystem` honors a
-user's OS preference on first visit, which is the accessible default. Keep it on unless there is a strong reason to
-force a single theme.
+The provider has no UI and no direct accessibility surface. It does shape perceived behavior. Every first visit opens in
+dark, whatever the OS preference, because `defaultTheme` is `"dark"` and no app selects the `"system"` theme that
+`enableSystem` allows. A visitor who prefers light switches once with [ThemeToggle](theme-toggle.md), and `next-themes`
+remembers the choice.
 
 ## Usage Guidelines
 
@@ -76,11 +81,15 @@ theme in a component, call `useTheme` from `next-themes` inside a Client Compone
 
 ## Do's And Don'ts
 
+<div align = "center">
+
 | Do | Don't |
 | --- | --- |
 | Render it once at the app root. | Scatter multiple providers down the tree. |
 | Keep `attribute="class"` for the token system. | Switch to an attribute the Tailwind tokens do not read. |
 | Set `suppressHydrationWarning` on `<html>`. | Omit it and accept theme-class hydration warnings. |
 | Configure the theme strategy here. | Hardcode theme decisions inside leaf components. |
+
+</div>
 
 </div>

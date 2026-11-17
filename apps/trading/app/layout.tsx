@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Space_Grotesk } from "next/font/google"
-import { SITE, getProperty } from "@typhed/brand"
+import { getProperty } from "@typhed/brand"
 import { AuthControls, AuthProvider } from "@typhed/auth"
+import { BRAND_VIEWPORT, buildMetadata } from "@typhed/ui/lib/metadata"
 import { SiteShell } from "@typhed/ui/components/site-shell"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 
@@ -11,8 +12,6 @@ import { SiteNotice } from "@/components/site-notice"
 
 import "./theme.css"
 import "./globals.css"
-
-const TRADING = getProperty("trading")
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,21 +25,9 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: `${TRADING.name} - ${SITE.tagline}`,
-    template: `%s - ${TRADING.name}`,
-  },
-  description: TRADING.description,
-  metadataBase: new URL(TRADING.url),
-}
+export const metadata: Metadata = buildMetadata(getProperty("trading"))
 
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#080c1c" },
-  ],
-}
+export const viewport: Viewport = BRAND_VIEWPORT
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

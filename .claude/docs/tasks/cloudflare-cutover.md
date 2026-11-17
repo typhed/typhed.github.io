@@ -6,55 +6,66 @@
 
 <div align = "justify">
 
-The owner's steps to put typhed.com, trading.typhed.com, and blog.typhed.com live on Cloudflare Workers with no
-downtime. Work top to bottom; every step is reversible until the DNS records change in step 4.4. Branch
-`cutover/routes` is the one commit that points the live hostnames at the Workers.
+The owner's steps to move typhed.com, trading.typhed.com, and blog.typhed.com from GitHub Pages to their Cloudflare
+Workers. The sites are a work in progress with no real users, so a short outage is acceptable and the whole move fits in
+one sitting. The order below still avoids an outage, at no extra cost: all four hostnames are already proxied through
+Cloudflare, so the Workers take over the moment their routes attach, before any DNS record changes. Branch
+`cutover/routes` sits one commit ahead of `master` and carries those routes.
 
-## 1. Before You Start
+## Where Things Stand
 
-  - [ ] On a machine without network restrictions, run the gates with no workarounds:
-    `pnpm install --frozen-lockfile && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
-  - [ ] With a Clerk **development** key in the root `.env.local`, sign in on all three apps locally.
-  - [ ] `typhed/typhed.project.data` reads `api.json`, `products.json`, and `profile.json`: point it at
-    `packages/brand/` in this repository.
+  - [x] The gates pass on the owner's machine (2026-11-17), with the results in
+    [owner-machine-checks.md](owner-machine-checks.md).
+  - [x] **First look.** On 2026-11-17 the three Workers went up from the owner's machine on the account's `workers.dev`
+    subdomain, `typhed-main`, at `https://typhed-<app>.typhed-main.workers.dev`. Every page check in step 2 passes
+    there in both themes and at phone width, apart from the prefetch 404s of a Windows build. The pipeline builds on
+    Linux and has none.
+  - [x] typhed.com, `www`, `trading`, and `blog` resolve through the Cloudflare proxy to GitHub Pages, which also
+    answers the 301 from `www` to the apex. The `clerk` and `accounts` records point at Clerk (checked 2026-11-17).
 
-## 2. Prepare Cloudflare And GitHub
+## 1. Prepare, With Nothing Visible Changing
 
-  - [ ] **Account ID:** Cloudflare dashboard -> Workers & Pages -> copy the Account ID from the right-hand panel.
-  - [ ] **API token:** My Profile -> API Tokens -> Create Token -> template **Edit Cloudflare Workers** -> Account
-    Resources: your account; Zone Resources: `typhed.com` -> Create, and copy the token once.
-  - [ ] **Secrets:** `typhed/typhed.github.io` -> Settings -> Secrets and variables -> Actions -> New repository secret:
-    `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-  - [ ] **Variables:** same page, Variables tab: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (the production key) and the
-    blog's analytics values listed in `.env.example`. Every `NEXT_PUBLIC_*` Variable reaches every build.
+  - [ ] **Clerk.** Delete the test users from the production instance for a clean start. Under Domains, check that
+    `clerk.typhed.com` and `accounts.typhed.com` show as verified, and copy the production publishable key
+    (`pk_live_...`). Step 2 tests sign-in on typhed.com, so a local check with a development key is optional.
+  - [ ] **API token.** Cloudflare: My Profile -> API Tokens -> Create Token -> template **Edit Cloudflare Workers** ->
+    Account Resources: the HUF account; Zone Resources: `typhed.com` -> Create, and copy the token once.
+  - [ ] **Secrets.** `typhed/typhed.github.io` -> Settings -> Secrets and variables -> Actions -> New repository secret:
+    `CLOUDFLARE_API_TOKEN`, and `CLOUDFLARE_ACCOUNT_ID` with the Account ID from the Workers & Pages page.
+  - [ ] **Variables.** Same page, Variables tab: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` with the production key. The deploy
+    stops without it. Leave out the blog's analytics Variables until the analytics question in [gaps.md](../gaps.md)
+    has an answer, because every `NEXT_PUBLIC_*` Variable reaches every build.
+  - [ ] **www redirect.** Rules -> Redirect Rules -> Create rule -> template **Redirect from WWW to root**: hostname
+    equals `www.typhed.com`, dynamic target `concat("https://typhed.com", http.request.uri.path)`, status 301, preserve
+    query string. The edge then answers the same 301 that GitHub Pages sends today.
+  - [ ] **Account backend.** `typhed/typhed.project.data` reads `api.json`, `products.json`, and `profile.json`: point
+    it at `packages/brand/` in this repository.
 
-## 3. Land The Branch And Check The Workers
+## 2. Go Live With One Push
 
-  - [ ] Push `master` and `cutover/routes`: `git push origin master cutover/routes`.
-  - [ ] The **Deploy to Cloudflare Workers** run publishes `typhed-web`, `typhed-trading`, and `typhed-blogging`. Each
-    Worker's `*.workers.dev` URL is under Workers & Pages -> the Worker -> Settings -> Domains & Routes.
-  - [ ] Open each `workers.dev` URL and check the header, footer, theme toggle, trading sidebar, `/about/`, a blog post,
-    `/tools/ipo/`, `/budgeting/mnws/`, the 404 page, `/ads.txt` on the blog, and `/permalink/conduct.html` on web.
-    Sign-in does not work on `workers.dev`: the production Clerk key only works on typhed.com hostnames.
+  - [ ] Fast-forward `master` to the routes commit and push it:
+    `git switch master && git merge --ff-only cutover/routes && git push origin master`. If `master` has moved on since
+    the branch was made, run `git switch cutover/routes && git rebase master` first. CI runs the gates, and **Deploy to
+    Cloudflare Workers** builds the three apps on Linux and publishes them with their routes. Each hostname switches to
+    its Worker as its deploy finishes. If the run fails before a deploy, GitHub Pages keeps serving that site.
+  - [ ] **Verify.** `curl -sI https://typhed.com/`, and the same for `trading.typhed.com` and `blog.typhed.com`, shows
+    `server: cloudflare` and no `x-github-request-id` header. `curl -sI https://www.typhed.com/` answers 301 to
+    `https://typhed.com/`, and `curl -sI https://typhed.com/permalink/conduct.html` answers 302 to the Code of Conduct.
+    In a browser, check the header, footer, theme toggle, trading sidebar, `/about/`, a blog post, `/tools/ipo/`,
+    `/budgeting/mnws/`, the 404 page, and `/ads.txt` on the blog.
+  - [ ] **Sign-in.** Sign up with a fresh test account on typhed.com, then open trading.typhed.com and blog.typhed.com:
+    you are still signed in. Delete the account afterwards if you like.
 
-## 4. Go Live, In This Order
+## 3. Take GitHub Out Of The Path
 
-  - [ ] **4.1 www redirect.** Rules -> Redirect Rules -> Create rule -> template **Redirect from WWW to root**:
-    hostname equals `www.typhed.com`, dynamic target `concat("https://typhed.com", http.request.uri.path)`, status
-    301, preserve query string.
-  - [ ] **4.2 Routes.** Merge `cutover/routes` into `master`. Its run attaches `typhed.com/*`, `trading.typhed.com/*`,
-    and `blog.typhed.com/*` to the Workers while the proxied DNS records stay in place, so there is no gap.
-  - [ ] **4.3 Verify.** `curl -sI https://typhed.com/` (and the trading and blog hosts) shows no
-    `x-github-request-id` header; `curl -sI https://www.typhed.com/` answers 301 to `https://typhed.com/`;
-    `curl -sI https://typhed.com/permalink/conduct.html` answers 302 to the Code of Conduct. Sign in on typhed.com, then
-    open trading.typhed.com: you are still signed in.
-  - [ ] **4.4 DNS.** Cloudflare -> `typhed.com` -> DNS -> Records. Replace the apex records that point at GitHub
+  - [ ] **DNS.** Cloudflare -> `typhed.com` -> DNS -> Records. Replace the apex records that point at GitHub
     (A `185.199.108.153` to `185.199.111.153`, AAAA `2606:50c0:8000::153` to `2606:50c0:8003::153`) with one
     `AAAA @ 100::` record, Proxied. Edit `www`, `trading`, and `blog` (CNAME `typhed.github.io`) to `AAAA 100::`,
-    Proxied. Leave `clerk`, `accounts`, mail, and verification records untouched.
-  - [ ] **4.5 Purge.** Caching -> Configuration -> Purge Everything.
+    Proxied. The routes answer before any origin, so visitors see no change. Leave every Clerk record (`clerk`,
+    `accounts`, and the `clk` mail records), the mail records, and the verification records untouched.
+  - [ ] **Purge.** Caching -> Configuration -> Purge Everything.
 
-## 5. Turn Off GitHub Pages
+## 4. Turn Off GitHub Pages
 
   - [ ] `typhed/typhed.github.io`: Settings -> Pages -> remove the custom domain and unpublish the site; Settings ->
     Environments -> delete `github-pages`.
@@ -63,22 +74,35 @@ downtime. Work top to bottom; every step is reversible until the DNS records cha
   - [ ] Organisation Settings -> Pages -> Verified domains: keep `typhed.com` verified, so nobody else can claim its
     hostnames on GitHub Pages.
 
-## 6. Clean Up
+## 5. Retire The Merged Repositories
 
-  - [ ] Delete the old tags and releases.
-  - [ ] After a stable week, archive `typhed/blog.typhed.com`, `typhed/trading.typhed.com`, `typhed/shared.documents`,
-    and `typhed/shared.components` (Settings -> General -> Danger Zone -> Archive this repository). Archived
-    repositories stay readable, so old links keep working.
+Four repositories now live inside this monorepo with their full histories, so they can retire. Archive them rather than
+delete them: an archived repository stays readable, so old links, issues, and releases keep working, while deleting
+removes all of that for good. Do it after step 4, because the two product repositories serve their subdomains until
+then.
 
-## 7. Redeploy And Roll Back
+  - [ ] Archive `typhed/blog.typhed.com` and `typhed/trading.typhed.com` (Settings -> General -> Danger Zone -> Archive
+    this repository).
+  - [ ] Archive `typhed/shared.components` and `typhed/shared.documents`.
+  - [ ] Delete the old tags and releases of `typhed/typhed.github.io`.
+  - [ ] In the local clone, `git remote remove blogging`, then the same for `trading`, `shared-components`, and
+    `shared-documents`. Then `git branch -d monorepo cutover/routes`.
 
-  - [ ] **Redeploy:** Actions -> Deploy to Cloudflare Workers -> Run workflow -> `apps` = `all` (or `web`, `trading`,
+These stay: `typhed/typhed.github.io` (this monorepo), `typhed/typhed.project.data` (the account backend's data,
+repointed in step 1), and the organisation's `.github` and `.github-private` repositories.
+
+## 6. Redeploy And Roll Back
+
+  * **Redeploy:** Actions -> Deploy to Cloudflare Workers -> Run workflow -> `apps` = `all` (or `web`, `trading`,
     `blogging`).
-  - [ ] **Deploy from a machine:** `pnpm build`, then `pnpm --filter <app> exec wrangler deploy` with
-    `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set.
-  - [ ] **Roll back:** Workers & Pages -> the Worker -> Deployments -> Rollback, or
+  * **Deploy from a machine:** `pnpm build`, then `pnpm --filter <app> exec wrangler deploy`, after
+    `pnpm exec wrangler login` or with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` set. A build on Windows
+    carries the prefetch-name issue in [owner-machine-checks.md](owner-machine-checks.md), so prefer the workflow.
+  * **Roll back:** Workers & Pages -> the Worker -> Deployments -> Rollback, or
     `pnpm --filter <app> exec wrangler rollback`.
-  - [ ] **Take one site off its Worker:** Workers & Pages -> the Worker -> Settings -> Domains & Routes -> delete its
-    route.
+  * **Take one site off its Worker:** Workers & Pages -> the Worker -> Settings -> Domains & Routes -> delete its
+    route. Before step 3 the site falls back to GitHub Pages; after it, the hostname has nothing to serve.
+  * **Drop the `workers.dev` copies:** once the sites run on their hostnames, `"workers_dev": false` in each
+    `wrangler.jsonc` removes the `typhed-main.workers.dev` addresses, if you no longer want them.
 
 </div>

@@ -8,7 +8,7 @@ one source of truth, so a value lives in exactly one place and everything else r
 ## Commands
 
 ```shell
-# install once: pnpm switches to the pinned 12.x and runs every script on the pinned Node.js 26;
+# install once: pnpm switches to the pinned 12.x and runs the workspace scripts on the pinned Node.js 26;
 # Python 3.13 builds the web app's redirect pages
 $ npm install --global pnpm && pnpm install && pip install -r permalink/requirements.txt
 

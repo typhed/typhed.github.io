@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "50-30-20 (modified) Rule",
   description:
     "The 50-30-20 (modified) rule: the classic 50-30-20 budget split on your first salary, every raise reversed into savings, and windfalls deployed by an editable split - projecting your savings corpus month by month, entirely in your browser, with a reusable JSON export.",
+  alternates: { canonical: "/budgeting/mnws/" },
 }
 
 export default function MnwsBudgetingPage() {

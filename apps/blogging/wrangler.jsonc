@@ -1,6 +1,6 @@
 {
   // An assets-only Worker: Cloudflare serves the static export in ./out, no script runs.
-  "$schema": "./node_modules/wrangler/config-schema.json",
+  "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "typhed-blogging",
   "compatibility_date": "2026-11-01",
   "assets": {

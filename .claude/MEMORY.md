@@ -37,4 +37,6 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 
   * Owner questions: `.claude/docs/gaps.md`.
   * Going live on Cloudflare Workers: `.claude/docs/tasks/cloudflare-cutover.md`.
-  * Checks that need the owner's full machine: `.claude/docs/tasks/owner-machine-checks.md`.
+  * The owner's machine checks (toolchain and gates passed 2026-11-17), the typescript-eslint and wrangler updates due
+    2026-11-18, the first GitHub runs still to watch, and the machine's environment notes:
+    `.claude/docs/tasks/owner-machine-checks.md`.

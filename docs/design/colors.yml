@@ -36,7 +36,7 @@
 #       carry their own literal hex codes that only APPROXIMATE the dark theme:
 #         apps/web/app/opengraph-image.tsx  (1200x630 social card)
 #         apps/web/app/manifest.ts          (PWA background_color / theme_color)
-#         apps/web/app/layout.tsx           (viewport.themeColor + tile meta)
+#         packages/ui/lib/metadata.ts       (viewport.themeColor + tile meta, every app)
 #         packages/brand/assets/            (mark, lockup, favicon artwork)
 #     - IMPORTANT: these do NOT equal the HSL token hexes exactly. They use the
 #       clean Tailwind palette hexes (#22D3EE, #6366F1) and a dedicated brand
@@ -49,9 +49,10 @@
 # -----------------------------------------------------------------------------
 #   Dark ("Midnight Indigo") is the DEFAULT.
 #     apps/web/app/layout.tsx -> <ThemeProvider defaultTheme="dark" enableSystem>
-#   next-themes applies the `.dark` class on <html>. enableSystem means a
-#   first-time visitor with an OS light preference can resolve to light; the
-#   in-app toggle (theme-toggle.tsx) then flips between light/dark explicitly.
+#   next-themes applies the `.dark` class on <html>. A first-time visitor gets
+#   dark whatever the OS preference: enableSystem only allows a "system" theme,
+#   which nothing selects. The in-app toggle (theme-toggle.tsx) flips between
+#   light and dark, and next-themes remembers the choice.
 #   The two themes deliberately SWAP the accent hue:
 #     - Light: primary/brand = INDIGO, secondary accent = CYAN
 #     - Dark : primary/brand = CYAN,   secondary accent = INDIGO/VIOLET
@@ -316,7 +317,7 @@ static_assets:
     hex: "#0B1020"
     used_in:
       - "apps/web/app/manifest.ts (background_color, theme_color)"
-      - "apps/web/app/layout.tsx (viewport.themeColor dark, msapplication-TileColor)"
+      - "packages/ui/lib/metadata.ts (viewport.themeColor dark, msapplication-TileColor)"
       - "apps/web/app/opengraph-image.tsx (canvas gradient start, logo ink)"
     note: >
       Dedicated 'brand navy'. NOTE it is NOT the dark --background token
@@ -326,7 +327,7 @@ static_assets:
   light_theme_color:
     hex: "#F8FAFC"
     used_in:
-      - "apps/web/app/layout.tsx (viewport.themeColor light)"
+      - "packages/ui/lib/metadata.ts (viewport.themeColor light)"
     note: "Matches the light --background token exactly (slate-50)."
 
   opengraph_card:
@@ -474,7 +475,7 @@ change_guide:
   when_changing_brand_colors_also_update_static_assets:
     - "apps/web/app/opengraph-image.tsx (all hardcoded hexes listed above)"
     - "apps/web/app/manifest.ts         (#0B1020 background/theme color)"
-    - "apps/web/app/layout.tsx          (viewport.themeColor light #F8FAFC / dark #0B1020, tile color)"
+    - "packages/ui/lib/metadata.ts      (viewport.themeColor light #F8FAFC / dark #0B1020, tile color)"
     - "packages/brand/assets/           (mark, lockup, favicon artwork - master brand files)"
     - "Reason: raster/SVG/meta colors can't read CSS vars; they drift silently."
   alpha_convention:

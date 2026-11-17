@@ -39,8 +39,9 @@ in the [architecture reference](docs/architecture.md); every design decision is 
 
 ## 🚀 Getting Started
 
-You need pnpm and Python 3.13, which builds the web app's redirect pages. Any recent pnpm switches itself to the version
-the repository pins, then downloads the pinned Node.js 26 LTS and runs every script with it.
+You need Node.js, pnpm, and Python 3.13, which builds the web app's redirect pages. Any recent pnpm switches itself to
+the version the repository pins, then downloads the pinned Node.js 26 LTS and runs the workspace scripts with it. The
+install itself runs the build steps of `esbuild` and `workerd` on the Node.js already on your `PATH`.
 
 ```shell
 $ npm install --global pnpm
