@@ -17,22 +17,22 @@ export default function HomePage() {
 
   return (
     <div className="container max-w-3xl py-16 sm:py-24">
-      <section className="mb-16 animate-fade-up">
-        <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <section className="animate-fade-up mb-16">
+        <h1 className="font-display text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
           {SITE.name}
         </h1>
-        <p className="mt-4 text-lg leading-8 text-muted-foreground">{SITE.description}</p>
+        <p className="text-muted-foreground mt-4 text-lg leading-8">{SITE.description}</p>
       </section>
 
       <section>
-        <h2 className="mb-6 font-display text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="font-display text-muted-foreground mb-6 text-sm font-semibold uppercase tracking-wider">
           Latest posts
         </h2>
 
         {posts.length === 0 ? (
           <p className="text-muted-foreground">
-            No posts yet. Add an <code>.mdx</code> file to{" "}
-            <code>content/blog/</code> to publish your first post.
+            No posts yet. Add an <code>.mdx</code> file to <code>content/blog/</code> to publish
+            your first post.
           </p>
         ) : (
           <ul className="space-y-6">
@@ -40,24 +40,24 @@ export default function HomePage() {
               <li key={post.slug} className="group">
                 <Link
                   href={`/blog/${post.slug}/`}
-                  className="block rounded-xl border border-border bg-card/50 p-6 transition-colors hover:border-brand/50"
+                  className="border-border bg-card/50 hover:border-brand/50 block rounded-xl border p-6 transition-colors"
                 >
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                     <AccessBadge category={post.accessCategory} />
                     <time dateTime={post.date}>{formatDate(post.date)}</time>
                     <span aria-hidden="true">·</span>
                     <span>{post.readingTimeText}</span>
                   </div>
-                  <h3 className="mt-2 font-display text-xl font-semibold text-foreground transition-colors group-hover:text-brand">
+                  <h3 className="font-display text-foreground group-hover:text-brand mt-2 text-xl font-semibold transition-colors">
                     {post.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{post.description}</p>
+                  <p className="text-muted-foreground mt-2 text-sm leading-6">{post.description}</p>
                   {post.tags.length > 0 ? (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {post.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
+                          className="bg-muted text-muted-foreground rounded-full px-2.5 py-0.5 text-xs"
                         >
                           {tag}
                         </span>

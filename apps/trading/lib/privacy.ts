@@ -1,6 +1,6 @@
-import { IPO_STORAGE_KEY, LEGACY_IPO_STORAGE_KEYS } from "@/lib/ipo/types";
-import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types";
-import { DB_NAME } from "@/lib/storage";
+import { IPO_STORAGE_KEY, LEGACY_IPO_STORAGE_KEYS } from "@/lib/ipo/types"
+import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types"
+import { DB_NAME } from "@/lib/storage"
 
 /**
  * Every browser-storage location this site writes user data to. Add new
@@ -11,7 +11,7 @@ const LOCAL_STORAGE_KEYS: readonly string[] = [
   IPO_STORAGE_KEY,
   ...LEGACY_IPO_STORAGE_KEYS,
   MNWS_STORAGE_KEY,
-];
+]
 
 /**
  * Erase every piece of user data this site stores in the browser: tool
@@ -24,18 +24,18 @@ const LOCAL_STORAGE_KEYS: readonly string[] = [
 export async function clearAllLocalData(): Promise<void> {
   try {
     for (const key of LOCAL_STORAGE_KEYS) {
-      window.localStorage.removeItem(key);
+      window.localStorage.removeItem(key)
     }
   } catch {
     // Storage may be blocked entirely; nothing more to do.
   }
 
-  if (typeof indexedDB === "undefined") return;
+  if (typeof indexedDB === "undefined") return
   await new Promise<void>((resolve) => {
-    const request = indexedDB.deleteDatabase(DB_NAME);
-    request.onsuccess = () => resolve();
-    request.onerror = () => resolve();
+    const request = indexedDB.deleteDatabase(DB_NAME)
+    request.onsuccess = () => resolve()
+    request.onerror = () => resolve()
     // Another open tab holds the database; deletion completes when it closes.
-    request.onblocked = () => resolve();
-  });
+    request.onblocked = () => resolve()
+  })
 }

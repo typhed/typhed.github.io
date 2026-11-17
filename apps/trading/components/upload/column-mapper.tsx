@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import type { ColumnMapping, TimeFormat } from "@typhed/chart-engine";
-import { missingRequiredFields } from "@typhed/chart-engine";
+import type { ColumnMapping, TimeFormat } from "@typhed/chart-engine"
+import { missingRequiredFields } from "@typhed/chart-engine"
 
-import { Button } from "@typhed/ui/components/ui/button";
+import { Button } from "@typhed/ui/components/ui/button"
 
 const REQUIRED: Array<{ key: keyof ColumnMapping; label: string }> = [
   { key: "time", label: "Timestamp" },
@@ -11,7 +11,7 @@ const REQUIRED: Array<{ key: keyof ColumnMapping; label: string }> = [
   { key: "high", label: "High" },
   { key: "low", label: "Low" },
   { key: "close", label: "Close" },
-];
+]
 
 const TIME_FORMATS: Array<{ value: TimeFormat; label: string }> = [
   { value: "auto", label: "Auto-detect" },
@@ -19,10 +19,10 @@ const TIME_FORMATS: Array<{ value: TimeFormat; label: string }> = [
   { value: "unix_s", label: "Unix seconds" },
   { value: "unix_ms", label: "Unix milliseconds" },
   { value: "excel", label: "Excel serial date" },
-];
+]
 
 const selectClass =
-  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
 /**
  * Confirm-the-mapping step. Auto-detected columns are pre-filled but nothing is
@@ -35,24 +35,23 @@ export function ColumnMapper({
   onConfirm,
   onCancel,
 }: {
-  headers: string[];
-  mapping: ColumnMapping;
-  onChange: (mapping: ColumnMapping) => void;
-  onConfirm: () => void;
-  onCancel: () => void;
+  headers: string[]
+  mapping: ColumnMapping
+  onChange: (mapping: ColumnMapping) => void
+  onConfirm: () => void
+  onCancel: () => void
 }) {
-  const missing = missingRequiredFields(mapping);
+  const missing = missingRequiredFields(mapping)
 
   function set<K extends keyof ColumnMapping>(key: K, value: ColumnMapping[K]) {
-    onChange({ ...mapping, [key]: value });
+    onChange({ ...mapping, [key]: value })
   }
 
   return (
-    <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-6">
+    <div className="border-border bg-card mx-auto max-w-2xl rounded-lg border p-6">
       <h2 className="font-display text-lg font-semibold">Map your columns</h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Confirm which column holds each value. Timestamps without a timezone are
-        read as UTC.
+      <p className="text-muted-foreground mt-1 text-sm">
+        Confirm which column holds each value. Timestamps without a timezone are read as UTC.
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -110,16 +109,10 @@ export function ColumnMapper({
         <Button variant="ghost" size="sm" onClick={onCancel}>
           Choose a different file
         </Button>
-        <Button
-          variant="brand"
-          onClick={onConfirm}
-          disabled={missing.length > 0}
-        >
-          {missing.length > 0
-            ? `Map ${missing.join(", ")}`
-            : "Render chart"}
+        <Button variant="brand" onClick={onConfirm} disabled={missing.length > 0}>
+          {missing.length > 0 ? `Map ${missing.join(", ")}` : "Render chart"}
         </Button>
       </div>
     </div>
-  );
+  )
 }

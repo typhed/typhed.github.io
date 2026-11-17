@@ -1,26 +1,26 @@
-"use client";
+"use client"
 
-import { cn } from "@typhed/ui/lib/utils";
-import { fmtInr, fmtNumber, fmtPercent, signTone } from "@/lib/format";
-import type { IpoMeta } from "@/lib/ipo/types";
-import type { IpoMetrics } from "@/lib/ipo/analytics";
-import { StatTile } from "@/components/tools/controls";
+import { cn } from "@typhed/ui/lib/utils"
+import { fmtInr, fmtNumber, fmtPercent, signTone } from "@/lib/format"
+import type { IpoMeta } from "@/lib/ipo/types"
+import type { IpoMetrics } from "@/lib/ipo/analytics"
+import { StatTile } from "@/components/tools/controls"
 
 function countdownLabel(days: number): string | null {
-  if (!Number.isFinite(days)) return null;
-  if (days > 1) return `Lists in ${days} days`;
-  if (days === 1) return "Lists tomorrow";
-  if (days === 0) return "Lists today";
-  if (days === -1) return "Listed yesterday";
-  return `Listed ${Math.abs(days)} days ago`;
+  if (!Number.isFinite(days)) return null
+  if (days > 1) return `Lists in ${days} days`
+  if (days === 1) return "Lists tomorrow"
+  if (days === 0) return "Lists today"
+  if (days === -1) return "Listed yesterday"
+  return `Listed ${Math.abs(days)} days ago`
 }
 
 export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetrics }) {
-  const countdown = countdownLabel(metrics.daysToListing);
-  const gainTone = signTone(metrics.listingGainPct);
+  const countdown = countdownLabel(metrics.daysToListing)
+  const gainTone = signTone(metrics.listingGainPct)
 
   return (
-    <section className="rounded-lg border border-border bg-card p-6">
+    <section className="border-border bg-card rounded-lg border p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
@@ -28,7 +28,7 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               {meta.companyName || "Untitled IPO"}
             </h2>
             {meta.nseSymbol && (
-              <span className="rounded-full border border-border bg-muted px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <span className="border-border bg-muted text-muted-foreground rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide">
                 NSE: {meta.nseSymbol}
               </span>
             )}
@@ -43,13 +43,14 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               {meta.applicationType}
             </span>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Price band {fmtInr(meta.priceBand.min, 0)} - {fmtInr(meta.priceBand.max, 0)} &middot; Lot{" "}
-            {fmtNumber(meta.lotSize, 0)} shares &middot; Min investment {fmtInr(metrics.minInvestment, 0)}
+          <p className="text-muted-foreground mt-1 text-sm">
+            Price band {fmtInr(meta.priceBand.min, 0)} - {fmtInr(meta.priceBand.max, 0)} &middot;
+            Lot {fmtNumber(meta.lotSize, 0)} shares &middot; Min investment{" "}
+            {fmtInr(metrics.minInvestment, 0)}
           </p>
         </div>
         {countdown && (
-          <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
+          <span className="border-brand/30 bg-brand/10 text-brand rounded-full border px-3 py-1 text-xs font-medium">
             {countdown}
           </span>
         )}
@@ -70,7 +71,9 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
         <StatTile label="Latest GMP" value={fmtInr(metrics.latestGmp, 0)} tone="brand" />
         <StatTile
           label="Est. listing gain"
-          value={Number.isFinite(metrics.listingGainPct) ? fmtPercent(metrics.listingGainPct, 1) : "-"}
+          value={
+            Number.isFinite(metrics.listingGainPct) ? fmtPercent(metrics.listingGainPct, 1) : "-"
+          }
           tone={gainTone}
           note={`est. ${fmtInr(metrics.estListingPrice, 0)}`}
         />
@@ -82,5 +85,5 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
         />
       </div>
     </section>
-  );
+  )
 }

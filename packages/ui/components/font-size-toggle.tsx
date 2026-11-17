@@ -85,15 +85,13 @@ export function FontSizeToggle() {
 
   const offset = current * FONT_STEP_PX
   const label =
-    current === 0
-      ? "Text size: default"
-      : `Text size: ${offset > 0 ? "+" : ""}${offset}px`
+    current === 0 ? "Text size: default" : `Text size: ${offset > 0 ? "+" : ""}${offset}px`
 
   return (
     <div
       role="group"
       aria-label="Text size"
-      className="inline-flex h-8 shrink-0 items-center overflow-hidden rounded-full border border-border bg-secondary transition-colors hover:border-brand/50"
+      className="border-border bg-secondary hover:border-brand/50 inline-flex h-8 shrink-0 items-center overflow-hidden rounded-full border transition-colors"
     >
       <button
         type="button"

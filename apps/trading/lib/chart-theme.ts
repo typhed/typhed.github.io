@@ -1,13 +1,13 @@
 /** Colour set for the lightweight-charts canvas, resolved per theme. */
 export interface ChartColors {
-  background: string;
-  textColor: string;
-  grid: string;
-  border: string;
-  up: string;
-  down: string;
-  upFill: string;
-  downFill: string;
+  background: string
+  textColor: string
+  grid: string
+  border: string
+  up: string
+  down: string
+  upFill: string
+  downFill: string
 }
 
 /**
@@ -27,7 +27,7 @@ export function chartColors(isDark: boolean): ChartColors {
       down: "#ef5350",
       upFill: "rgba(38, 166, 154, 0.45)",
       downFill: "rgba(239, 83, 80, 0.45)",
-    };
+    }
   }
   return {
     background: "transparent",
@@ -38,5 +38,5 @@ export function chartColors(isDark: boolean): ChartColors {
     down: "#e0524f",
     upFill: "rgba(15, 157, 143, 0.4)",
     downFill: "rgba(224, 82, 79, 0.4)",
-  };
+  }
 }

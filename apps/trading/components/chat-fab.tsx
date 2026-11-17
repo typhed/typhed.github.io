@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { MessageCircle, X } from "lucide-react";
+import * as React from "react"
+import { MessageCircle, X } from "lucide-react"
 
-import { cn } from "@typhed/ui/lib/utils";
-import { ChatPanel } from "@/components/chat/chat-panel";
+import { cn } from "@typhed/ui/lib/utils"
+import { ChatPanel } from "@/components/chat/chat-panel"
 
 /**
  * Bottom-right floating chat launcher. Opens the assistant panel, which is a
  * working chat UI shell wired for a future AI backend (see ChatPanel).
  */
 export function ChatFab() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
@@ -27,13 +27,13 @@ export function ChatFab() {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          "flex h-14 w-14 items-center justify-center rounded-full text-brand-foreground shadow-lg transition-transform hover:scale-105",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-          "bg-gradient-to-br from-brand to-brand-2",
+          "text-brand-foreground flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105",
+          "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "from-brand to-brand-2 bg-gradient-to-br",
         )}
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>
     </div>
-  );
+  )
 }

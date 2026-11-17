@@ -1,6 +1,6 @@
-import type { Candle } from "../types";
-import { ema, emaSeries } from "./moving-average";
-import type { MacdPoint } from "./types";
+import type { Candle } from "../types"
+import { ema, emaSeries } from "./moving-average"
+import type { MacdPoint } from "./types"
 
 /**
  * MACD: (EMA(fast) - EMA(slow)) with a signal line = EMA(signalPeriod) of the
@@ -14,22 +14,22 @@ export function macd(
   slowPeriod = 26,
   signalPeriod = 9,
 ): MacdPoint[] {
-  if (candles.length === 0) return [];
+  if (candles.length === 0) return []
 
-  const fast = ema(candles, fastPeriod);
-  const slow = ema(candles, slowPeriod);
+  const fast = ema(candles, fastPeriod)
+  const slow = ema(candles, slowPeriod)
 
   const macdLine = candles.map((candle, index) => ({
     time: candle.time,
     value: fast[index]!.value - slow[index]!.value,
-  }));
+  }))
 
-  const signal = emaSeries(macdLine, signalPeriod);
+  const signal = emaSeries(macdLine, signalPeriod)
 
   return macdLine.map((point, index) => ({
     time: point.time,
     macd: point.value,
     signal: signal[index]!.value,
     histogram: point.value - signal[index]!.value,
-  }));
+  }))
 }

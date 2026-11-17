@@ -30,7 +30,7 @@ export function ScrollToTop() {
       tabIndex={visible ? 0 : -1}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className={cn(
-        "group fixed bottom-6 left-1/2 z-40 inline-flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-border bg-background/70 text-muted-foreground shadow-lg ring-offset-background backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-brand/50 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "border-border bg-background/70 text-muted-foreground ring-offset-background hover:border-brand/50 hover:text-brand focus-visible:ring-ring group fixed bottom-6 left-1/2 z-40 inline-flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border shadow-lg backdrop-blur-md transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         visible ? "opacity-100" : "pointer-events-none opacity-0",
       )}
     >

@@ -15,12 +15,12 @@ import type {
   IpoDataset,
   Milestone,
   SubscriptionRow,
-} from "./types";
-import { FIXED_MILESTONE_LABELS, SCHEMA_VERSION } from "./types";
-import { newId } from "@/lib/id";
+} from "./types"
+import { FIXED_MILESTONE_LABELS, SCHEMA_VERSION } from "./types"
+import { newId } from "@/lib/id"
 
 export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 /**
@@ -29,31 +29,27 @@ export function makeMilestone(init: Omit<Milestone, "id">): Milestone {
  * while keeping the fixed rows so they can be filled in again.
  */
 export function blankFixedMilestones(): Milestone[] {
-  return FIXED_MILESTONE_LABELS.map((label) =>
-    makeMilestone({ label, date: "", fixed: true }),
-  );
+  return FIXED_MILESTONE_LABELS.map((label) => makeMilestone({ label, date: "", fixed: true }))
 }
 
 export function makeFinancialRow(init: Omit<FinancialRow, "id">): FinancialRow {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 export function makeGmpRow(init: Omit<GmpRow, "id">): GmpRow {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 export function makeContributor(init: Omit<Contributor, "id">): Contributor {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 export function makeApplication(init: Omit<Application, "id">): Application {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
-export function makeSubscriptionRow(
-  init: Omit<SubscriptionRow, "id">,
-): SubscriptionRow {
-  return { id: newId(), ...init };
+export function makeSubscriptionRow(init: Omit<SubscriptionRow, "id">): SubscriptionRow {
+  return { id: newId(), ...init }
 }
 
 /** The seed IPO - identical to the source spreadsheet screenshot. */
@@ -136,9 +132,9 @@ export function defaultIpoDataset(): IpoDataset {
       makeSubscriptionRow({ category: "SHAREHOLDER", timesSubscribed: 9.52 }),
       makeSubscriptionRow({ category: "OVERALL", timesSubscribed: 41.73 }),
     ],
-  };
+  }
 }
 
 /** A ready-made instance for initial React state / SSR. Ids are minted once at
  * module load; they are only React keys and are never rendered or persisted. */
-export const DEFAULT_IPO_DATASET: IpoDataset = defaultIpoDataset();
+export const DEFAULT_IPO_DATASET: IpoDataset = defaultIpoDataset()

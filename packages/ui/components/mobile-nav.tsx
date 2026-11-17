@@ -50,7 +50,7 @@ export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
       {open ? (
         <div
           id="mobile-menu"
-          className="absolute inset-x-0 top-full z-50 border-b border-border/40 bg-background/95 backdrop-blur-md"
+          className="border-border/40 bg-background/95 absolute inset-x-0 top-full z-50 border-b backdrop-blur-md"
         >
           <nav aria-label="Primary" className="container flex flex-col gap-1 py-4">
             {NAV_LINKS.map((link) => (
@@ -58,10 +58,8 @@ export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                {...(link.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="text-muted-foreground hover:bg-accent hover:text-foreground rounded-md px-3 py-2 text-sm font-medium transition-colors"
               >
                 {link.label}
               </a>

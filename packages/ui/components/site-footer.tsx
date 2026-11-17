@@ -50,16 +50,14 @@ const SOCIAL_ICON_LINKS = SOCIAL_LINKS.filter((link) => link.icon !== "mail")
 function FooterLinkGroup({ column }: { column: FooterColumn }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-foreground">{column.heading}</h2>
+      <h2 className="text-foreground text-sm font-semibold">{column.heading}</h2>
       <nav aria-label={column.heading} className="mt-4 flex flex-col gap-3">
         {column.links.map((link) => (
           <a
             key={link.label}
             href={link.href}
-            {...(link.external
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {})}
-            className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-brand"
+            {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="text-muted-foreground hover:text-brand inline-flex w-fit items-center gap-1 text-sm transition-colors"
           >
             {link.label}
             {link.external ? (
@@ -94,7 +92,7 @@ export function SiteFooter({ className }: { className?: string }) {
   return (
     <footer
       className={cn(
-        "relative z-10 w-full border-t border-border bg-card bg-gradient-to-b from-brand/5 to-brand-2/5",
+        "border-border bg-card from-brand/5 to-brand-2/5 relative z-10 w-full border-t bg-gradient-to-b",
         className,
       )}
     >
@@ -119,23 +117,18 @@ export function SiteFooter({ className }: { className?: string }) {
           ))}
 
           <div>
-            <h2 className="text-sm font-semibold text-foreground">Contact Us</h2>
+            <h2 className="text-foreground text-sm font-semibold">Contact Us</h2>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="mt-4 inline-block text-sm text-muted-foreground transition-colors hover:text-brand"
+              className="text-muted-foreground hover:text-brand mt-4 inline-block text-sm transition-colors"
             >
               {CONTACT_EMAIL}
             </a>
 
             {SOCIAL_ICON_LINKS.length > 0 ? (
               <div className="mt-6">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Social Connect
-                </h3>
-                <nav
-                  aria-label="Social media"
-                  className="mt-4 flex items-center gap-3"
-                >
+                <h3 className="text-foreground text-sm font-semibold">Social Connect</h3>
+                <nav aria-label="Social media" className="mt-4 flex items-center gap-3">
                   {SOCIAL_ICON_LINKS.map((link) => {
                     const Icon = SOCIAL_ICONS[link.icon]
                     return (
@@ -144,10 +137,8 @@ export function SiteFooter({ className }: { className?: string }) {
                         href={link.href}
                         aria-label={link.label}
                         title={link.label}
-                        {...(link.external
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/40 text-muted-foreground transition-colors hover:border-brand/50 hover:text-brand"
+                        {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        className="border-border bg-background/40 text-muted-foreground hover:border-brand/50 hover:text-brand inline-flex h-9 w-9 items-center justify-center rounded-full border transition-colors"
                       >
                         <Icon className="h-4 w-4" />
                       </a>
@@ -160,13 +151,10 @@ export function SiteFooter({ className }: { className?: string }) {
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="container flex flex-col gap-4 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-border border-t">
+        <div className="text-muted-foreground container flex flex-col gap-4 py-6 text-xs sm:flex-row sm:items-center sm:justify-between">
           <p>{COPYRIGHT.line1}</p>
-          <a
-            href={PRIVACY_LINK.href}
-            className="transition-colors hover:text-brand"
-          >
+          <a href={PRIVACY_LINK.href} className="hover:text-brand transition-colors">
             {PRIVACY_LINK.label}
           </a>
         </div>

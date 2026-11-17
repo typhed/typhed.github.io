@@ -1,20 +1,14 @@
-import { fmtInr } from "@/lib/format";
-import type { MnwsResult } from "@/lib/budgeting/mnws/engine";
-import { ToolCard } from "@/components/tools/controls";
+import { fmtInr } from "@/lib/format"
+import type { MnwsResult } from "@/lib/budgeting/mnws/engine"
+import { ToolCard } from "@/components/tools/controls"
 
 /** A right-aligned numeric cell; renders a muted dash for zero/empty. */
 function Num({ value, muted = false }: { value: number; muted?: boolean }) {
   return (
-    <td
-      className={`px-2 py-1.5 text-right tabular-nums ${muted ? "text-muted-foreground" : ""}`}
-    >
-      {value > 0 ? (
-        fmtInr(value, 0)
-      ) : (
-        <span className="text-muted-foreground">-</span>
-      )}
+    <td className={`px-2 py-1.5 text-right tabular-nums ${muted ? "text-muted-foreground" : ""}`}>
+      {value > 0 ? fmtInr(value, 0) : <span className="text-muted-foreground">-</span>}
     </td>
-  );
+  )
 }
 
 /**
@@ -23,8 +17,8 @@ function Num({ value, muted = false }: { value: number; muted?: boolean }) {
  * A totals row closes the table. ~1 row per year, so it renders in full.
  */
 export function MnwsSchedule({ result }: { result: MnwsResult }) {
-  if (!result.summary.hasData) return null;
-  const { financialYears, summary } = result;
+  if (!result.summary.hasData) return null
+  const { financialYears, summary } = result
 
   return (
     <ToolCard
@@ -34,8 +28,8 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
       <div className="border-border max-h-[28rem] overflow-auto rounded-md border">
         <table className="w-full min-w-[760px] text-xs">
           <caption className="sr-only">
-            Per financial year: income, needs, wants, savings, windfalls,
-            cumulative cash saved and invested corpus.
+            Per financial year: income, needs, wants, savings, windfalls, cumulative cash saved and
+            invested corpus.
           </caption>
           <thead className="bg-card sticky top-0 z-10">
             <tr className="border-border text-muted-foreground border-b text-left">
@@ -71,10 +65,7 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
                 key={fy.startYear}
                 className={`border-border/60 border-b ${fy.windfall > 0 ? "bg-brand/5" : ""}`}
               >
-                <th
-                  scope="row"
-                  className="whitespace-nowrap px-2 py-1.5 text-left font-normal"
-                >
+                <th scope="row" className="whitespace-nowrap px-2 py-1.5 text-left font-normal">
                   {fy.label}
                 </th>
                 <Num value={fy.income} muted />
@@ -99,9 +90,7 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
               <Num value={summary.totalWants} />
               <Num value={summary.totalSavings} />
               <Num value={summary.bonusReceived} />
-              <td className="text-muted-foreground px-2 py-2 text-right tabular-nums">
-                -
-              </td>
+              <td className="text-muted-foreground px-2 py-2 text-right tabular-nums">-</td>
               <td className="text-brand px-2 py-2 text-right tabular-nums">
                 {fmtInr(summary.investedCorpus, 0)}
               </td>
@@ -110,5 +99,5 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
         </table>
       </div>
     </ToolCard>
-  );
+  )
 }

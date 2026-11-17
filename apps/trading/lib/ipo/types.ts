@@ -11,7 +11,7 @@
  * provenance; the parser itself is defensive field-by-field and accepts any
  * older shape, so no per-version migration code exists (yet).
  */
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 5
 
 /**
  * The localStorage key holding the last-edited dataset for this browser,
@@ -22,18 +22,18 @@ export const SCHEMA_VERSION = 5;
  * parser accepts every older shape, so no per-version migration code is
  * needed. The portable JSON file remains importable regardless.
  */
-export const IPO_STORAGE_KEY = `typhed:ipo:v${SCHEMA_VERSION}`;
+export const IPO_STORAGE_KEY = `typhed:ipo:v${SCHEMA_VERSION}`
 
 /** Keys older builds wrote; read once at load, then cleaned up. */
-export const LEGACY_IPO_STORAGE_KEYS = ["typhed:ipo:v2"] as const;
+export const LEGACY_IPO_STORAGE_KEYS = ["typhed:ipo:v2"] as const
 
 /** Whether the issue is on the main board or the SME platform. */
-export const APPLICATION_TYPES = ["MAINBOARD", "SME"] as const;
-export type ApplicationType = (typeof APPLICATION_TYPES)[number];
+export const APPLICATION_TYPES = ["MAINBOARD", "SME"] as const
+export type ApplicationType = (typeof APPLICATION_TYPES)[number]
 
 /** Investor category an application is filed under - drives allotment probability. */
-export const APPLICATION_CATEGORIES = ["RETAIL", "sHNI", "bHNI", "SHAREHOLDER"] as const;
-export type ApplicationCategory = (typeof APPLICATION_CATEGORIES)[number];
+export const APPLICATION_CATEGORIES = ["RETAIL", "sHNI", "bHNI", "SHAREHOLDER"] as const
+export type ApplicationCategory = (typeof APPLICATION_CATEGORIES)[number]
 
 /**
  * Categories the subscription panel may list. The four application categories
@@ -49,50 +49,50 @@ export const SUBSCRIPTION_CATEGORIES = [
   "EMPLOYEE",
   "OVERALL",
   "CUSTOM",
-] as const;
-export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number];
+] as const
+export type SubscriptionCategory = (typeof SUBSCRIPTION_CATEGORIES)[number]
 
 export interface PriceBand {
   /** Lower price band, INR per share. */
-  min: number;
+  min: number
   /** Upper (cut-off) price band, INR per share. */
-  max: number;
+  max: number
 }
 
 export interface IpoMeta {
   /** Free-text company / issue name shown in the header. */
-  companyName: string;
+  companyName: string
   /** NSE trading symbol / ticker, e.g. "SBIFUNDS" (empty when unknown). */
-  nseSymbol: string;
+  nseSymbol: string
   /** Main board vs SME platform. */
-  applicationType: ApplicationType;
+  applicationType: ApplicationType
   /** Shares per lot (integer >= 1). */
-  lotSize: number;
-  priceBand: PriceBand;
+  lotSize: number
+  priceBand: PriceBand
   /** ISO 4217 code; display uses `en-IN` regardless, this is metadata. */
-  currency: string;
+  currency: string
   /** Unit the financial figures are reported in, e.g. "Cr" or "Lakh". */
-  unitLabel: string;
+  unitLabel: string
   /** Equals `SCHEMA_VERSION` when the file was written. */
-  schemaVersion: number;
+  schemaVersion: number
   /** ISO 8601 timestamp stamped at export time (empty until first export). */
-  savedAt: string;
+  savedAt: string
 }
 
 /** A dated event in the IPO lifecycle (Offer Start, Listing Date, ...). */
 export interface Milestone {
   /** Ephemeral React key; stripped from exported JSON, regenerated on load. */
-  id: string;
-  label: string;
+  id: string
+  label: string
   /** ISO date, "yyyy-mm-dd"; may be empty for a fixed milestone with no date set. */
-  date: string;
+  date: string
   /**
    * True for the canonical lifecycle milestones: the editor renders them as
    * read-only, date-only rows (no rename, no delete) and keeps them even with a
    * blank date. Absent / false for user-added ("custom") milestones, which are
    * fully editable, removable and re-orderable.
    */
-  fixed?: boolean;
+  fixed?: boolean
 }
 
 /**
@@ -109,13 +109,13 @@ export const FIXED_MILESTONE_LABELS = [
   "DEMAT Transfer",
   "Listing Date",
   "Mandate End",
-] as const;
+] as const
 
-const FIXED_MILESTONE_SET: ReadonlySet<string> = new Set(FIXED_MILESTONE_LABELS);
+const FIXED_MILESTONE_SET: ReadonlySet<string> = new Set(FIXED_MILESTONE_LABELS)
 
 /** Whether `label` names one of the canonical fixed lifecycle milestones. */
 export function isFixedMilestone(label: string): boolean {
-  return FIXED_MILESTONE_SET.has(label);
+  return FIXED_MILESTONE_SET.has(label)
 }
 
 /**
@@ -124,47 +124,47 @@ export function isFixedMilestone(label: string): boolean {
  * flag existed are still classified correctly.
  */
 export function isMilestoneFixed(milestone: { fixed?: boolean; label: string }): boolean {
-  return milestone.fixed === true || isFixedMilestone(milestone.label);
+  return milestone.fixed === true || isFixedMilestone(milestone.label)
 }
 
 /** One fiscal year of reported financials. */
 export interface FinancialRow {
-  id: string;
+  id: string
   /** Period label as shown, e.g. "Mar'26". */
-  period: string;
-  totalAssets: number;
-  grossRevenue: number;
-  pat: number;
+  period: string
+  totalAssets: number
+  grossRevenue: number
+  pat: number
 }
 
 /** One daily grey-market-premium reading. */
 export interface GmpRow {
-  id: string;
+  id: string
   /** ISO date, "yyyy-mm-dd". */
-  date: string;
+  date: string
   /** GMP in INR per share. */
-  value: number;
+  value: number
 }
 
 /** One person who funded part of an application's corpus. */
 export interface Contributor {
-  id: string;
-  name: string;
+  id: string
+  name: string
   /** Shares this person funds (>= 0) - used in the application's "detailed" mode. */
-  units: number;
+  units: number
   /** INR per share they put in (normally the cut-off / issue price) - "detailed" mode. */
-  price: number;
+  price: number
   /** Corpus in INR, entered directly - used in the application's "total" mode. */
-  amount: number;
+  amount: number
 }
 
 /** How an application's corpus is entered, per contributor row. */
-export const CONTRIBUTION_MODES = ["total", "detailed"] as const;
-export type ContributionMode = (typeof CONTRIBUTION_MODES)[number];
+export const CONTRIBUTION_MODES = ["total", "detailed"] as const
+export type ContributionMode = (typeof CONTRIBUTION_MODES)[number]
 
 /** How an allotment outcome is entered. */
-export const ALLOTMENT_MODES = ["total", "detailed"] as const;
-export type AllotmentMode = (typeof ALLOTMENT_MODES)[number];
+export const ALLOTMENT_MODES = ["total", "detailed"] as const
+export type AllotmentMode = (typeof ALLOTMENT_MODES)[number]
 
 /** Outcome recorded once an application is allotted. */
 export interface AllotmentResult {
@@ -172,47 +172,47 @@ export interface AllotmentResult {
    * "total" (default): the realised profit is entered as a single amount.
    * "detailed": profit is derived from quantity allotted and selling price.
    */
-  mode: AllotmentMode;
+  mode: AllotmentMode
   /** Shares actually received (whole lots) - used in "detailed" mode. */
-  quantityAllotted: number;
+  quantityAllotted: number
   /** INR per share realised on sale (0 if unsold) - used in "detailed" mode. */
-  sellingPrice: number;
+  sellingPrice: number
   /** Realised profit in INR, entered directly - used in "total" mode. */
-  totalAmount: number;
+  totalAmount: number
 }
 
 /** One IPO application, funded by one or more contributors under a single PAN/name. */
 export interface Application {
-  id: string;
+  id: string
   /** Identifier - PAN or name recommended, e.g. "Debmalya Pramanik (ZERODHA)". */
-  name: string;
-  category: ApplicationCategory;
+  name: string
+  category: ApplicationCategory
   /**
    * How each contributor's corpus is entered. "total" (default for new
    * applications): a single INR amount per contributor. "detailed": units x
    * price. Either way the corpus and every downstream figure are the same.
    */
-  contributionMode: ContributionMode;
-  allotted: boolean;
-  allotment: AllotmentResult;
-  contributors: Contributor[];
+  contributionMode: ContributionMode
+  allotted: boolean
+  allotment: AllotmentResult
+  contributors: Contributor[]
 }
 
 /** One category's latest oversubscription reading, "x times". */
 export interface SubscriptionRow {
-  id: string;
-  category: SubscriptionCategory;
+  id: string
+  category: SubscriptionCategory
   /** Free-text name for a user-added ("CUSTOM") row; ignored for fixed categories. */
-  label?: string;
+  label?: string
   /** Times subscribed (>= 0), e.g. 5.2. */
-  timesSubscribed: number;
+  timesSubscribed: number
 }
 
 export interface IpoDataset {
-  meta: IpoMeta;
-  timeline: Milestone[];
-  financials: FinancialRow[];
-  gmp: GmpRow[];
-  applications: Application[];
-  subscription: SubscriptionRow[];
+  meta: IpoMeta
+  timeline: Milestone[]
+  financials: FinancialRow[]
+  gmp: GmpRow[]
+  applications: Application[]
+  subscription: SubscriptionRow[]
 }

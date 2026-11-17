@@ -1,13 +1,18 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
-import { fmtDisplayDate } from "@/lib/format";
-import type { FinancialRow, GmpRow, IpoMeta, Milestone } from "@/lib/ipo/types";
-import { isMilestoneFixed } from "@/lib/ipo/types";
-import { sortedGmp } from "@/lib/ipo/analytics";
-import { blankFixedMilestones, makeFinancialRow, makeGmpRow, makeMilestone } from "@/lib/ipo/defaults";
-import { NumberField, Segmented, TextField } from "@/components/tools/controls";
+import { fmtDisplayDate } from "@/lib/format"
+import type { FinancialRow, GmpRow, IpoMeta, Milestone } from "@/lib/ipo/types"
+import { isMilestoneFixed } from "@/lib/ipo/types"
+import { sortedGmp } from "@/lib/ipo/analytics"
+import {
+  blankFixedMilestones,
+  makeFinancialRow,
+  makeGmpRow,
+  makeMilestone,
+} from "@/lib/ipo/defaults"
+import { NumberField, Segmented, TextField } from "@/components/tools/controls"
 import {
   AddRowButton,
   DateCell,
@@ -18,18 +23,18 @@ import {
   ReorderButtons,
   ResetButton,
   TextCell,
-} from "@/components/tools/editable-table";
+} from "@/components/tools/editable-table"
 
 /** Seed date for a new dated row when "today" is not known yet (pre-hydration). */
-const FALLBACK_ISO_DATE = "2026-01-01";
+const FALLBACK_ISO_DATE = "2026-01-01"
 
 /** Issue details: name, lot size, price band, unit. */
 export function MetaEditor({
   meta,
   onChange,
 }: {
-  meta: IpoMeta;
-  onChange: (patch: Partial<IpoMeta>) => void;
+  meta: IpoMeta
+  onChange: (patch: Partial<IpoMeta>) => void
 }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2">
@@ -87,7 +92,7 @@ export function MetaEditor({
         onChange={(max) => onChange({ priceBand: { ...meta.priceBand, max } })}
       />
     </div>
-  );
+  )
 }
 
 /**
@@ -104,46 +109,46 @@ export function TimelineEditor({
   today,
   onChange,
 }: {
-  milestones: Milestone[];
-  today: string;
-  onChange: (next: Milestone[]) => void;
+  milestones: Milestone[]
+  today: string
+  onChange: (next: Milestone[]) => void
 }) {
   const moveMilestone = (id: string, direction: -1 | 1) => {
-    const idx = milestones.findIndex((m) => m.id === id);
-    const target = idx + direction;
-    if (idx < 0 || target < 0 || target >= milestones.length) return;
-    const next = [...milestones];
-    [next[idx], next[target]] = [next[target]!, next[idx]!];
-    onChange(next);
-  };
+    const idx = milestones.findIndex((m) => m.id === id)
+    const target = idx + direction
+    if (idx < 0 || target < 0 || target >= milestones.length) return
+    const next = [...milestones]
+    ;[next[idx], next[target]] = [next[target]!, next[idx]!]
+    onChange(next)
+  }
 
   const handleReset = () => {
     const confirmed =
       typeof window === "undefined" ||
       window.confirm(
         "Reset the IPO Timeline?\n\nThis clears every milestone date and removes any milestones you added. The fixed milestones stay so you can fill their dates in again.",
-      );
-    if (confirmed) onChange(blankFixedMilestones());
-  };
+      )
+    if (confirmed) onChange(blankFixedMilestones())
+  }
 
   return (
     <div>
       <div className="space-y-2">
-        <div className="hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
+        <div className="text-muted-foreground hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs sm:grid">
           <span>Milestone</span>
           <span>Date</span>
           <span className="sr-only">Actions</span>
         </div>
 
         {milestones.map((milestone, idx) => {
-          const fixed = isMilestoneFixed(milestone);
+          const fixed = isMilestoneFixed(milestone)
           return (
             <div
               key={milestone.id}
               className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
             >
               {fixed ? (
-                <div className="flex items-center rounded-md border border-input bg-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground">
+                <div className="border-input bg-muted text-muted-foreground flex items-center rounded-md border px-2.5 py-1.5 text-sm font-medium">
                   {milestone.label}
                 </div>
               ) : (
@@ -176,7 +181,7 @@ export function TimelineEditor({
                 </div>
               )}
             </div>
-          );
+          )
         })}
       </div>
 
@@ -184,13 +189,16 @@ export function TimelineEditor({
         <AddRowButton
           label="Add milestone"
           onClick={() =>
-            onChange([...milestones, makeMilestone({ label: "New milestone", date: today || FALLBACK_ISO_DATE })])
+            onChange([
+              ...milestones,
+              makeMilestone({ label: "New milestone", date: today || FALLBACK_ISO_DATE }),
+            ])
           }
         />
         <ResetButton label="Reset timeline" onClick={handleReset} />
       </div>
     </div>
-  );
+  )
 }
 
 /** Reported GMP readings. */
@@ -198,20 +206,23 @@ export function GmpEditor({
   rows,
   onChange,
 }: {
-  rows: GmpRow[];
-  onChange: (next: GmpRow[]) => void;
+  rows: GmpRow[]
+  onChange: (next: GmpRow[]) => void
 }) {
-  const ordered = sortedGmp(rows);
+  const ordered = sortedGmp(rows)
   return (
     <div>
       <div className="space-y-2">
-        <div className="hidden grid-cols-[150px_1fr_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
+        <div className="text-muted-foreground hidden grid-cols-[150px_1fr_auto] gap-2 px-1 text-xs sm:grid">
           <span>Date</span>
           <span>GMP (₹)</span>
           <span className="sr-only">Remove</span>
         </div>
         {ordered.map((row) => (
-          <div key={row.id} className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[150px_1fr_auto]">
+          <div
+            key={row.id}
+            className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[150px_1fr_auto]"
+          >
             <DateCell
               ariaLabel="GMP date"
               value={row.date}
@@ -232,12 +243,15 @@ export function GmpEditor({
       <AddRowButton
         label="Add reading"
         onClick={() => {
-          const last = ordered[ordered.length - 1];
-          onChange([...rows, makeGmpRow({ date: last?.date ?? FALLBACK_ISO_DATE, value: last?.value ?? 0 })]);
+          const last = ordered[ordered.length - 1]
+          onChange([
+            ...rows,
+            makeGmpRow({ date: last?.date ?? FALLBACK_ISO_DATE, value: last?.value ?? 0 }),
+          ])
         }}
       />
     </div>
-  );
+  )
 }
 
 /** Company reported financials by fiscal year. */
@@ -245,13 +259,13 @@ export function FinancialsEditor({
   rows,
   onChange,
 }: {
-  rows: FinancialRow[];
-  onChange: (next: FinancialRow[]) => void;
+  rows: FinancialRow[]
+  onChange: (next: FinancialRow[]) => void
 }) {
   return (
     <div>
       <div className="space-y-2">
-        <div className="hidden grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
+        <div className="text-muted-foreground hidden grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 px-1 text-xs sm:grid">
           <span>Period</span>
           <span>Assets</span>
           <span>Revenue</span>
@@ -293,9 +307,12 @@ export function FinancialsEditor({
       <AddRowButton
         label="Add fiscal year"
         onClick={() =>
-          onChange([...rows, makeFinancialRow({ period: "FY", totalAssets: 0, grossRevenue: 0, pat: 0 })])
+          onChange([
+            ...rows,
+            makeFinancialRow({ period: "FY", totalAssets: 0, grossRevenue: 0, pat: 0 }),
+          ])
         }
       />
     </div>
-  );
+  )
 }

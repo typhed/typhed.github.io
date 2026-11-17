@@ -22,77 +22,75 @@
 
 export interface BlockLengthEstimate {
   /** Optimal expected block length for the stationary bootstrap. */
-  stationary: number;
+  stationary: number
   /** Optimal block length for the circular block bootstrap. */
-  circular: number;
+  circular: number
   /** The lag-window parameter m the estimate used. */
-  m: number;
+  m: number
 }
 
-export function optimalBlockLength(
-  series: readonly number[],
-): BlockLengthEstimate {
-  const n = series.length;
+export function optimalBlockLength(series: readonly number[]): BlockLengthEstimate {
+  const n = series.length
   if (n < 20) {
     // Too short for the lag-window machinery; fall back to sqrt-length.
-    const fallback = Math.max(1, Math.round(Math.sqrt(Math.max(1, n))));
-    return { stationary: fallback, circular: fallback, m: 0 };
+    const fallback = Math.max(1, Math.round(Math.sqrt(Math.max(1, n))))
+    return { stationary: fallback, circular: fallback, m: 0 }
   }
 
-  const seriesMean = series.reduce((a, b) => a + b, 0) / n;
-  const eps = series.map((x) => x - seriesMean);
+  const seriesMean = series.reduce((a, b) => a + b, 0) / n
+  const eps = series.map((x) => x - seriesMean)
 
-  const bMax = Math.ceil(Math.min(3 * Math.sqrt(n), n / 3));
-  const kn = Math.max(5, Math.floor(Math.log10(n)));
-  const mMax = Math.ceil(Math.sqrt(n)) + kn;
-  const cv = 2 * Math.sqrt(Math.log10(n) / n);
+  const bMax = Math.ceil(Math.min(3 * Math.sqrt(n), n / 3))
+  const kn = Math.max(5, Math.floor(Math.log10(n)))
+  const mMax = Math.ceil(Math.sqrt(n)) + kn
+  const cv = 2 * Math.sqrt(Math.log10(n) / n)
 
-  const acv = new Float64Array(mMax + 1);
-  const absAcorr = new Float64Array(mMax + 1);
-  let optM: number | null = null;
+  const acv = new Float64Array(mMax + 1)
+  const absAcorr = new Float64Array(mMax + 1)
+  let optM: number | null = null
 
   for (let i = 0; i <= mMax; i += 1) {
-    let v1 = 0;
-    for (let t = i + 1; t < n; t += 1) v1 += eps[t]! * eps[t]!;
-    let v2 = 0;
-    for (let t = 0; t < n - i - 1; t += 1) v2 += eps[t]! * eps[t]!;
-    let cross = 0;
-    for (let t = i; t < n; t += 1) cross += eps[t]! * eps[t - i]!;
-    acv[i] = cross / n;
-    absAcorr[i] = v1 > 0 && v2 > 0 ? Math.abs(cross) / Math.sqrt(v1 * v2) : 0;
+    let v1 = 0
+    for (let t = i + 1; t < n; t += 1) v1 += eps[t]! * eps[t]!
+    let v2 = 0
+    for (let t = 0; t < n - i - 1; t += 1) v2 += eps[t]! * eps[t]!
+    let cross = 0
+    for (let t = i; t < n; t += 1) cross += eps[t]! * eps[t - i]!
+    acv[i] = cross / n
+    absAcorr[i] = v1 > 0 && v2 > 0 ? Math.abs(cross) / Math.sqrt(v1 * v2) : 0
 
     if (i >= kn && optM === null) {
-      let allBelow = true;
+      let allBelow = true
       for (let k = i - kn; k < i; k += 1) {
         if (absAcorr[k]! >= cv) {
-          allBelow = false;
-          break;
+          allBelow = false
+          break
         }
       }
-      if (allBelow) optM = i - kn;
+      if (allBelow) optM = i - kn
     }
   }
 
-  const m = Math.min(optM !== null ? 2 * Math.max(optM, 1) : mMax, mMax);
+  const m = Math.min(optM !== null ? 2 * Math.max(optM, 1) : mMax, mMax)
 
-  let g = 0;
-  let g0 = acv[0]!;
+  let g = 0
+  let g0 = acv[0]!
   for (let k = 1; k <= m; k += 1) {
-    const ratio = k / m;
-    const lam = ratio <= 0.5 ? 1 : 2 * (1 - ratio);
-    g += 2 * lam * k * acv[k]!;
-    g0 += 2 * lam * acv[k]!;
+    const ratio = k / m
+    const lam = ratio <= 0.5 ? 1 : 2 * (1 - ratio)
+    g += 2 * lam * k * acv[k]!
+    g0 += 2 * lam * acv[k]!
   }
 
-  const dSb = 2 * g0 * g0;
-  const dCb = (4 / 3) * g0 * g0;
-  const nCbrt = Math.cbrt(n);
-  const rawSb = dSb > 0 ? Math.cbrt((2 * g * g) / dSb) * nCbrt : 1;
-  const rawCb = dCb > 0 ? Math.cbrt((2 * g * g) / dCb) * nCbrt : 1;
+  const dSb = 2 * g0 * g0
+  const dCb = (4 / 3) * g0 * g0
+  const nCbrt = Math.cbrt(n)
+  const rawSb = dSb > 0 ? Math.cbrt((2 * g * g) / dSb) * nCbrt : 1
+  const rawCb = dCb > 0 ? Math.cbrt((2 * g * g) / dCb) * nCbrt : 1
 
   return {
     stationary: Math.min(Math.max(1, rawSb), bMax),
     circular: Math.min(Math.max(1, rawCb), bMax),
     m,
-  };
+  }
 }

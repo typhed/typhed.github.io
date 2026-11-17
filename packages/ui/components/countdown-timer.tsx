@@ -64,10 +64,10 @@ export function CountdownTimer({ className }: { className?: string }) {
   if (mounted && time.done) {
     return (
       <div className={cn("text-center", className)}>
-        <p className="font-display text-3xl font-semibold text-foreground sm:text-4xl">
+        <p className="font-display text-foreground text-3xl font-semibold sm:text-4xl">
           We are live.
         </p>
-        <p className="mt-2 text-sm text-muted-foreground">Welcome to the future we engineered.</p>
+        <p className="text-muted-foreground mt-2 text-sm">Welcome to the future we engineered.</p>
       </div>
     )
   }
@@ -84,8 +84,8 @@ export function CountdownTimer({ className }: { className?: string }) {
         return (
           <React.Fragment key={unit.key}>
             <div className="flex flex-col items-center">
-              <div className="group relative grid h-20 w-14 place-items-center overflow-hidden rounded-2xl border border-border/60 bg-card/40 shadow-lg shadow-brand/5 backdrop-blur-xl sm:h-28 sm:w-24">
-                <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-brand/70 to-transparent" />
+              <div className="border-border/60 bg-card/40 shadow-brand/5 group relative grid h-20 w-14 place-items-center overflow-hidden rounded-2xl border shadow-lg backdrop-blur-xl sm:h-28 sm:w-24">
+                <span className="via-brand/70 pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent to-transparent" />
                 <span className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/5 to-transparent dark:from-white/[0.04]" />
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.span
@@ -94,21 +94,21 @@ export function CountdownTimer({ className }: { className?: string }) {
                     animate={{ y: "0%", opacity: 1 }}
                     exit={reduceMotion ? { opacity: 0 } : { y: "55%", opacity: 0 }}
                     transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                    className="font-display text-3xl font-semibold tabular-nums text-foreground sm:text-5xl"
+                    className="font-display text-foreground text-3xl font-semibold tabular-nums sm:text-5xl"
                     suppressHydrationWarning
                   >
                     {display}
                   </motion.span>
                 </AnimatePresence>
               </div>
-              <span className="mt-3 text-[calc(0.625rem*var(--font-scale,1))] uppercase tracking-[0.2em] text-muted-foreground sm:text-xs">
+              <span className="text-muted-foreground mt-3 text-[calc(0.625rem*var(--font-scale,1))] uppercase tracking-[0.2em] sm:text-xs">
                 {unit.label}
               </span>
             </div>
             {index < UNITS.length - 1 ? (
               <span
                 aria-hidden="true"
-                className="hidden font-display text-2xl font-light text-brand/50 sm:mb-9 sm:block sm:text-4xl"
+                className="font-display text-brand/50 hidden text-2xl font-light sm:mb-9 sm:block sm:text-4xl"
               >
                 :
               </span>

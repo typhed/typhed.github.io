@@ -9,4 +9,7 @@
  * character class that silently matches nothing, leaving shared components
  * unstyled while the build still succeeds.
  */
-module.exports = ["../../packages/ui/components/**/*.{ts,tsx}", "../../packages/auth/src/**/*.{ts,tsx}"]
+module.exports = [
+  "../../packages/ui/components/**/*.{ts,tsx}",
+  "../../packages/auth/src/**/*.{ts,tsx}",
+]

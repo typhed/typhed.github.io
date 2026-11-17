@@ -64,8 +64,12 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}>
-      <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
+    >
+      <body className="bg-background text-foreground min-h-dvh font-sans antialiased">
         {/* AuthProvider sits inside ThemeProvider so the Clerk modal accent
             follows the active theme. */}
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
@@ -83,7 +87,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <GoogleAnalytics />
         <GoogleAdSense />
         <MicrosoftClarity />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   )

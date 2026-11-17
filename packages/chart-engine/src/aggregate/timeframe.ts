@@ -1,15 +1,15 @@
-import type { UTCTimestamp } from "../types";
+import type { UTCTimestamp } from "../types"
 
-export type TimeframeUnit = "minute" | "hour" | "day" | "week";
+export type TimeframeUnit = "minute" | "hour" | "day" | "week"
 
 export interface Timeframe {
   /** Stable id, e.g. "5m", "1h", "1D". */
-  id: string;
+  id: string
   /** Human label, e.g. "5 minutes". */
-  label: string;
+  label: string
   /** Bucket size in seconds. */
-  seconds: number;
-  unit: TimeframeUnit;
+  seconds: number
+  unit: TimeframeUnit
 }
 
 /**
@@ -29,12 +29,12 @@ export const TIMEFRAMES: readonly Timeframe[] = [
   { id: "4h", label: "4 hours", seconds: 14400, unit: "hour" },
   { id: "1D", label: "1 day", seconds: 86400, unit: "day" },
   { id: "1W", label: "1 week", seconds: 604800, unit: "week" },
-] as const;
+] as const
 
-const SECONDS_PER_DAY = 86400;
+const SECONDS_PER_DAY = 86400
 
 export function timeframeById(id: string): Timeframe | undefined {
-  return TIMEFRAMES.find((tf) => tf.id === id);
+  return TIMEFRAMES.find((tf) => tf.id === id)
 }
 
 /**
@@ -44,11 +44,11 @@ export function timeframeById(id: string): Timeframe | undefined {
  */
 export function bucketStart(time: UTCTimestamp, tf: Timeframe): UTCTimestamp {
   if (tf.unit === "week") {
-    const day = Math.floor(time / SECONDS_PER_DAY);
-    const weekdayFromMonday = ((day + 3) % 7 + 7) % 7;
-    return (day - weekdayFromMonday) * SECONDS_PER_DAY;
+    const day = Math.floor(time / SECONDS_PER_DAY)
+    const weekdayFromMonday = (((day + 3) % 7) + 7) % 7
+    return (day - weekdayFromMonday) * SECONDS_PER_DAY
   }
-  return Math.floor(time / tf.seconds) * tf.seconds;
+  return Math.floor(time / tf.seconds) * tf.seconds
 }
 
 /**
@@ -57,6 +57,6 @@ export function bucketStart(time: UTCTimestamp, tf: Timeframe): UTCTimestamp {
  * the base (weekly is always allowed since 604800 is a multiple of a day/hour).
  */
 export function canAggregate(base: Timeframe, target: Timeframe): boolean {
-  if (target.seconds <= base.seconds) return false;
-  return target.seconds % base.seconds === 0;
+  if (target.seconds <= base.seconds) return false
+  return target.seconds % base.seconds === 0
 }

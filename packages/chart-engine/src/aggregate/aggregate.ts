@@ -1,5 +1,5 @@
-import type { Candle } from "../types";
-import { bucketStart, type Timeframe } from "./timeframe";
+import type { Candle } from "../types"
+import { bucketStart, type Timeframe } from "./timeframe"
 
 /**
  * Aggregate base candles into a higher timeframe.
@@ -17,19 +17,19 @@ import { bucketStart, type Timeframe } from "./timeframe";
  * runs of fractional volumes.
  */
 export function aggregate(base: readonly Candle[], target: Timeframe): Candle[] {
-  const out: Candle[] = [];
+  const out: Candle[] = []
 
-  let current: Candle | null = null;
-  let currentBucket = Number.NaN;
-  let volumeComp = 0; // Kahan running compensation for the open bucket
+  let current: Candle | null = null
+  let currentBucket = Number.NaN
+  let volumeComp = 0 // Kahan running compensation for the open bucket
 
   for (const bar of base) {
-    const bucket = bucketStart(bar.time, target);
+    const bucket = bucketStart(bar.time, target)
 
     if (current === null || bucket !== currentBucket) {
-      if (current !== null) out.push(current);
-      currentBucket = bucket;
-      volumeComp = 0;
+      if (current !== null) out.push(current)
+      currentBucket = bucket
+      volumeComp = 0
       current = {
         time: bucket,
         open: bar.open,
@@ -37,22 +37,22 @@ export function aggregate(base: readonly Candle[], target: Timeframe): Candle[] 
         low: bar.low,
         close: bar.close,
         volume: bar.volume,
-      };
-      continue;
+      }
+      continue
     }
 
-    if (bar.high > current.high) current.high = bar.high;
-    if (bar.low < current.low) current.low = bar.low;
-    current.close = bar.close;
+    if (bar.high > current.high) current.high = bar.high
+    if (bar.low < current.low) current.low = bar.low
+    current.close = bar.close
 
     if (current.volume !== null && bar.volume !== null) {
-      const y = bar.volume - volumeComp;
-      const t = current.volume + y;
-      volumeComp = t - current.volume - y;
-      current.volume = t;
+      const y = bar.volume - volumeComp
+      const t = current.volume + y
+      volumeComp = t - current.volume - y
+      current.volume = t
     }
   }
 
-  if (current !== null) out.push(current);
-  return out;
+  if (current !== null) out.push(current)
+  return out
 }

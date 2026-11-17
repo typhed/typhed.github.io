@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { useEntitlements as useAccountEntitlements, type Tier } from "@typhed/auth";
+import { useEntitlements as useAccountEntitlements, type Tier } from "@typhed/auth"
 
 export type FeatureId =
   | "chart"
@@ -9,14 +9,14 @@ export type FeatureId =
   | "risk-basic"
   | "montecarlo"
   | "advanced"
-  | "risk-parity";
+  | "risk-parity"
 
-export type { Tier };
+export type { Tier }
 
 export interface FeatureMeta {
-  id: FeatureId;
-  label: string;
-  tier: Tier;
+  id: FeatureId
+  label: string
+  tier: Tier
 }
 
 /**
@@ -32,22 +32,22 @@ export const FEATURES: Record<FeatureId, FeatureMeta> = {
   montecarlo: { id: "montecarlo", label: "Monte Carlo", tier: "pro" },
   advanced: { id: "advanced", label: "Advanced analytics", tier: "pro" },
   "risk-parity": { id: "risk-parity", label: "Risk parity", tier: "pro" },
-};
+}
 
 export interface Entitlements {
-  isLoaded: boolean;
-  tier: Tier;
+  isLoaded: boolean
+  tier: Tier
   /** The pro feature slugs granted to this user. */
-  granted: readonly string[];
-  has: (feature: FeatureId) => boolean;
+  granted: readonly string[]
+  has: (feature: FeatureId) => boolean
 }
 
 function grantsFor(tier: Tier, granted: readonly string[]) {
   return (feature: FeatureId): boolean => {
-    if (FEATURES[feature].tier === "free") return true;
-    if (tier === "pro") return true;
-    return granted.includes(feature);
-  };
+    if (FEATURES[feature].tier === "free") return true
+    if (tier === "pro") return true
+    return granted.includes(feature)
+  }
 }
 
 /**

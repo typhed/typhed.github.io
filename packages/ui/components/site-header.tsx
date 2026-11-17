@@ -42,7 +42,7 @@ export function SiteHeader({
   mobileAuthSlot?: React.ReactNode
 } = {}) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-md">
+    <header className="border-border/40 bg-background/70 sticky top-0 z-40 w-full border-b backdrop-blur-md">
       {/*
         Applies the saved text size before the page below paints. Everything
         readable renders after this point, so a visitor on a non-default size
@@ -54,7 +54,7 @@ export function SiteHeader({
         <a
           href="/"
           aria-label={`${SITE.name} home`}
-          className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="focus-visible:ring-ring rounded-md outline-none focus-visible:ring-2"
         >
           <BrandMark />
         </a>
@@ -65,10 +65,8 @@ export function SiteHeader({
               <a
                 key={link.label}
                 href={link.href}
-                {...(link.external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
               >
                 {link.label}
               </a>
@@ -78,12 +76,7 @@ export function SiteHeader({
           {authSlot ? (
             <div className="hidden md:flex md:items-center">{authSlot}</div>
           ) : (
-            <Button
-              asChild
-              variant="default"
-              size="sm"
-              className="hidden md:inline-flex"
-            >
+            <Button asChild variant="default" size="sm" className="hidden md:inline-flex">
               <a href={LOGIN_CTA.href}>{LOGIN_CTA.label}</a>
             </Button>
           )}

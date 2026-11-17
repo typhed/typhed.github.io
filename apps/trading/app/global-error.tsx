@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 /**
  * Root error boundary. It replaces the entire root layout when the layout
@@ -8,8 +8,8 @@
 export default function GlobalError({
   reset,
 }: {
-  error: Error & { digest?: string };
-  reset: () => void;
+  error: Error & { digest?: string }
+  reset: () => void
 }) {
   return (
     <html lang="en">
@@ -31,8 +31,7 @@ export default function GlobalError({
       >
         <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Something went wrong</h1>
         <p style={{ maxWidth: "28rem", fontSize: "0.875rem", color: "#94a3b8" }}>
-          The app hit an unexpected error. Your data lives in this browser and is
-          not lost.
+          The app hit an unexpected error. Your data lives in this browser and is not lost.
         </p>
         <button
           type="button"
@@ -51,5 +50,5 @@ export default function GlobalError({
         </button>
       </body>
     </html>
-  );
+  )
 }

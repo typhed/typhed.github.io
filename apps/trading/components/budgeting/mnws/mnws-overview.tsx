@@ -1,25 +1,25 @@
-import { cn } from "@typhed/ui/lib/utils";
-import { fmtInr, fmtInrCrore, fmtPercent } from "@/lib/format";
-import type { MnwsResult } from "@/lib/budgeting/mnws/engine";
-import { ToolCard, StatTile } from "@/components/tools/controls";
-import { SERIES, SERIES_ORDER } from "./series";
-import { SplitBar } from "./mnws-visuals";
+import { cn } from "@typhed/ui/lib/utils"
+import { fmtInr, fmtInrCrore, fmtPercent } from "@/lib/format"
+import type { MnwsResult } from "@/lib/budgeting/mnws/engine"
+import { ToolCard, StatTile } from "@/components/tools/controls"
+import { SERIES, SERIES_ORDER } from "./series"
+import { SplitBar } from "./mnws-visuals"
 
 /** "X yr Y mo" from a month count. */
 export function fmtDuration(months: number): string {
-  const years = Math.floor(months / 12);
-  const rem = months % 12;
-  const parts: string[] = [];
-  if (years > 0) parts.push(`${years} yr`);
-  if (rem > 0) parts.push(`${rem} mo`);
-  return parts.join(" ") || "0 mo";
+  const years = Math.floor(months / 12)
+  const rem = months % 12
+  const parts: string[] = []
+  if (years > 0) parts.push(`${years} yr`)
+  if (rem > 0) parts.push(`${rem} mo`)
+  return parts.join(" ") || "0 mo"
 }
 
 /** The current needs/wants/savings goal derived from the latest salary. */
 function CurrentGoal({ result }: { result: MnwsResult }) {
-  const { summary } = result;
-  const { currentRates, currentAlloc, currentSalary } = summary;
-  const hasSalary = currentSalary > 0;
+  const { summary } = result
+  const { currentRates, currentAlloc, currentSalary } = summary
+  const hasSalary = currentSalary > 0
 
   return (
     <div className="border-border bg-background rounded-lg border p-4">
@@ -28,10 +28,7 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
           Current needs / wants / savings goal
         </p>
         <p className="text-muted-foreground text-xs">
-          at{" "}
-          {hasSalary
-            ? `${fmtInr(currentSalary, 0)} / month`
-            : "your latest salary"}
+          at {hasSalary ? `${fmtInr(currentSalary, 0)} / month` : "your latest salary"}
         </p>
       </div>
       <SplitBar
@@ -45,13 +42,7 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
       />
       <div className="mt-3 grid gap-2 lg:grid-cols-3">
         {SERIES_ORDER.map((key) => (
-          <div
-            key={key}
-            className={cn(
-              "rounded-md border p-3 text-center",
-              SERIES[key].cardClass,
-            )}
-          >
+          <div key={key} className={cn("rounded-md border p-3 text-center", SERIES[key].cardClass)}>
             <p className="text-muted-foreground inline-flex items-center gap-1.5 text-xs">
               <span
                 className="h-2 w-2 rounded-full"
@@ -73,24 +64,22 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
                   {fmtInr(currentAlloc[key], 0)} / month
                 </span>
               ) : (
-                <span className="text-muted-foreground text-[11px] tabular-nums">
-                  -
-                </span>
+                <span className="text-muted-foreground text-[11px] tabular-nums">-</span>
               )}
             </div>
           </div>
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 /** KPI panel + current-goal summary for the MNWS plan. */
 export function MnwsOverview({ result }: { result: MnwsResult }) {
-  const { summary } = result;
+  const { summary } = result
 
   if (!summary.hasData) {
-    const firstAlloc = result.regimes[0]?.effectiveLabel;
+    const firstAlloc = result.regimes[0]?.effectiveLabel
     return (
       <ToolCard
         title="Plan summary"
@@ -101,12 +90,9 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
             <CurrentGoal result={result} />
             {firstAlloc && (
               <p className="text-muted-foreground mt-3 text-sm">
-                Allocations begin{" "}
-                <span className="text-foreground font-medium">
-                  {firstAlloc}
-                </span>
-                , the month after your first salary. Add earlier salaries or
-                wait for that month to see the full timeline.
+                Allocations begin <span className="text-foreground font-medium">{firstAlloc}</span>,
+                the month after your first salary. Add earlier salaries or wait for that month to
+                see the full timeline.
               </p>
             )}
           </>
@@ -116,7 +102,7 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
           </p>
         )}
       </ToolCard>
-    );
+    )
   }
 
   return (
@@ -161,37 +147,32 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
         />
       </div>
     </ToolCard>
-  );
+  )
 }
 
 /** The prominent bottom-line callout: total saved + the current goal split. */
 export function MnwsBottomLine({ result }: { result: MnwsResult }) {
-  const { summary } = result;
-  if (!summary.hasData) return null;
+  const { summary } = result
+  if (!summary.hasData) return null
 
   const goal = SERIES_ORDER.map(
     (key) => `${SERIES[key].label} ${fmtPercent(summary.currentRates[key], 0)}`,
-  ).join(" · ");
+  ).join(" · ")
 
   return (
     <div className="border-brand/30 bg-brand/10 rounded-lg border p-5">
-      <p className="text-brand text-[11px] font-semibold uppercase tracking-wide">
-        Bottom line
-      </p>
+      <p className="text-brand text-[11px] font-semibold uppercase tracking-wide">Bottom line</p>
       <p className="text-foreground mt-1.5 text-sm leading-relaxed sm:text-base">
-        Over{" "}
-        <span className="font-semibold">{fmtDuration(summary.monthCount)}</span>{" "}
-        of disciplined 50-30-20 (modified) budgeting, you set aside{" "}
-        <span className="font-semibold tabular-nums">
-          {fmtInr(summary.totalSavings, 0)}
-        </span>{" "}
-        in savings — compounding to a corpus of{" "}
+        Over <span className="font-semibold">{fmtDuration(summary.monthCount)}</span> of disciplined
+        50-30-20 (modified) budgeting, you set aside{" "}
+        <span className="font-semibold tabular-nums">{fmtInr(summary.totalSavings, 0)}</span> in
+        savings — compounding to a corpus of{" "}
         <span className="text-brand font-semibold tabular-nums">
           {fmtInr(summary.investedCorpus, 0)}
         </span>{" "}
-        at {fmtPercent(summary.annualReturnPct / 100, 0)} p.a. Your current goal
-        is <span className="font-semibold">{goal}</span>.
+        at {fmtPercent(summary.annualReturnPct / 100, 0)} p.a. Your current goal is{" "}
+        <span className="font-semibold">{goal}</span>.
       </p>
     </div>
-  );
+  )
 }

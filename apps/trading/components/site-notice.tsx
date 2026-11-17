@@ -7,8 +7,8 @@ import { ClearLocalDataButton } from "@/components/clear-local-data"
  */
 export function SiteNotice() {
   return (
-    <div className="border-t border-border/60">
-      <div className="container flex flex-col gap-2 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+    <div className="border-border/60 border-t">
+      <div className="text-muted-foreground container flex flex-col gap-2 py-4 text-xs sm:flex-row sm:items-center sm:justify-between">
         <p>Not investment advice. Verify every figure before you trade.</p>
         <ClearLocalDataButton />
       </div>

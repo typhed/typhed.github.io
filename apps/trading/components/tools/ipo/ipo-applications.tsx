@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { AlertTriangle } from "lucide-react";
+import * as React from "react"
+import { AlertTriangle } from "lucide-react"
 
-import { cn } from "@typhed/ui/lib/utils";
-import { fmtInr, fmtPercent } from "@/lib/format";
+import { cn } from "@typhed/ui/lib/utils"
+import { fmtInr, fmtPercent } from "@/lib/format"
 import type {
   Application,
   ApplicationCategory,
   ContributionMode,
   SubscriptionCategory,
   SubscriptionRow,
-} from "@/lib/ipo/types";
-import { APPLICATION_CATEGORIES } from "@/lib/ipo/types";
-import type { ApplicationMetrics } from "@/lib/ipo/applications";
-import { probabilityOfAllotment } from "@/lib/ipo/applications";
-import { makeApplication, makeContributor, makeSubscriptionRow } from "@/lib/ipo/defaults";
-import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls";
+} from "@/lib/ipo/types"
+import { APPLICATION_CATEGORIES } from "@/lib/ipo/types"
+import type { ApplicationMetrics } from "@/lib/ipo/applications"
+import { probabilityOfAllotment } from "@/lib/ipo/applications"
+import { makeApplication, makeContributor, makeSubscriptionRow } from "@/lib/ipo/defaults"
+import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls"
 import {
   AddRowButton,
   dropRow,
@@ -25,15 +25,15 @@ import {
   RemoveRowButton,
   SelectCell,
   TextCell,
-} from "@/components/tools/editable-table";
+} from "@/components/tools/editable-table"
 
-const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }));
+const CATEGORY_OPTIONS = APPLICATION_CATEGORIES.map((c) => ({ value: c, label: c }))
 
 // Shared by the corpus-input and allotment segmented controls.
 const ENTRY_MODE_OPTIONS = [
   { value: "total", label: "Total Amount" },
   { value: "detailed", label: "Quantity & Price" },
-] as const;
+] as const
 
 // Fixed-category display labels: uppercase throughout except sHNI / bHNI.
 const SUB_LABEL: Record<SubscriptionCategory, string> = {
@@ -45,26 +45,26 @@ const SUB_LABEL: Record<SubscriptionCategory, string> = {
   EMPLOYEE: "EMPLOYEE",
   OVERALL: "OVERALL",
   CUSTOM: "CUSTOM",
-};
+}
 
 function isApplicationCategory(c: SubscriptionCategory): c is ApplicationCategory {
-  return (APPLICATION_CATEGORIES as readonly string[]).includes(c);
+  return (APPLICATION_CATEGORIES as readonly string[]).includes(c)
 }
 
 /** Compact probability for the narrow subscription panel. */
 function formatPercentShort(p: number | null): string {
-  if (p === null) return "-";
-  if (p >= 1) return "100%";
-  return `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`;
+  if (p === null) return "-"
+  if (p >= 1) return "100%"
+  return `${(p * 100).toFixed(p < 0.1 ? 1 : 0)}%`
 }
 
 /** Long, badge-friendly probability label for the application header. */
 function formatProbability(category: ApplicationCategory, p: number | null): string {
-  if (p === null || p >= 1) return formatPercentShort(p);
-  const pct = formatPercentShort(p);
-  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`;
-  if (category === "SHAREHOLDER") return pct;
-  return `>= ${pct}`;
+  if (p === null || p >= 1) return formatPercentShort(p)
+  const pct = formatPercentShort(p)
+  if (category === "RETAIL") return `${pct} · ~1 in ${Math.round(1 / p)}`
+  if (category === "SHAREHOLDER") return pct
+  return `>= ${pct}`
 }
 
 export function IpoApplications({
@@ -75,23 +75,20 @@ export function IpoApplications({
   onApplicationsChange,
   onSubscriptionChange,
 }: {
-  applications: Application[];
-  subscription: SubscriptionRow[];
-  metrics: ApplicationMetrics[];
-  lotSize: number;
-  onApplicationsChange: (next: Application[]) => void;
-  onSubscriptionChange: (next: SubscriptionRow[]) => void;
+  applications: Application[]
+  subscription: SubscriptionRow[]
+  metrics: ApplicationMetrics[]
+  lotSize: number
+  onApplicationsChange: (next: Application[]) => void
+  onSubscriptionChange: (next: SubscriptionRow[]) => void
 }) {
-  const metricsById = React.useMemo(
-    () => new Map(metrics.map((m) => [m.id, m])),
-    [metrics],
-  );
+  const metricsById = React.useMemo(() => new Map(metrics.map((m) => [m.id, m])), [metrics])
 
   const updateApp = (id: string, patch: Partial<Application>) =>
-    onApplicationsChange(patchRow(applications, id, patch));
+    onApplicationsChange(patchRow(applications, id, patch))
 
   const updateContributors = (appId: string, next: Application["contributors"]) =>
-    updateApp(appId, { contributors: next });
+    updateApp(appId, { contributors: next })
 
   return (
     <ToolCard
@@ -102,15 +99,15 @@ export function IpoApplications({
         {/* LEFT - applications */}
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
-            <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
+            <p className="border-border text-muted-foreground rounded-md border border-dashed p-4 text-sm">
               No applications yet. Add one to start tracking. Each application can carry multiple
               contributors - for example, a ₹50L bHNI application funded by two people - and every
-              contributor&apos;s share, expected profit and, once allotted, take-home profit is split
-              by their contribution automatically.
+              contributor&apos;s share, expected profit and, once allotted, take-home profit is
+              split by their contribution automatically.
             </p>
           )}
           {applications.map((app) => {
-            const m = metricsById.get(app.id);
+            const m = metricsById.get(app.id)
             return (
               <ApplicationCard
                 key={app.id}
@@ -119,13 +116,15 @@ export function IpoApplications({
                 lotSize={lotSize}
                 onNameChange={(name) => updateApp(app.id, { name })}
                 onCategoryChange={(category) => updateApp(app.id, { category })}
-                onContributionModeChange={(contributionMode) => updateApp(app.id, { contributionMode })}
+                onContributionModeChange={(contributionMode) =>
+                  updateApp(app.id, { contributionMode })
+                }
                 onAllottedChange={(allotted) => updateApp(app.id, { allotted })}
                 onAllotmentChange={(allotment) => updateApp(app.id, { allotment })}
                 onContributorsChange={(next) => updateContributors(app.id, next)}
                 onRemove={() => onApplicationsChange(dropRow(applications, app.id))}
               />
-            );
+            )
           })}
           <AddRowButton
             label="Add New Application"
@@ -137,8 +136,15 @@ export function IpoApplications({
                   category: "RETAIL",
                   contributionMode: "total",
                   allotted: false,
-                  allotment: { mode: "total", quantityAllotted: 0, sellingPrice: 0, totalAmount: 0 },
-                  contributors: [makeContributor({ name: "Contributor Name", units: 0, price: 0, amount: 0 })],
+                  allotment: {
+                    mode: "total",
+                    quantityAllotted: 0,
+                    sellingPrice: 0,
+                    totalAmount: 0,
+                  },
+                  contributors: [
+                    makeContributor({ name: "Contributor Name", units: 0, price: 0, amount: 0 }),
+                  ],
                 }),
               ])
             }
@@ -146,13 +152,10 @@ export function IpoApplications({
         </div>
 
         {/* RIGHT - subscription status */}
-        <SubscriptionPanel
-          subscription={subscription}
-          onChange={onSubscriptionChange}
-        />
+        <SubscriptionPanel subscription={subscription} onChange={onSubscriptionChange} />
       </div>
     </ToolCard>
-  );
+  )
 }
 
 function ApplicationCard({
@@ -167,26 +170,26 @@ function ApplicationCard({
   onContributorsChange,
   onRemove,
 }: {
-  app: Application;
-  metrics: ApplicationMetrics | undefined;
-  lotSize: number;
-  onNameChange: (name: string) => void;
-  onCategoryChange: (category: ApplicationCategory) => void;
-  onContributionModeChange: (mode: ContributionMode) => void;
-  onAllottedChange: (allotted: boolean) => void;
-  onAllotmentChange: (allotment: Application["allotment"]) => void;
-  onContributorsChange: (next: Application["contributors"]) => void;
-  onRemove: () => void;
+  app: Application
+  metrics: ApplicationMetrics | undefined
+  lotSize: number
+  onNameChange: (name: string) => void
+  onCategoryChange: (category: ApplicationCategory) => void
+  onContributionModeChange: (mode: ContributionMode) => void
+  onAllottedChange: (allotted: boolean) => void
+  onAllotmentChange: (allotment: Application["allotment"]) => void
+  onContributorsChange: (next: Application["contributors"]) => void
+  onRemove: () => void
 }) {
-  const contributors = app.contributors;
-  const isTotalMode = app.contributionMode === "total";
-  const contribMetricsById = new Map((metrics?.contributors ?? []).map((c) => [c.id, c]));
-  const applicationTotal = metrics?.applicationTotal ?? 0;
-  const probText = metrics ? formatProbability(app.category, metrics.probabilityOfWinning) : "-";
-  const actualTone = (metrics?.actualProfit ?? 0) >= 0 ? "positive" : "negative";
+  const contributors = app.contributors
+  const isTotalMode = app.contributionMode === "total"
+  const contribMetricsById = new Map((metrics?.contributors ?? []).map((c) => [c.id, c]))
+  const applicationTotal = metrics?.applicationTotal ?? 0
+  const probText = metrics ? formatProbability(app.category, metrics.probabilityOfWinning) : "-"
+  const actualTone = (metrics?.actualProfit ?? 0) >= 0 ? "positive" : "negative"
 
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
+    <div className="border-border bg-background rounded-lg border p-4">
       {/* header */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-[10rem] flex-1">
@@ -205,7 +208,7 @@ function ApplicationCard({
             type="checkbox"
             checked={app.allotted}
             onChange={(e) => onAllottedChange(e.target.checked)}
-            className="h-4 w-4 rounded border-input"
+            className="border-input h-4 w-4 rounded"
             style={{ accentColor: "hsl(var(--brand))" }}
           />
           ALLOTTED
@@ -214,11 +217,11 @@ function ApplicationCard({
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-        <span className="rounded-full border border-brand/30 bg-brand/10 px-2 py-0.5 font-medium text-brand">
+        <span className="border-brand/30 bg-brand/10 text-brand rounded-full border px-2 py-0.5 font-medium">
           Win Probability: {probText}
         </span>
         {(metrics?.flags ?? []).map((flag) => (
-          <span key={flag} className="inline-flex items-center gap-1 text-warning">
+          <span key={flag} className="text-warning inline-flex items-center gap-1">
             <AlertTriangle className="h-3 w-3" aria-hidden />
             {flag}
           </span>
@@ -227,7 +230,7 @@ function ApplicationCard({
 
       {/* corpus input mode */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
           Corpus Input
         </p>
         <Segmented
@@ -239,7 +242,7 @@ function ApplicationCard({
 
       {/* contributor table */}
       <div className="mt-3">
-        <div className="hidden items-center gap-2 px-1 pb-1 text-[11px] font-medium text-muted-foreground sm:flex">
+        <div className="text-muted-foreground hidden items-center gap-2 px-1 pb-1 text-[11px] font-medium sm:flex">
           <span className="w-6" />
           <span className="min-w-[8rem] flex-1">Contributor(s) Details</span>
           <span className="w-16 text-right">QTY</span>
@@ -250,15 +253,17 @@ function ApplicationCard({
         </div>
         <div className="space-y-2">
           {contributors.map((c, i) => {
-            const cm = contribMetricsById.get(c.id);
+            const cm = contribMetricsById.get(c.id)
             return (
               <div key={c.id} className="flex flex-wrap items-center gap-2">
-                <span className="w-6 text-xs tabular-nums text-muted-foreground">#{i + 1}</span>
+                <span className="text-muted-foreground w-6 text-xs tabular-nums">#{i + 1}</span>
                 <div className="min-w-[8rem] flex-1">
                   <TextCell
                     ariaLabel="Contributor Name"
                     value={c.name}
-                    onChange={(name) => onContributorsChange(patchRow(contributors, c.id, { name }))}
+                    onChange={(name) =>
+                      onContributorsChange(patchRow(contributors, c.id, { name }))
+                    }
                   />
                 </div>
                 <div className="w-16">
@@ -267,7 +272,9 @@ function ApplicationCard({
                     value={c.units}
                     min={0}
                     disabled={isTotalMode}
-                    onChange={(units) => onContributorsChange(patchRow(contributors, c.id, { units }))}
+                    onChange={(units) =>
+                      onContributorsChange(patchRow(contributors, c.id, { units }))
+                    }
                   />
                 </div>
                 <div className="w-20">
@@ -276,7 +283,9 @@ function ApplicationCard({
                     value={c.price}
                     min={0}
                     disabled={isTotalMode}
-                    onChange={(price) => onContributorsChange(patchRow(contributors, c.id, { price }))}
+                    onChange={(price) =>
+                      onContributorsChange(patchRow(contributors, c.id, { price }))
+                    }
                   />
                 </div>
                 {isTotalMode ? (
@@ -285,7 +294,9 @@ function ApplicationCard({
                       ariaLabel="Total Amount"
                       value={c.amount}
                       min={0}
-                      onChange={(amount) => onContributorsChange(patchRow(contributors, c.id, { amount }))}
+                      onChange={(amount) =>
+                        onContributorsChange(patchRow(contributors, c.id, { amount }))
+                      }
                     />
                   </div>
                 ) : (
@@ -293,7 +304,7 @@ function ApplicationCard({
                     {fmtInr(cm?.contribution ?? c.units * c.price, 0)}
                   </span>
                 )}
-                <span className="w-16 text-right text-sm tabular-nums text-muted-foreground">
+                <span className="text-muted-foreground w-16 text-right text-sm tabular-nums">
                   {fmtPercent(cm?.sharePct ?? 0, 1)}
                 </span>
                 <RemoveRowButton
@@ -301,12 +312,12 @@ function ApplicationCard({
                   onClick={() => onContributorsChange(dropRow(contributors, c.id))}
                 />
               </div>
-            );
+            )
           })}
         </div>
 
         {/* totals row */}
-        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2">
+        <div className="border-border mt-2 flex flex-wrap items-center gap-2 border-t pt-2">
           <span className="w-6" />
           <span className="min-w-[8rem] flex-1 text-sm font-medium">Total Corpus</span>
           <span className="w-16" />
@@ -314,7 +325,7 @@ function ApplicationCard({
           <span className="w-24 text-right text-sm font-semibold tabular-nums">
             {fmtInr(applicationTotal, 0)}
           </span>
-          <span className="w-16 text-right text-sm tabular-nums text-muted-foreground">100%</span>
+          <span className="text-muted-foreground w-16 text-right text-sm tabular-nums">100%</span>
           <span className="w-8" />
         </div>
 
@@ -331,10 +342,7 @@ function ApplicationCard({
 
       {/* profit tiles */}
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <StatTile
-          label="Best-Case Profit"
-          value={fmtInr(metrics?.bestCaseProfit ?? 0, 0)}
-        />
+        <StatTile label="Best-Case Profit" value={fmtInr(metrics?.bestCaseProfit ?? 0, 0)} />
         <StatTile
           label="Expected Profit"
           value={fmtInr(metrics?.expectedProfit ?? 0, 0)}
@@ -352,9 +360,9 @@ function ApplicationCard({
 
       {/* allotment panel */}
       {app.allotted && (
-        <div className="mt-4 rounded-md border border-border bg-card p-3">
+        <div className="border-border bg-card mt-4 rounded-md border p-3">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
               Allotment
             </p>
             <Segmented
@@ -391,15 +399,17 @@ function ApplicationCard({
             />
           )}
           <div className="mt-3">
-            <p className="mb-1 text-xs text-muted-foreground">Profit share per contributor</p>
+            <p className="text-muted-foreground mb-1 text-xs">Profit share per contributor</p>
             <ul className="space-y-1 text-sm">
               {contributors.map((c) => {
-                const cm = contribMetricsById.get(c.id);
+                const cm = contribMetricsById.get(c.id)
                 return (
                   <li key={c.id} className="flex items-center justify-between gap-2">
                     <span className="truncate">
                       {c.name}{" "}
-                      <span className="text-muted-foreground">({fmtPercent(cm?.sharePct ?? 0, 0)})</span>
+                      <span className="text-muted-foreground">
+                        ({fmtPercent(cm?.sharePct ?? 0, 0)})
+                      </span>
                     </span>
                     <span
                       className={cn(
@@ -410,50 +420,54 @@ function ApplicationCard({
                       {fmtInr(cm?.actualProfit ?? 0, 0)}
                     </span>
                   </li>
-                );
+                )
               })}
             </ul>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function SubscriptionPanel({
   subscription,
   onChange,
 }: {
-  subscription: SubscriptionRow[];
-  onChange: (next: SubscriptionRow[]) => void;
+  subscription: SubscriptionRow[]
+  onChange: (next: SubscriptionRow[]) => void
 }) {
   const maxTimes = Math.max(
     1,
     ...subscription.map((r) => (Number.isFinite(r.timesSubscribed) ? r.timesSubscribed : 0)),
-  );
+  )
 
   // OVERALL is always pinned last; user-added CUSTOM rows sit above it.
-  const overallRow = subscription.find((r) => r.category === "OVERALL");
-  const leadingRows = subscription.filter((r) => r.category !== "OVERALL");
+  const overallRow = subscription.find((r) => r.category === "OVERALL")
+  const leadingRows = subscription.filter((r) => r.category !== "OVERALL")
 
   const addCustom = () => {
-    const custom = makeSubscriptionRow({ category: "CUSTOM", label: "NEW CATEGORY", timesSubscribed: 0 });
-    const overallIdx = subscription.findIndex((r) => r.category === "OVERALL");
+    const custom = makeSubscriptionRow({
+      category: "CUSTOM",
+      label: "NEW CATEGORY",
+      timesSubscribed: 0,
+    })
+    const overallIdx = subscription.findIndex((r) => r.category === "OVERALL")
     const next =
       overallIdx === -1
         ? [...subscription, custom]
-        : [...subscription.slice(0, overallIdx), custom, ...subscription.slice(overallIdx)];
-    onChange(next);
-  };
+        : [...subscription.slice(0, overallIdx), custom, ...subscription.slice(overallIdx)]
+    onChange(next)
+  }
 
   const renderRow = (row: SubscriptionRow, removable: boolean) => {
-    const isCustom = row.category === "CUSTOM";
-    const isApp = isApplicationCategory(row.category);
+    const isCustom = row.category === "CUSTOM"
+    const isApp = isApplicationCategory(row.category)
     const p = isApplicationCategory(row.category)
       ? probabilityOfAllotment(row.category, row.timesSubscribed)
-      : null;
-    const barPct = Math.min(100, (row.timesSubscribed / maxTimes) * 100);
-    const label = isCustom ? row.label ?? "" : SUB_LABEL[row.category];
+      : null
+    const barPct = Math.min(100, (row.timesSubscribed / maxTimes) * 100)
+    const label = isCustom ? (row.label ?? "") : SUB_LABEL[row.category]
 
     return (
       <div key={row.id}>
@@ -489,20 +503,20 @@ function SubscriptionPanel({
           )}
         </div>
         <div className="mt-1.5 flex items-center gap-2">
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-brand" style={{ width: `${barPct}%` }} />
+          <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
+            <div className="bg-brand h-full rounded-full" style={{ width: `${barPct}%` }} />
           </div>
-          <span className="w-16 text-right text-[11px] tabular-nums text-muted-foreground">
+          <span className="text-muted-foreground w-16 text-right text-[11px] tabular-nums">
             {isApp ? `P ${formatPercentShort(p)}` : `${row.timesSubscribed}x`}
           </span>
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   return (
     <div className="min-w-0">
-      <div className="rounded-lg border border-border bg-background p-4">
+      <div className="border-border bg-background rounded-lg border p-4">
         <h3 className="font-display text-sm font-semibold">Subscription Status</h3>
 
         <div className="mt-4 space-y-3">
@@ -512,9 +526,9 @@ function SubscriptionPanel({
         <AddRowButton label="Add Custom Category" onClick={addCustom} />
 
         {overallRow && (
-          <div className="mt-3 border-t border-border pt-3">{renderRow(overallRow, false)}</div>
+          <div className="border-border mt-3 border-t pt-3">{renderRow(overallRow, false)}</div>
         )}
       </div>
     </div>
-  );
+  )
 }

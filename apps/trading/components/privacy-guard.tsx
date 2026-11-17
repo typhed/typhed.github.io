@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { CLERK_ENABLED, useAuth } from "@typhed/auth";
-import { clearAllLocalData } from "@/lib/privacy";
+import * as React from "react"
+import { CLERK_ENABLED, useAuth } from "@typhed/auth"
+import { clearAllLocalData } from "@/lib/privacy"
 
 /**
  * Shared-device protection: the moment a signed-in user signs out, every
@@ -14,26 +14,26 @@ import { clearAllLocalData } from "@/lib/privacy";
 export function PrivacyGuard() {
   // Build-time constant: with no Clerk key there is no provider to read.
   if (!CLERK_ENABLED) {
-    return null;
+    return null
   }
-  return <PrivacyGuardInner />;
+  return <PrivacyGuardInner />
 }
 
 function PrivacyGuardInner() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const wasSignedIn = React.useRef(false);
+  const { isLoaded, isSignedIn } = useAuth()
+  const wasSignedIn = React.useRef(false)
 
   React.useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded) return
     if (isSignedIn) {
-      wasSignedIn.current = true;
-      return;
+      wasSignedIn.current = true
+      return
     }
     if (wasSignedIn.current) {
-      wasSignedIn.current = false;
-      void clearAllLocalData();
+      wasSignedIn.current = false
+      void clearAllLocalData()
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn])
 
-  return null;
+  return null
 }

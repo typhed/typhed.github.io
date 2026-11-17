@@ -20,7 +20,7 @@ export function AccessBadge({
     <span
       title={meta.description}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground",
+        "bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs",
         className,
       )}
     >

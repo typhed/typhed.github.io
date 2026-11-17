@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
-import { cn } from "@typhed/ui/lib/utils";
+import { cn } from "@typhed/ui/lib/utils"
 
 /** A titled container for a tool. */
 export function ToolCard({
@@ -11,20 +11,18 @@ export function ToolCard({
   children,
   className,
 }: {
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  className?: string;
+  title: string
+  description?: string
+  children: React.ReactNode
+  className?: string
 }) {
   return (
-    <div className={cn("rounded-lg border border-border bg-card p-6", className)}>
+    <div className={cn("border-border bg-card rounded-lg border p-6", className)}>
       <h2 className="font-display text-lg font-semibold">{title}</h2>
-      {description && (
-        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-      )}
+      {description && <p className="text-muted-foreground mt-1 text-sm">{description}</p>}
       <div className="mt-5">{children}</div>
     </div>
-  );
+  )
 }
 
 /** A labelled numeric input bound to a number value. */
@@ -37,18 +35,18 @@ export function NumberField({
   max,
   suffix,
 }: {
-  label: string;
-  value: number;
-  onChange: (value: number) => void;
-  step?: string | number;
-  min?: number;
-  max?: number;
-  suffix?: string;
+  label: string
+  value: number
+  onChange: (value: number) => void
+  step?: string | number
+  min?: number
+  max?: number
+  suffix?: string
 }) {
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
+      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
         <input
           type="number"
           inputMode="decimal"
@@ -59,12 +57,10 @@ export function NumberField({
           onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
           className="w-full bg-transparent px-3 py-2 text-sm outline-none"
         />
-        {suffix && (
-          <span className="px-3 text-xs text-muted-foreground">{suffix}</span>
-        )}
+        {suffix && <span className="text-muted-foreground px-3 text-xs">{suffix}</span>}
       </div>
     </label>
-  );
+  )
 }
 
 /** A labelled free-text input bound to a string value. */
@@ -74,15 +70,15 @@ export function TextField({
   onChange,
   placeholder,
 }: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
+  label: string
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
 }) {
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
+      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
         <input
           type="text"
           value={value}
@@ -92,7 +88,7 @@ export function TextField({
         />
       </div>
     </label>
-  );
+  )
 }
 
 /** A labelled native date input bound to an ISO "yyyy-mm-dd" string. */
@@ -101,14 +97,14 @@ export function DateField({
   value,
   onChange,
 }: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
+  label: string
+  value: string
+  onChange: (value: string) => void
 }) {
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
+      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
         <input
           type="date"
           value={value}
@@ -117,7 +113,7 @@ export function DateField({
         />
       </div>
     </label>
-  );
+  )
 }
 
 /** A stat tile: a label, a large value, and an optional sub-note. */
@@ -127,36 +123,34 @@ export function StatTile({
   tone = "default",
   note,
 }: {
-  label: string;
-  value: string;
-  tone?: "default" | "positive" | "negative" | "brand";
-  note?: string;
+  label: string
+  value: string
+  tone?: "default" | "positive" | "negative" | "brand"
+  note?: string
 }) {
   const toneClass = {
     default: "text-foreground",
     positive: "text-success",
     negative: "text-destructive",
     brand: "text-brand",
-  }[tone];
+  }[tone]
 
   return (
-    <div className="rounded-lg border border-border bg-background p-4">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={cn("mt-1 font-display text-2xl font-semibold", toneClass)}>
-        {value}
-      </p>
-      {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
+    <div className="border-border bg-background rounded-lg border p-4">
+      <p className="text-muted-foreground text-xs">{label}</p>
+      <p className={cn("font-display mt-1 text-2xl font-semibold", toneClass)}>{value}</p>
+      {note && <p className="text-muted-foreground mt-1 text-xs">{note}</p>}
     </div>
-  );
+  )
 }
 
 /** Dashed empty-state placeholder shown where a chart would render. */
 export function ChartEmptyState({ message }: { message: string }) {
   return (
-    <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
+    <div className="border-border text-muted-foreground flex h-48 items-center justify-center rounded-md border border-dashed text-sm">
       {message}
     </div>
-  );
+  )
 }
 
 /** A small segmented control for mutually exclusive options. */
@@ -165,12 +159,12 @@ export function Segmented<T extends string>({
   value,
   onChange,
 }: {
-  options: ReadonlyArray<{ value: T; label: string }>;
-  value: T;
-  onChange: (value: T) => void;
+  options: ReadonlyArray<{ value: T; label: string }>
+  value: T
+  onChange: (value: T) => void
 }) {
   return (
-    <div className="inline-flex rounded-md border border-border bg-card p-1">
+    <div className="border-border bg-card inline-flex rounded-md border p-1">
       {options.map((option) => (
         <button
           key={option.value}
@@ -179,7 +173,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(option.value)}
           className={cn(
             "rounded px-3 py-1 text-xs font-medium transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
             option.value === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:text-foreground",
@@ -189,5 +183,5 @@ export function Segmented<T extends string>({
         </button>
       ))}
     </div>
-  );
+  )
 }

@@ -1,30 +1,26 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
-import { fmtInr, fmtInrShort, fmtPercent } from "@/lib/format";
-import { niceScale } from "@/lib/ipo/analytics";
-import { useElementWidth } from "@/lib/use-element-width";
-import type {
-  FinancialYearRow,
-  MnwsResult,
-  MonthRow,
-} from "@/lib/budgeting/mnws/engine";
-import { ToolCard } from "@/components/tools/controls";
-import { CORPUS_COLORS, SERIES, SERIES_ORDER } from "./series";
-import { SeriesLegend } from "./mnws-visuals";
+import { fmtInr, fmtInrShort, fmtPercent } from "@/lib/format"
+import { niceScale } from "@/lib/ipo/analytics"
+import { useElementWidth } from "@/lib/use-element-width"
+import type { FinancialYearRow, MnwsResult, MonthRow } from "@/lib/budgeting/mnws/engine"
+import { ToolCard } from "@/components/tools/controls"
+import { CORPUS_COLORS, SERIES, SERIES_ORDER } from "./series"
+import { SeriesLegend } from "./mnws-visuals"
 
-const HEIGHT = 300;
-const PAD = { top: 16, right: 52, bottom: 28, left: 56 };
+const HEIGHT = 300
+const PAD = { top: 16, right: 52, bottom: 28, left: 56 }
 
 /** Indices at each January (and the first month) - the x-axis year gridlines. */
 function yearTicks(months: MonthRow[]): number[] {
-  const ticks: number[] = [];
+  const ticks: number[] = []
   months.forEach((m, i) => {
-    const prev = months[i - 1];
-    if (i === 0 || !prev || m.year !== prev.year) ticks.push(i);
-  });
-  return ticks;
+    const prev = months[i - 1]
+    if (i === 0 || !prev || m.year !== prev.year) ticks.push(i)
+  })
+  return ticks
 }
 
 /**
@@ -32,33 +28,26 @@ function yearTicks(months: MonthRow[]): number[] {
  * start-month tick is dropped when it crowds the first January label, and
  * crowded January labels thin out on narrow viewports.
  */
-function visibleYearTicks(
-  months: MonthRow[],
-  x: (i: number) => number,
-  minGap = 34,
-): number[] {
-  const all = yearTicks(months);
-  const kept: number[] = [];
+function visibleYearTicks(months: MonthRow[], x: (i: number) => number, minGap = 34): number[] {
+  const all = yearTicks(months)
+  const kept: number[] = []
   for (let j = all.length - 1; j >= 0; j--) {
-    const idx = all[j]!;
-    if (kept.length === 0 || x(kept[0]!) - x(idx) >= minGap) kept.unshift(idx);
+    const idx = all[j]!
+    if (kept.length === 0 || x(kept[0]!) - x(idx) >= minGap) kept.unshift(idx)
   }
-  return kept;
+  return kept
 }
 
 /** A dot swatch + label legend row, used where SeriesLegend's keys don't apply. */
 function Legend({
   items,
 }: {
-  items: ReadonlyArray<{ color: string; label: string; dashed?: boolean }>;
+  items: ReadonlyArray<{ color: string; label: string; dashed?: boolean }>
 }) {
   return (
     <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
       {items.map((item) => (
-        <span
-          key={item.label}
-          className="text-muted-foreground inline-flex items-center gap-1.5"
-        >
+        <span key={item.label} className="text-muted-foreground inline-flex items-center gap-1.5">
           <span
             className="inline-block h-0 w-4 shrink-0 rounded-full"
             style={{
@@ -69,7 +58,7 @@ function Legend({
         </span>
       ))}
     </div>
-  );
+  )
 }
 
 /** Arrow-left/right step and Escape-clear a hover index; returns true if handled. */
@@ -80,19 +69,16 @@ function stepHover(
 ): boolean {
   if (key === "ArrowRight" || key === "ArrowLeft") {
     setHover((prev) => {
-      const base = prev ?? lastIdx;
-      return Math.max(
-        0,
-        Math.min(lastIdx, base + (key === "ArrowRight" ? 1 : -1)),
-      );
-    });
-    return true;
+      const base = prev ?? lastIdx
+      return Math.max(0, Math.min(lastIdx, base + (key === "ArrowRight" ? 1 : -1)))
+    })
+    return true
   }
   if (key === "Escape") {
-    setHover(null);
-    return true;
+    setHover(null)
+    return true
   }
-  return false;
+  return false
 }
 
 /**
@@ -101,69 +87,58 @@ function stepHover(
  * clears. Returns the hovered index and the props to spread on the <svg>.
  */
 function useScrubHover(n: number, xLeft: number, iw: number) {
-  const [hover, setHover] = React.useState<number | null>(null);
-  const lastIdx = n - 1;
+  const [hover, setHover] = React.useState<number | null>(null)
+  const lastIdx = n - 1
   const handlers = {
     tabIndex: 0,
     onPointerMove: (e: React.PointerEvent<SVGSVGElement>) => {
-      if (n <= 1) return setHover(0);
-      const rect = e.currentTarget.getBoundingClientRect();
-      const ratio = (e.clientX - rect.left - xLeft) / (iw || 1);
-      setHover(Math.max(0, Math.min(lastIdx, Math.round(ratio * (n - 1)))));
+      if (n <= 1) return setHover(0)
+      const rect = e.currentTarget.getBoundingClientRect()
+      const ratio = (e.clientX - rect.left - xLeft) / (iw || 1)
+      setHover(Math.max(0, Math.min(lastIdx, Math.round(ratio * (n - 1)))))
     },
     onPointerLeave: () => setHover(null),
     onKeyDown: (e: React.KeyboardEvent) => {
-      if (stepHover(e.key, lastIdx, setHover)) e.preventDefault();
+      if (stepHover(e.key, lastIdx, setHover)) e.preventDefault()
     },
     onFocus: () => setHover((prev) => prev ?? lastIdx),
     onBlur: () => setHover(null),
-  };
-  return { hover, handlers };
+  }
+  return { hover, handlers }
 }
 
 /* ------------------------------- Corpus ------------------------------- */
 
 /** Cash saved vs invested corpus over time - the hero savings chart. */
-function CorpusChart({
-  months,
-  annualReturnPct,
-}: {
-  months: MonthRow[];
-  annualReturnPct: number;
-}) {
-  const [ref, width] = useElementWidth<HTMLDivElement>();
+function CorpusChart({ months, annualReturnPct }: { months: MonthRow[]; annualReturnPct: number }) {
+  const [ref, width] = useElementWidth<HTMLDivElement>()
 
-  const n = months.length;
-  const maxVal = months.reduce(
-    (max, m) => Math.max(max, m.investedCumulative, m.cashCumulative),
-    0,
-  );
+  const n = months.length
+  const maxVal = months.reduce((max, m) => Math.max(max, m.investedCumulative, m.cashCumulative), 0)
   const scale = React.useMemo(
     () => niceScale(0, maxVal, { includeZero: true, maxTicks: 5 }),
     [maxVal],
-  );
+  )
 
-  const iw = Math.max(0, width - PAD.left - PAD.right);
-  const ih = HEIGHT - PAD.top - PAD.bottom;
-  const span = scale.hi - scale.lo || 1;
-  const x = (i: number) => PAD.left + (n <= 1 ? iw / 2 : (i / (n - 1)) * iw);
-  const y = (v: number) => PAD.top + (1 - (v - scale.lo) / span) * ih;
-  const { hover, handlers } = useScrubHover(n, PAD.left, iw);
+  const iw = Math.max(0, width - PAD.left - PAD.right)
+  const ih = HEIGHT - PAD.top - PAD.bottom
+  const span = scale.hi - scale.lo || 1
+  const x = (i: number) => PAD.left + (n <= 1 ? iw / 2 : (i / (n - 1)) * iw)
+  const y = (v: number) => PAD.top + (1 - (v - scale.lo) / span) * ih
+  const { hover, handlers } = useScrubHover(n, PAD.left, iw)
 
   const investedLine = months
     .map((m, i) => `${x(i).toFixed(1)},${y(m.investedCumulative).toFixed(1)}`)
-    .join(" ");
+    .join(" ")
   const cashLine = months
     .map((m, i) => `${x(i).toFixed(1)},${y(m.cashCumulative).toFixed(1)}`)
-    .join(" ");
-  const baseY = y(scale.lo);
-  const investedArea = `${x(0).toFixed(1)},${baseY.toFixed(1)} ${investedLine} ${x(n - 1).toFixed(1)},${baseY.toFixed(1)}`;
-  const lastIdx = n - 1;
-  const bonusMonths = months
-    .map((m, i) => ({ m, i }))
-    .filter(({ m }) => m.bonusInflow > 0);
-  const ticks = visibleYearTicks(months, x);
-  const hovered = hover !== null ? months[hover] : undefined;
+    .join(" ")
+  const baseY = y(scale.lo)
+  const investedArea = `${x(0).toFixed(1)},${baseY.toFixed(1)} ${investedLine} ${x(n - 1).toFixed(1)},${baseY.toFixed(1)}`
+  const lastIdx = n - 1
+  const bonusMonths = months.map((m, i) => ({ m, i })).filter(({ m }) => m.bonusInflow > 0)
+  const ticks = visibleYearTicks(months, x)
+  const hovered = hover !== null ? months[hover] : undefined
 
   return (
     <div ref={ref} className="relative" style={{ height: HEIGHT }}>
@@ -178,16 +153,8 @@ function CorpusChart({
         >
           <defs>
             <linearGradient id="mnws-corpus-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor={CORPUS_COLORS.invested}
-                stopOpacity={0.22}
-              />
-              <stop
-                offset="100%"
-                stopColor={CORPUS_COLORS.invested}
-                stopOpacity={0}
-              />
+              <stop offset="0%" stopColor={CORPUS_COLORS.invested} stopOpacity={0.22} />
+              <stop offset="100%" stopColor={CORPUS_COLORS.invested} stopOpacity={0} />
             </linearGradient>
           </defs>
 
@@ -295,9 +262,7 @@ function CorpusChart({
           className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
           style={{ left: Math.min(Math.max(x(hover), 70), width - 70), top: 8 }}
         >
-          <div className="text-popover-foreground font-semibold">
-            {hovered.label}
-          </div>
+          <div className="text-popover-foreground font-semibold">{hovered.label}</div>
           <div className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
@@ -315,21 +280,21 @@ function CorpusChart({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /* -------------------------------- Drift -------------------------------- */
 
 /** A 100 %-stacked area of the recurring needs/wants/savings rates over time. */
 function DriftChart({ months }: { months: MonthRow[] }) {
-  const [ref, width] = useElementWidth<HTMLDivElement>();
+  const [ref, width] = useElementWidth<HTMLDivElement>()
 
-  const n = months.length;
-  const iw = Math.max(0, width - PAD.left - PAD.right);
-  const ih = HEIGHT - PAD.top - PAD.bottom;
-  const x = (i: number) => PAD.left + (n <= 1 ? iw / 2 : (i / (n - 1)) * iw);
-  const y = (v: number) => PAD.top + (1 - v) * ih; // v is a 0..1 fraction
-  const { hover, handlers } = useScrubHover(n, PAD.left, iw);
+  const n = months.length
+  const iw = Math.max(0, width - PAD.left - PAD.right)
+  const ih = HEIGHT - PAD.top - PAD.bottom
+  const x = (i: number) => PAD.left + (n <= 1 ? iw / 2 : (i / (n - 1)) * iw)
+  const y = (v: number) => PAD.top + (1 - v) * ih // v is a 0..1 fraction
+  const { hover, handlers } = useScrubHover(n, PAD.left, iw)
 
   // Cumulative upper boundary per bucket (needs at bottom, savings on top).
   const upper = (m: MonthRow, key: (typeof SERIES_ORDER)[number]) =>
@@ -337,34 +302,28 @@ function DriftChart({ months }: { months: MonthRow[] }) {
       ? m.needsRate
       : key === "wants"
         ? m.needsRate + m.wantsRate
-        : m.needsRate + m.wantsRate + m.savingsRate;
+        : m.needsRate + m.wantsRate + m.savingsRate
   const lower = (m: MonthRow, key: (typeof SERIES_ORDER)[number]) =>
-    key === "needs"
-      ? 0
-      : key === "wants"
-        ? m.needsRate
-        : m.needsRate + m.wantsRate;
+    key === "needs" ? 0 : key === "wants" ? m.needsRate : m.needsRate + m.wantsRate
 
   const bandPath = (key: (typeof SERIES_ORDER)[number]) => {
-    const top = months
-      .map((m, i) => `${x(i).toFixed(1)},${y(upper(m, key)).toFixed(1)}`)
-      .join(" ");
+    const top = months.map((m, i) => `${x(i).toFixed(1)},${y(upper(m, key)).toFixed(1)}`).join(" ")
     const bottom = months
       .map((m, i) => ({ m, i }))
       .reverse()
       .map(({ m, i }) => `${x(i).toFixed(1)},${y(lower(m, key)).toFixed(1)}`)
-      .join(" ");
-    return `${top} ${bottom}`;
-  };
+      .join(" ")
+    return `${top} ${bottom}`
+  }
 
   // The two internal boundaries (needs|wants, wants|savings) as gap strokes.
   const boundary = (fn: (m: MonthRow) => number) =>
-    months.map((m, i) => `${x(i).toFixed(1)},${y(fn(m)).toFixed(1)}`).join(" ");
+    months.map((m, i) => `${x(i).toFixed(1)},${y(fn(m)).toFixed(1)}`).join(" ")
 
-  const gridlines = [0, 0.25, 0.5, 0.75, 1];
-  const ticks = visibleYearTicks(months, x);
-  const lastIdx = n - 1;
-  const hovered = hover !== null ? months[hover] : undefined;
+  const gridlines = [0, 0.25, 0.5, 0.75, 1]
+  const ticks = visibleYearTicks(months, x)
+  const lastIdx = n - 1
+  const hovered = hover !== null ? months[hover] : undefined
 
   return (
     <div ref={ref} className="relative" style={{ height: HEIGHT }}>
@@ -391,12 +350,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
           ))}
 
           {SERIES_ORDER.map((key) => (
-            <polygon
-              key={key}
-              points={bandPath(key)}
-              fill={SERIES[key].color}
-              fillOpacity={0.9}
-            />
+            <polygon key={key} points={bandPath(key)} fill={SERIES[key].color} fillOpacity={0.9} />
           ))}
 
           {/* 2px surface-gap strokes between the stacked bands. */}
@@ -443,9 +397,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
           className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
           style={{ left: Math.min(Math.max(x(hover), 78), width - 78), top: 8 }}
         >
-          <div className="text-popover-foreground font-semibold">
-            {hovered.label}
-          </div>
+          <div className="text-popover-foreground font-semibold">{hovered.label}</div>
           {SERIES_ORDER.map((key) => (
             <div
               key={key}
@@ -455,39 +407,38 @@ function DriftChart({ months }: { months: MonthRow[] }) {
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: SERIES[key].color }}
               />
-              {SERIES[key].label}{" "}
-              {fmtPercent(hovered[`${key}Rate` as const], 1)}
+              {SERIES[key].label} {fmtPercent(hovered[`${key}Rate` as const], 1)}
             </div>
           ))}
         </div>
       )}
     </div>
-  );
+  )
 }
 
 /* -------------------------------- Annual ------------------------------- */
 
-const A_PAD = { top: 16, right: 16, bottom: 28, left: 56 };
+const A_PAD = { top: 16, right: 16, bottom: 28, left: 56 }
 
 /** Stacked bars of each financial year's savings: salary savings + windfalls. */
 function AnnualChart({ years }: { years: FinancialYearRow[] }) {
-  const [ref, width] = useElementWidth<HTMLDivElement>();
-  const [hover, setHover] = React.useState<number | null>(null);
+  const [ref, width] = useElementWidth<HTMLDivElement>()
+  const [hover, setHover] = React.useState<number | null>(null)
 
-  const n = years.length;
-  const maxVal = years.reduce((max, a) => Math.max(max, a.totalSavings), 0);
+  const n = years.length
+  const maxVal = years.reduce((max, a) => Math.max(max, a.totalSavings), 0)
   const scale = React.useMemo(
     () => niceScale(0, maxVal, { includeZero: true, maxTicks: 5 }),
     [maxVal],
-  );
+  )
 
-  const iw = Math.max(0, width - A_PAD.left - A_PAD.right);
-  const ih = HEIGHT - A_PAD.top - A_PAD.bottom;
-  const span = scale.hi - scale.lo || 1;
-  const y = (v: number) => A_PAD.top + (1 - (v - scale.lo) / span) * ih;
-  const slot = n > 0 ? iw / n : iw;
-  const barW = Math.min(48, slot * 0.62);
-  const cx = (i: number) => A_PAD.left + slot * (i + 0.5);
+  const iw = Math.max(0, width - A_PAD.left - A_PAD.right)
+  const ih = HEIGHT - A_PAD.top - A_PAD.bottom
+  const span = scale.hi - scale.lo || 1
+  const y = (v: number) => A_PAD.top + (1 - (v - scale.lo) / span) * ih
+  const slot = n > 0 ? iw / n : iw
+  const barW = Math.min(48, slot * 0.62)
+  const cx = (i: number) => A_PAD.left + slot * (i + 0.5)
 
   const items = [
     {
@@ -500,7 +451,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
       label: "Bonus savings",
       color: CORPUS_COLORS.invested,
     },
-  ];
+  ]
 
   return (
     <div ref={ref} className="relative" style={{ height: HEIGHT }}>
@@ -513,7 +464,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
           aria-label={`Savings added each financial year from ${years[0]?.label} to ${years[n - 1]?.label}.`}
           className="focus-visible:ring-ring rounded-md outline-none focus-visible:ring-2"
           onKeyDown={(e) => {
-            if (stepHover(e.key, n - 1, setHover)) e.preventDefault();
+            if (stepHover(e.key, n - 1, setHover)) e.preventDefault()
           }}
           onFocus={() => setHover((prev) => prev ?? n - 1)}
           onBlur={() => setHover(null)}
@@ -541,18 +492,16 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
           ))}
 
           {years.map((a, i) => {
-            const salaryTop = y(a.salarySavings);
-            const totalTop = y(a.totalSavings);
-            const base = y(scale.lo);
-            const x0 = cx(i) - barW / 2;
-            const isHover = hover === i;
+            const salaryTop = y(a.salarySavings)
+            const totalTop = y(a.totalSavings)
+            const base = y(scale.lo)
+            const x0 = cx(i) - barW / 2
+            const isHover = hover === i
             return (
               <g
                 key={a.startYear}
                 onPointerEnter={() => setHover(i)}
-                onPointerLeave={() =>
-                  setHover((prev) => (prev === i ? null : prev))
-                }
+                onPointerLeave={() => setHover((prev) => (prev === i ? null : prev))}
               >
                 {/* Salary savings (bottom segment). */}
                 <rect
@@ -585,7 +534,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
                   {a.shortLabel}
                 </text>
               </g>
-            );
+            )
           })}
         </svg>
       )}
@@ -598,9 +547,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
             top: 8,
           }}
         >
-          <div className="text-popover-foreground font-semibold">
-            {years[hover]!.label}
-          </div>
+          <div className="text-popover-foreground font-semibold">{years[hover]!.label}</div>
           <div className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
@@ -625,14 +572,14 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
 
       <Legend items={items} />
     </div>
-  );
+  )
 }
 
 /* ------------------------------ Container ------------------------------ */
 
 /** All MNWS charts, savings-first. Renders nothing until there is a timeline. */
 export function MnwsCharts({ result }: { result: MnwsResult }) {
-  if (!result.summary.hasData) return null;
+  if (!result.summary.hasData) return null
 
   return (
     <div className="space-y-6">
@@ -640,10 +587,7 @@ export function MnwsCharts({ result }: { result: MnwsResult }) {
         title="Savings corpus growth"
         description="What disciplined saving builds: your nominal cash saved versus the same contributions invested and compounding."
       >
-        <CorpusChart
-          months={result.months}
-          annualReturnPct={result.summary.annualReturnPct}
-        />
+        <CorpusChart months={result.months} annualReturnPct={result.summary.annualReturnPct} />
         <Legend
           items={[
             {
@@ -676,5 +620,5 @@ export function MnwsCharts({ result }: { result: MnwsResult }) {
         </ToolCard>
       </div>
     </div>
-  );
+  )
 }

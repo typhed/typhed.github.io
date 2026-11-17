@@ -1,9 +1,9 @@
-import type { Candle, ColumnMapping, ParsedTable } from "../types";
-import { parseTimestamp } from "./time";
+import type { Candle, ColumnMapping, ParsedTable } from "../types"
+import { parseTimestamp } from "./time"
 
 interface FieldPattern {
-  field: keyof Omit<ColumnMapping, "timeFormat">;
-  pattern: RegExp;
+  field: keyof Omit<ColumnMapping, "timeFormat">
+  pattern: RegExp
 }
 
 // Ordered so specific names win before generic ones.
@@ -14,7 +14,7 @@ const FIELD_PATTERNS: FieldPattern[] = [
   { field: "low", pattern: /^(low|l|min)$/i },
   { field: "close", pattern: /^(close|c|last|price|adj[_ ]?close)$/i },
   { field: "volume", pattern: /^(volume|vol|v|qty|quantity)$/i },
-];
+]
 
 /**
  * Best-effort mapping from column headers to OHLCV fields. Nothing is assumed
@@ -29,49 +29,51 @@ export function autoDetectMapping(headers: string[]): ColumnMapping {
     close: "",
     volume: null,
     timeFormat: "auto",
-  };
+  }
 
   for (const header of headers) {
     for (const { field, pattern } of FIELD_PATTERNS) {
-      if (!pattern.test(header.trim())) continue;
+      if (!pattern.test(header.trim())) continue
       if (field === "volume") {
-        if (mapping.volume === null) mapping.volume = header;
+        if (mapping.volume === null) mapping.volume = header
       } else if (mapping[field] === "") {
-        mapping[field] = header;
+        mapping[field] = header
       }
     }
   }
 
-  return mapping;
+  return mapping
 }
 
 /** Fields that must be mapped before candles can be built. */
 export function missingRequiredFields(mapping: ColumnMapping): string[] {
   return (["time", "open", "high", "low", "close"] as const).filter(
     (field) => mapping[field] === "",
-  );
+  )
 }
 
 export interface MapRowIssue {
-  row: number;
-  reason: string;
+  row: number
+  reason: string
 }
 
 export interface MapResult {
-  candles: Candle[];
+  candles: Candle[]
   /**
    * Rows dropped (timestamp / OHLC unparseable) or degraded (volume
    * unparseable - the bar is kept with volume blanked).
    */
-  issues: MapRowIssue[];
+  issues: MapRowIssue[]
 }
 
 function toNumber(raw: unknown): number | null {
-  if (typeof raw === "number") return Number.isFinite(raw) ? raw : null;
-  const text = String(raw ?? "").trim().replace(/,/g, "");
-  if (text === "") return null;
-  const n = Number(text);
-  return Number.isFinite(n) ? n : null;
+  if (typeof raw === "number") return Number.isFinite(raw) ? raw : null
+  const text = String(raw ?? "")
+    .trim()
+    .replace(/,/g, "")
+  if (text === "") return null
+  const n = Number(text)
+  return Number.isFinite(n) ? n : null
 }
 
 /**
@@ -79,45 +81,44 @@ function toNumber(raw: unknown): number | null {
  * unparseable timestamp or OHLC value are dropped and reported, never guessed.
  */
 export function toCandles(table: ParsedTable, mapping: ColumnMapping): MapResult {
-  const candles: Candle[] = [];
-  const issues: MapRowIssue[] = [];
+  const candles: Candle[] = []
+  const issues: MapRowIssue[] = []
 
   table.rows.forEach((row, index) => {
-    const time = parseTimestamp(row[mapping.time], mapping.timeFormat);
+    const time = parseTimestamp(row[mapping.time], mapping.timeFormat)
     if (time === null) {
       issues.push({
         row: index,
-        reason:
-          "unparseable timestamp (accepted: ISO 8601, unix seconds/ms, Excel serial)",
-      });
-      return;
+        reason: "unparseable timestamp (accepted: ISO 8601, unix seconds/ms, Excel serial)",
+      })
+      return
     }
 
-    const open = toNumber(row[mapping.open]);
-    const high = toNumber(row[mapping.high]);
-    const low = toNumber(row[mapping.low]);
-    const close = toNumber(row[mapping.close]);
+    const open = toNumber(row[mapping.open])
+    const high = toNumber(row[mapping.high])
+    const low = toNumber(row[mapping.low])
+    const close = toNumber(row[mapping.close])
 
     if (open === null || high === null || low === null || close === null) {
-      issues.push({ row: index, reason: "unparseable OHLC value" });
-      return;
+      issues.push({ row: index, reason: "unparseable OHLC value" })
+      return
     }
 
-    let volume: number | null = null;
+    let volume: number | null = null
     if (mapping.volume !== null) {
-      volume = toNumber(row[mapping.volume]);
+      volume = toNumber(row[mapping.volume])
       if (volume === null) {
         // A bad volume cell must not cost the whole OHLC bar: keep the bar,
         // blank the volume, and report what happened.
         issues.push({
           row: index,
           reason: "unparseable volume (bar kept, volume blanked)",
-        });
+        })
       }
     }
 
-    candles.push({ time, open, high, low, close, volume });
-  });
+    candles.push({ time, open, high, low, close, volume })
+  })
 
-  return { candles, issues };
+  return { candles, issues }
 }

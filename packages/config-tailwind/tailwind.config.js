@@ -37,9 +37,7 @@ function scaled(size, lineHeight) {
   return [
     `calc(${size} * ${SCALE})`,
     {
-      lineHeight: lineHeight.endsWith("rem")
-        ? `calc(${lineHeight} * ${SCALE})`
-        : lineHeight,
+      lineHeight: lineHeight.endsWith("rem") ? `calc(${lineHeight} * ${SCALE})` : lineHeight,
     },
   ]
 }

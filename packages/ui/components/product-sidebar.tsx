@@ -64,7 +64,7 @@ export function ProductSidebar({
   return (
     <aside
       className={cn(
-        "shrink-0 border-b border-border/60 bg-background/60 backdrop-blur md:border-b-0 md:border-r",
+        "border-border/60 bg-background/60 shrink-0 border-b backdrop-blur md:border-b-0 md:border-r",
         open ? "md:w-60" : "md:w-12",
       )}
     >
@@ -77,7 +77,7 @@ export function ProductSidebar({
             aria-controls={menuId}
             aria-label={open ? "Collapse menu" : "Expand menu"}
             title={open ? "Collapse menu" : "Expand menu"}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2"
           >
             {open ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
           </button>
@@ -86,7 +86,7 @@ export function ProductSidebar({
           {groups.map((group, index) => (
             <div key={group.label ?? index} className="mt-3 first:mt-1">
               {group.label ? (
-                <p className="mb-1 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
                   {group.label}
                 </p>
               ) : null}
@@ -99,8 +99,10 @@ export function ProductSidebar({
                         href={link.href}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "block rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-                          active ? "bg-accent font-medium text-foreground" : "text-muted-foreground",
+                          "hover:bg-accent hover:text-accent-foreground block rounded-md px-2 py-1.5 text-sm transition-colors",
+                          active
+                            ? "bg-accent text-foreground font-medium"
+                            : "text-muted-foreground",
                         )}
                       >
                         {link.label}

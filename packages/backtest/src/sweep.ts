@@ -1,7 +1,7 @@
-import { ema, type Candle } from "@typhed/chart-engine";
+import { ema, type Candle } from "@typhed/chart-engine"
 
-import { runBacktest } from "./backtest";
-import type { BacktestParams, BacktestStats, StrategyTemplate } from "./types";
+import { runBacktest } from "./backtest"
+import type { BacktestParams, BacktestStats, StrategyTemplate } from "./types"
 
 /**
  * The EMA sweep: run the backtest over a grid of EMA periods (and holding
@@ -23,61 +23,61 @@ import type { BacktestParams, BacktestStats, StrategyTemplate } from "./types";
  */
 
 export interface SweepParams {
-  template: StrategyTemplate;
+  template: StrategyTemplate
   /** EMA periods to sweep (default 5..50). */
-  emaPeriods?: readonly number[];
+  emaPeriods?: readonly number[]
   /** Holding caps to sweep (default: just `holdingCapBars`). */
-  holdingCaps?: readonly number[];
-  holdingCapBars: number;
-  roundTripCostBps: number;
-  atrStopMultiple?: number;
-  atrPeriod?: number;
-  startEquity?: number;
-  riskPercent?: number;
+  holdingCaps?: readonly number[]
+  holdingCapBars: number
+  roundTripCostBps: number
+  atrStopMultiple?: number
+  atrPeriod?: number
+  startEquity?: number
+  riskPercent?: number
   /** dualCross: slow period = round(fast * slowRatio), min fast + 1. */
-  slowRatio?: number;
+  slowRatio?: number
   /** Guard 1 threshold (default 30). */
-  minTrades?: number;
+  minTrades?: number
   /** Guard 3 split (default 0.7 = fit on the first 70%). */
-  walkForwardSplit?: number;
+  walkForwardSplit?: number
 }
 
 export interface SweepCell {
-  emaPeriod: number;
-  holdingCapBars: number;
-  slowEmaPeriod: number | null;
-  stats: BacktestStats;
+  emaPeriod: number
+  holdingCapBars: number
+  slowEmaPeriod: number | null
+  stats: BacktestStats
   /** "Follows this EMA" measure, independent of P&L (null: too few touches). */
-  touchFidelity: number | null;
-  inSampleScore: number;
-  outOfSampleScore: number;
-  score: number;
+  touchFidelity: number | null
+  inSampleScore: number
+  outOfSampleScore: number
+  score: number
   /** Guard 1: fewer than minTrades closed trades. */
-  lowSample: boolean;
+  lowSample: boolean
   /** Guard 3: out-of-sample score collapsed below half of in-sample. */
-  oosDegraded: boolean;
+  oosDegraded: boolean
 }
 
 export interface SweepRow {
-  emaPeriod: number;
+  emaPeriod: number
   /** The best cell (by score) among this N's holding caps. */
-  cell: SweepCell;
+  cell: SweepCell
   /** Guard 2: score smoothed over N +/- 2 across rows. */
-  smoothedScore: number;
+  smoothedScore: number
 }
 
 export interface SweepResult {
-  rows: SweepRow[];
+  rows: SweepRow[]
   /** The plateau winner, or null when every row is low-sample. */
-  best: SweepRow | null;
-  minTrades: number;
-  walkForwardSplit: number;
+  best: SweepRow | null
+  minTrades: number
+  walkForwardSplit: number
 }
 
-const DEFAULT_EMA_PERIODS = Array.from({ length: 46 }, (_, i) => i + 5);
+const DEFAULT_EMA_PERIODS = Array.from({ length: 46 }, (_, i) => i + 5)
 
 function scoreOf(stats: BacktestStats): number {
-  return stats.trades > 0 ? stats.avgR * Math.sqrt(stats.trades) : 0;
+  return stats.trades > 0 ? stats.avgR * Math.sqrt(stats.trades) : 0
 }
 
 /**
@@ -92,28 +92,28 @@ export function touchFidelity(
   emaValues: readonly number[],
   holdingCapBars: number,
 ): number | null {
-  const window = Math.max(1, holdingCapBars);
-  let touches = 0;
-  let resolved = 0;
+  const window = Math.max(1, holdingCapBars)
+  let touches = 0
+  let resolved = 0
 
   for (let t = 1; t < candles.length; t += 1) {
-    const bar = candles[t]!;
-    const emaT = emaValues[t]!;
-    const prevAbove = candles[t - 1]!.close > emaValues[t - 1]!;
-    if (!(prevAbove && bar.low <= emaT)) continue;
+    const bar = candles[t]!
+    const emaT = emaValues[t]!
+    const prevAbove = candles[t - 1]!.close > emaValues[t - 1]!
+    if (!(prevAbove && bar.low <= emaT)) continue
 
-    touches += 1;
+    touches += 1
     for (let k = 1; k <= window && t + k < candles.length; k += 1) {
-      const future = candles[t + k]!;
-      if (future.close < emaValues[t + k]!) break;
+      const future = candles[t + k]!
+      if (future.close < emaValues[t + k]!) break
       if (future.close > bar.high) {
-        resolved += 1;
-        break;
+        resolved += 1
+        break
       }
     }
   }
 
-  return touches >= 10 ? resolved / touches : null;
+  return touches >= 10 ? resolved / touches : null
 }
 
 /** One sweep step: the full grid for one EMA period. */
@@ -125,17 +125,17 @@ export function sweepCellsForPeriod(
   const caps =
     params.holdingCaps && params.holdingCaps.length > 0
       ? params.holdingCaps
-      : [params.holdingCapBars];
-  const minTrades = params.minTrades ?? 30;
-  const split = params.walkForwardSplit ?? 0.7;
-  const splitIndex = Math.floor(candles.length * split);
+      : [params.holdingCapBars]
+  const minTrades = params.minTrades ?? 30
+  const split = params.walkForwardSplit ?? 0.7
+  const splitIndex = Math.floor(candles.length * split)
 
   const slowEmaPeriod =
     params.template === "dualCross"
       ? Math.max(emaPeriod + 1, Math.round(emaPeriod * (params.slowRatio ?? 2.5)))
-      : null;
+      : null
 
-  const emaValues = ema(candles, emaPeriod).map((p) => p.value);
+  const emaValues = ema(candles, emaPeriod).map((p) => p.value)
 
   return caps.map((cap) => {
     const backtestParams: BacktestParams = {
@@ -144,24 +144,18 @@ export function sweepCellsForPeriod(
       ...(slowEmaPeriod !== null ? { slowEmaPeriod } : {}),
       holdingCapBars: cap,
       roundTripCostBps: params.roundTripCostBps,
-      ...(params.atrStopMultiple !== undefined
-        ? { atrStopMultiple: params.atrStopMultiple }
-        : {}),
+      ...(params.atrStopMultiple !== undefined ? { atrStopMultiple: params.atrStopMultiple } : {}),
       ...(params.atrPeriod !== undefined ? { atrPeriod: params.atrPeriod } : {}),
-      ...(params.startEquity !== undefined
-        ? { startEquity: params.startEquity }
-        : {}),
-      ...(params.riskPercent !== undefined
-        ? { riskPercent: params.riskPercent }
-        : {}),
-    };
+      ...(params.startEquity !== undefined ? { startEquity: params.startEquity } : {}),
+      ...(params.riskPercent !== undefined ? { riskPercent: params.riskPercent } : {}),
+    }
 
-    const full = runBacktest(candles, backtestParams);
-    const inSample = runBacktest(candles.slice(0, splitIndex), backtestParams);
-    const outOfSample = runBacktest(candles.slice(splitIndex), backtestParams);
+    const full = runBacktest(candles, backtestParams)
+    const inSample = runBacktest(candles.slice(0, splitIndex), backtestParams)
+    const outOfSample = runBacktest(candles.slice(splitIndex), backtestParams)
 
-    const inScore = scoreOf(inSample.stats);
-    const outScore = scoreOf(outOfSample.stats);
+    const inScore = scoreOf(inSample.stats)
+    const outScore = scoreOf(outOfSample.stats)
 
     return {
       emaPeriod,
@@ -174,8 +168,8 @@ export function sweepCellsForPeriod(
       score: scoreOf(full.stats),
       lowSample: full.stats.trades < minTrades,
       oosDegraded: inScore > 0 && outScore < 0.5 * inScore,
-    };
-  });
+    }
+  })
 }
 
 export function runSweep(
@@ -184,34 +178,32 @@ export function runSweep(
   onProgress?: (done: number, total: number) => void,
 ): SweepResult {
   const periods =
-    params.emaPeriods && params.emaPeriods.length > 0
-      ? params.emaPeriods
-      : DEFAULT_EMA_PERIODS;
-  const minTrades = params.minTrades ?? 30;
+    params.emaPeriods && params.emaPeriods.length > 0 ? params.emaPeriods : DEFAULT_EMA_PERIODS
+  const minTrades = params.minTrades ?? 30
 
-  const rows: SweepRow[] = [];
+  const rows: SweepRow[] = []
   periods.forEach((emaPeriod, index) => {
-    const cells = sweepCellsForPeriod(candles, params, emaPeriod);
-    const best = cells.reduce((a, b) => (b.score > a.score ? b : a));
-    rows.push({ emaPeriod, cell: best, smoothedScore: 0 });
-    onProgress?.(index + 1, periods.length);
-  });
+    const cells = sweepCellsForPeriod(candles, params, emaPeriod)
+    const best = cells.reduce((a, b) => (b.score > a.score ? b : a))
+    rows.push({ emaPeriod, cell: best, smoothedScore: 0 })
+    onProgress?.(index + 1, periods.length)
+  })
 
   // Guard 2: smooth over N +/- 2 by row position (the grid is ordered).
   for (let i = 0; i < rows.length; i += 1) {
-    let sum = 0;
-    let count = 0;
+    let sum = 0
+    let count = 0
     for (let j = Math.max(0, i - 2); j <= Math.min(rows.length - 1, i + 2); j += 1) {
-      sum += rows[j]!.cell.score;
-      count += 1;
+      sum += rows[j]!.cell.score
+      count += 1
     }
-    rows[i]!.smoothedScore = sum / count;
+    rows[i]!.smoothedScore = sum / count
   }
 
-  let best: SweepRow | null = null;
+  let best: SweepRow | null = null
   for (const row of rows) {
-    if (row.cell.lowSample) continue;
-    if (best === null || row.smoothedScore > best.smoothedScore) best = row;
+    if (row.cell.lowSample) continue
+    if (best === null || row.smoothedScore > best.smoothedScore) best = row
   }
 
   return {
@@ -219,5 +211,5 @@ export function runSweep(
     best,
     minTrades,
     walkForwardSplit: params.walkForwardSplit ?? 0.7,
-  };
+  }
 }

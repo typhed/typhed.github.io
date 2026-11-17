@@ -1,11 +1,7 @@
-import { ToolCard } from "@/components/tools/controls";
-import {
-  BASE_SPLIT,
-  DEFAULT_BONUS_SPLIT,
-  INCREMENT_SPLIT,
-} from "@/lib/budgeting/mnws/types";
-import { SERIES, SERIES_ORDER, type SeriesKey } from "./series";
-import { SplitBar } from "./mnws-visuals";
+import { ToolCard } from "@/components/tools/controls"
+import { BASE_SPLIT, DEFAULT_BONUS_SPLIT, INCREMENT_SPLIT } from "@/lib/budgeting/mnws/types"
+import { SERIES, SERIES_ORDER, type SeriesKey } from "./series"
+import { SplitBar } from "./mnws-visuals"
 
 /** One labelled rule: a heading, the split bar, and the three bucket percentages. */
 function RuleCard({
@@ -14,13 +10,12 @@ function RuleCard({
   description,
   split,
 }: {
-  step: string;
-  title: string;
-  description: string;
-  split: Record<SeriesKey, number>;
+  step: string
+  title: string
+  description: string
+  split: Record<SeriesKey, number>
 }) {
-  const total =
-    SERIES_ORDER.reduce((sum, key) => sum + Math.max(0, split[key]), 0) || 1;
+  const total = SERIES_ORDER.reduce((sum, key) => sum + Math.max(0, split[key]), 0) || 1
   return (
     <div className="border-border bg-background rounded-lg border p-4">
       <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-wide">
@@ -32,10 +27,7 @@ function RuleCard({
       <div className="mt-2 flex justify-between text-xs">
         {SERIES_ORDER.map((key) => (
           <span key={key} className="inline-flex items-center gap-1">
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: SERIES[key].color }}
-            />
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
             <span className="text-muted-foreground">{SERIES[key].label}</span>
             <span className="text-foreground font-semibold tabular-nums">
               {Math.round((Math.max(0, split[key]) / total) * 100)}%
@@ -44,7 +36,7 @@ function RuleCard({
         ))}
       </div>
     </div>
-  );
+  )
 }
 
 /** Explains the Modified Needs / Wants / Savings rule at the top of the tool. */
@@ -92,12 +84,9 @@ export function MnwsRuleExplainer() {
           savings rate climbs from 20 % toward 50 %
         </span>{" "}
         as your income grows, while{" "}
-        <span className="font-medium text-amber-500">
-          needs drift down from 50 % toward 20 %
-        </span>{" "}
-        and wants hold at a flat 30 %. The chart below shows the corpus that
-        discipline builds.
+        <span className="font-medium text-amber-500">needs drift down from 50 % toward 20 %</span>{" "}
+        and wants hold at a flat 30 %. The chart below shows the corpus that discipline builds.
       </p>
     </ToolCard>
-  );
+  )
 }

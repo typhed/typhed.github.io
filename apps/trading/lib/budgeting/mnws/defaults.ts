@@ -9,25 +9,21 @@
  * ids for add/remove edits and for rows rebuilt by the JSON parser.
  */
 
-import { newId } from "@/lib/id";
-import {
-  DEFAULT_ANNUAL_RETURN_PCT,
-  DEFAULT_BONUS_SPLIT,
-  SCHEMA_VERSION,
-} from "./types";
-import type { BonusEntry, MnwsDataset, SalaryEntry } from "./types";
+import { newId } from "@/lib/id"
+import { DEFAULT_ANNUAL_RETURN_PCT, DEFAULT_BONUS_SPLIT, SCHEMA_VERSION } from "./types"
+import type { BonusEntry, MnwsDataset, SalaryEntry } from "./types"
 
 export function makeSalaryEntry(init: Omit<SalaryEntry, "id">): SalaryEntry {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 export function makeBonusEntry(init: Omit<BonusEntry, "id">): BonusEntry {
-  return { id: newId(), ...init };
+  return { id: newId(), ...init }
 }
 
 /** A blank salary row with today's date pre-filled by the caller. */
 export function blankSalaryEntry(date: string): SalaryEntry {
-  return makeSalaryEntry({ date, amount: 0, note: "" });
+  return makeSalaryEntry({ date, amount: 0, note: "" })
 }
 
 /** A blank bonus row seeded with the default 25 / 0 / 75 split. */
@@ -39,7 +35,7 @@ export function blankBonusEntry(date: string): BonusEntry {
     wantsPct: DEFAULT_BONUS_SPLIT.wants,
     savingsPct: DEFAULT_BONUS_SPLIT.savings,
     note: "",
-  });
+  })
 }
 
 /** An empty plan: what "Reset" clears to, filled in by the user row by row. */
@@ -55,7 +51,7 @@ export function blankMnwsDataset(): MnwsDataset {
     settings: {
       annualReturnPct: DEFAULT_ANNUAL_RETURN_PCT,
     },
-  };
+  }
 }
 
 /** The seed plan: a disciplined ten-year salary journey with two windfalls. */
@@ -115,8 +111,8 @@ export function defaultMnwsDataset(): MnwsDataset {
     settings: {
       annualReturnPct: DEFAULT_ANNUAL_RETURN_PCT,
     },
-  };
+  }
 }
 
 /** A ready-made instance for initial React state / SSR (deterministic-enough ids). */
-export const DEFAULT_MNWS_DATASET: MnwsDataset = defaultMnwsDataset();
+export const DEFAULT_MNWS_DATASET: MnwsDataset = defaultMnwsDataset()

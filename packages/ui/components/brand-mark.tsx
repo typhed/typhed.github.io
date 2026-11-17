@@ -45,7 +45,7 @@ export function BrandMark({
         className={cn("h-9 w-9 object-contain", glyphClassName)}
       />
       {showWordmark ? (
-        <span className="font-display text-xl font-semibold tracking-tight text-foreground">
+        <span className="font-display text-foreground text-xl font-semibold tracking-tight">
           Ty<span className="text-brand">Phed</span>
         </span>
       ) : null}

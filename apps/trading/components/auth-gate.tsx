@@ -29,7 +29,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
 function WorkspaceLoading() {
   return (
     <div className="container py-24">
-      <div className="mx-auto h-40 max-w-3xl animate-pulse rounded-lg bg-muted" />
+      <div className="bg-muted mx-auto h-40 max-w-3xl animate-pulse rounded-lg" />
     </div>
   )
 }
@@ -37,15 +37,15 @@ function WorkspaceLoading() {
 function SignInPrompt() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 text-center">
-      <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-brand">
+      <span className="border-border bg-card text-brand mb-6 flex h-14 w-14 items-center justify-center rounded-full border">
         <Lock className="h-6 w-6" />
       </span>
       <h1 className="font-display text-2xl font-semibold tracking-tight">
         Sign in to open the workspace
       </h1>
-      <p className="mt-3 text-sm text-muted-foreground">
-        {TRADING.name} uses the same free {SITE.tagline} account as the main site and the blog.
-        Sign in once and you are signed in everywhere.
+      <p className="text-muted-foreground mt-3 text-sm">
+        {TRADING.name} uses the same free {SITE.tagline} account as the main site and the blog. Sign
+        in once and you are signed in everywhere.
       </p>
       <div className="mt-6">
         <SignInButton mode="modal">

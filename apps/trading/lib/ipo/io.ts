@@ -17,7 +17,7 @@ import type {
   IpoDataset,
   IpoMeta,
   SubscriptionCategory,
-} from "./types";
+} from "./types"
 import {
   ALLOTMENT_MODES,
   APPLICATION_CATEGORIES,
@@ -27,7 +27,7 @@ import {
   isMilestoneFixed,
   SCHEMA_VERSION,
   SUBSCRIPTION_CATEGORIES,
-} from "./types";
+} from "./types"
 import {
   makeApplication,
   makeContributor,
@@ -35,19 +35,11 @@ import {
   makeGmpRow,
   makeMilestone,
   makeSubscriptionRow,
-} from "./defaults";
-import { slugify } from "@/lib/utils";
-import {
-  asArray,
-  coerceIsoDate,
-  enumOr,
-  isObject,
-  num,
-  str,
-} from "@/lib/parse";
+} from "./defaults"
+import { slugify } from "@/lib/utils"
+import { asArray, coerceIsoDate, enumOr, isObject, num, str } from "@/lib/parse"
 
-export type ParseResult =
-  { ok: true; data: IpoDataset } | { ok: false; error: string };
+export type ParseResult = { ok: true; data: IpoDataset } | { ok: false; error: string }
 
 /** Serialise to pretty JSON: stamp schema/version + savedAt, strip row ids. */
 export function serializeIpoDataset(data: IpoDataset): string {
@@ -98,15 +90,15 @@ export function serializeIpoDataset(data: IpoDataset): string {
       ...(s.category === "CUSTOM" ? { label: s.label ?? "" } : {}),
       timesSubscribed: s.timesSubscribed,
     })),
-  };
-  return JSON.stringify(clean, null, 2);
+  }
+  return JSON.stringify(clean, null, 2)
 }
 
 /** Download filename, e.g. `ipo-sample-ipo-2026-07-16.json`. */
 export function ipoFileName(data: IpoDataset, today: string): string {
-  const slug = slugify(data.meta.companyName) || "dashboard";
-  const stamp = today || new Date().toISOString().slice(0, 10);
-  return `ipo-${slug}-${stamp}.json`;
+  const slug = slugify(data.meta.companyName) || "dashboard"
+  const stamp = today || new Date().toISOString().slice(0, 10)
+  return `ipo-${slug}-${stamp}.json`
 }
 
 /**
@@ -122,7 +114,7 @@ const MAX_ROWS = {
   applications: 500,
   contributorsPerApplication: 200,
   subscription: 100,
-} as const;
+} as const
 
 /**
  * Validate/clamp an untrusted payload into a fresh `IpoDataset`. Never spreads
@@ -133,14 +125,14 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     return {
       ok: false,
       error: "This file isn't a valid IPO dashboard export.",
-    };
+    }
   }
 
-  const metaRaw = isObject(raw.meta) ? raw.meta : {};
-  const bandRaw = isObject(metaRaw.priceBand) ? metaRaw.priceBand : {};
-  let bandMin = Math.max(0, num(bandRaw.min, 0));
-  let bandMax = Math.max(0, num(bandRaw.max, 0));
-  if (bandMin > bandMax) [bandMin, bandMax] = [bandMax, bandMin];
+  const metaRaw = isObject(raw.meta) ? raw.meta : {}
+  const bandRaw = isObject(metaRaw.priceBand) ? metaRaw.priceBand : {}
+  let bandMin = Math.max(0, num(bandRaw.min, 0))
+  let bandMax = Math.max(0, num(bandRaw.max, 0))
+  if (bandMin > bandMax) [bandMin, bandMax] = [bandMax, bandMin]
 
   const meta: IpoMeta = {
     companyName: str(metaRaw.companyName, "Untitled IPO"),
@@ -156,80 +148,67 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     unitLabel: str(metaRaw.unitLabel, "Cr"),
     schemaVersion: SCHEMA_VERSION,
     savedAt: str(metaRaw.savedAt, ""),
-  };
+  }
 
   const timeline = asArray(raw.timeline, MAX_ROWS.timeline).flatMap((entry) => {
-    if (!isObject(entry)) return [];
-    const label = str(entry.label, "Milestone");
+    if (!isObject(entry)) return []
+    const label = str(entry.label, "Milestone")
     // Prefer the explicit flag; fall back to the label set for legacy payloads.
-    const fixed = entry.fixed === true || isFixedMilestone(label);
-    const date = coerceIsoDate(entry.date);
+    const fixed = entry.fixed === true || isFixedMilestone(label)
+    const date = coerceIsoDate(entry.date)
     if (date === null) {
       // Fixed lifecycle milestones persist even without a date (hidden from the
       // timeline until filled in); a custom milestone needs a valid date.
-      return fixed ? [makeMilestone({ label, date: "", fixed: true })] : [];
+      return fixed ? [makeMilestone({ label, date: "", fixed: true })] : []
     }
-    return [makeMilestone({ label, date, ...(fixed ? { fixed: true } : {}) })];
-  });
+    return [makeMilestone({ label, date, ...(fixed ? { fixed: true } : {}) })]
+  })
 
-  const financials = asArray(raw.financials, MAX_ROWS.financials).flatMap(
-    (entry) => {
-      if (!isObject(entry)) return [];
-      const totalAssets = num(entry.totalAssets, NaN);
-      const grossRevenue = num(entry.grossRevenue, NaN);
-      const pat = num(entry.pat, NaN);
-      if (
-        !Number.isFinite(totalAssets) ||
-        !Number.isFinite(grossRevenue) ||
-        !Number.isFinite(pat)
-      ) {
-        return [];
-      }
-      return [
-        makeFinancialRow({
-          period: str(entry.period, "-"),
-          totalAssets,
-          grossRevenue,
-          pat,
-        }),
-      ];
-    },
-  );
+  const financials = asArray(raw.financials, MAX_ROWS.financials).flatMap((entry) => {
+    if (!isObject(entry)) return []
+    const totalAssets = num(entry.totalAssets, NaN)
+    const grossRevenue = num(entry.grossRevenue, NaN)
+    const pat = num(entry.pat, NaN)
+    if (!Number.isFinite(totalAssets) || !Number.isFinite(grossRevenue) || !Number.isFinite(pat)) {
+      return []
+    }
+    return [
+      makeFinancialRow({
+        period: str(entry.period, "-"),
+        totalAssets,
+        grossRevenue,
+        pat,
+      }),
+    ]
+  })
 
   const gmp = asArray(raw.gmp, MAX_ROWS.gmp).flatMap((entry) => {
-    if (!isObject(entry)) return [];
-    const date = coerceIsoDate(entry.date);
-    const value = num(entry.value, NaN);
-    if (date === null || !Number.isFinite(value)) return [];
-    return [makeGmpRow({ date, value })];
-  });
+    if (!isObject(entry)) return []
+    const date = coerceIsoDate(entry.date)
+    const value = num(entry.value, NaN)
+    if (date === null || !Number.isFinite(value)) return []
+    return [makeGmpRow({ date, value })]
+  })
 
-  const applications = asArray(raw.applications, MAX_ROWS.applications).flatMap(
-    (entry) => {
-      if (!isObject(entry)) return [];
-      const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {};
-      const contributors = asArray(
-        entry.contributors,
-        MAX_ROWS.contributorsPerApplication,
-      ).flatMap((c) => {
-        if (!isObject(c)) return [];
-        const unitsRaw = num(c.units, NaN);
-        const priceRaw = num(c.price, NaN);
-        const amountRaw = num(c.amount, NaN);
+  const applications = asArray(raw.applications, MAX_ROWS.applications).flatMap((entry) => {
+    if (!isObject(entry)) return []
+    const allotmentRaw = isObject(entry.allotment) ? entry.allotment : {}
+    const contributors = asArray(entry.contributors, MAX_ROWS.contributorsPerApplication).flatMap(
+      (c) => {
+        if (!isObject(c)) return []
+        const unitsRaw = num(c.units, NaN)
+        const priceRaw = num(c.price, NaN)
+        const amountRaw = num(c.amount, NaN)
         // Accept a row that carries EITHER units+price ("detailed") or a direct
         // amount ("total"); drop only rows with no usable numeric field at all.
-        const hasDetailed =
-          Number.isFinite(unitsRaw) && Number.isFinite(priceRaw);
-        const hasTotal = Number.isFinite(amountRaw);
-        if (!hasDetailed && !hasTotal) return [];
-        const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0);
-        const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0);
+        const hasDetailed = Number.isFinite(unitsRaw) && Number.isFinite(priceRaw)
+        const hasTotal = Number.isFinite(amountRaw)
+        if (!hasDetailed && !hasTotal) return []
+        const units = Math.max(0, Number.isFinite(unitsRaw) ? unitsRaw : 0)
+        const price = Math.max(0, Number.isFinite(priceRaw) ? priceRaw : 0)
         // Fall back to units*price so a legacy row keeps its corpus if the user
         // later switches the application to "total" mode.
-        const amount = Math.max(
-          0,
-          Number.isFinite(amountRaw) ? amountRaw : units * price,
-        );
+        const amount = Math.max(0, Number.isFinite(amountRaw) ? amountRaw : units * price)
         return [
           makeContributor({
             name: str(c.name, "Contributor"),
@@ -237,56 +216,44 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
             price,
             amount,
           }),
-        ];
-      });
-      return [
-        makeApplication({
-          name: str(entry.name, "Application"),
-          category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
-          // Legacy exports (no mode) carry units+price, so default to "detailed"
-          // to preserve them; new exports set the mode explicitly.
-          contributionMode: enumOr<ContributionMode>(
-            entry.contributionMode,
-            CONTRIBUTION_MODES,
-            "detailed",
-          ),
-          allotted: entry.allotted === true,
-          allotment: {
-            mode: enumOr<AllotmentMode>(
-              allotmentRaw.mode,
-              ALLOTMENT_MODES,
-              "total",
-            ),
-            quantityAllotted: Math.max(
-              0,
-              num(allotmentRaw.quantityAllotted, 0),
-            ),
-            sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
-            totalAmount: num(allotmentRaw.totalAmount, 0),
-          },
-          contributors,
-        }),
-      ];
-    },
-  );
+        ]
+      },
+    )
+    return [
+      makeApplication({
+        name: str(entry.name, "Application"),
+        category: enumOr(entry.category, APPLICATION_CATEGORIES, "RETAIL"),
+        // Legacy exports (no mode) carry units+price, so default to "detailed"
+        // to preserve them; new exports set the mode explicitly.
+        contributionMode: enumOr<ContributionMode>(
+          entry.contributionMode,
+          CONTRIBUTION_MODES,
+          "detailed",
+        ),
+        allotted: entry.allotted === true,
+        allotment: {
+          mode: enumOr<AllotmentMode>(allotmentRaw.mode, ALLOTMENT_MODES, "total"),
+          quantityAllotted: Math.max(0, num(allotmentRaw.quantityAllotted, 0)),
+          sellingPrice: Math.max(0, num(allotmentRaw.sellingPrice, 0)),
+          totalAmount: num(allotmentRaw.totalAmount, 0),
+        },
+        contributors,
+      }),
+    ]
+  })
 
-  const subscription = asArray(raw.subscription, MAX_ROWS.subscription).flatMap(
-    (entry) => {
-      if (!isObject(entry)) return [];
-      const category = str(entry.category, "");
-      if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category))
-        return [];
-      return [
-        makeSubscriptionRow({
-          category: category as SubscriptionCategory,
-          ...(category === "CUSTOM"
-            ? { label: str(entry.label, "Custom") }
-            : {}),
-          timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
-        }),
-      ];
-    },
-  );
+  const subscription = asArray(raw.subscription, MAX_ROWS.subscription).flatMap((entry) => {
+    if (!isObject(entry)) return []
+    const category = str(entry.category, "")
+    if (!(SUBSCRIPTION_CATEGORIES as readonly string[]).includes(category)) return []
+    return [
+      makeSubscriptionRow({
+        category: category as SubscriptionCategory,
+        ...(category === "CUSTOM" ? { label: str(entry.label, "Custom") } : {}),
+        timesSubscribed: Math.max(0, num(entry.timesSubscribed, 0)),
+      }),
+    ]
+  })
 
   if (
     timeline.length === 0 &&
@@ -295,11 +262,11 @@ export function safeParseIpoDataset(raw: unknown): ParseResult {
     applications.length === 0 &&
     subscription.length === 0
   ) {
-    return { ok: false, error: "No usable IPO data found in this file." };
+    return { ok: false, error: "No usable IPO data found in this file." }
   }
 
   return {
     ok: true,
     data: { meta, timeline, financials, gmp, applications, subscription },
-  };
+  }
 }

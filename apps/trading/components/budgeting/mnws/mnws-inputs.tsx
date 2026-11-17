@@ -1,19 +1,11 @@
-"use client";
+"use client"
 
-import { fmtDisplayDate } from "@/lib/format";
-import type {
-  BonusEntry,
-  MnwsMeta,
-  MnwsSettings,
-  SalaryEntry,
-} from "@/lib/budgeting/mnws/types";
-import { RETURN_MAX, RETURN_MIN } from "@/lib/budgeting/mnws/types";
-import { compareIso } from "@/lib/budgeting/mnws/dates";
-import {
-  blankBonusEntry,
-  makeSalaryEntry,
-} from "@/lib/budgeting/mnws/defaults";
-import { NumberField, TextField, ToolCard } from "@/components/tools/controls";
+import { fmtDisplayDate } from "@/lib/format"
+import type { BonusEntry, MnwsMeta, MnwsSettings, SalaryEntry } from "@/lib/budgeting/mnws/types"
+import { RETURN_MAX, RETURN_MIN } from "@/lib/budgeting/mnws/types"
+import { compareIso } from "@/lib/budgeting/mnws/dates"
+import { blankBonusEntry, makeSalaryEntry } from "@/lib/budgeting/mnws/defaults"
+import { NumberField, TextField, ToolCard } from "@/components/tools/controls"
 import {
   AddRowButton,
   DateCell,
@@ -23,15 +15,12 @@ import {
   RemoveRowButton,
   SortRowsButton,
   TextCell,
-} from "@/components/tools/editable-table";
+} from "@/components/tools/editable-table"
 
 /** The rows sorted by date in the given direction; equal dates keep their order. */
-function sortByDate<T extends { date: string }>(
-  rows: T[],
-  direction: "asc" | "desc",
-): T[] {
-  const sign = direction === "asc" ? 1 : -1;
-  return [...rows].sort((a, b) => sign * compareIso(a.date, b.date));
+function sortByDate<T extends { date: string }>(rows: T[], direction: "asc" | "desc"): T[] {
+  const sign = direction === "asc" ? 1 : -1
+  return [...rows].sort((a, b) => sign * compareIso(a.date, b.date))
 }
 
 /**
@@ -41,12 +30,9 @@ function sortByDate<T extends { date: string }>(
  */
 function latestByDate<T extends { date: string }>(rows: T[]): T | undefined {
   return rows.reduce<T | undefined>(
-    (latest, row) =>
-      latest === undefined || compareIso(row.date, latest.date) > 0
-        ? row
-        : latest,
+    (latest, row) => (latest === undefined || compareIso(row.date, latest.date) > 0 ? row : latest),
     undefined,
-  );
+  )
 }
 
 /**
@@ -54,13 +40,7 @@ function latestByDate<T extends { date: string }>(rows: T[]): T | undefined {
  * row is hidden), then dissolves into the grid at `lg` via `display:contents`
  * so the labelled cells still line up under the shared column headers.
  */
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="lg:contents">
       <span className="text-muted-foreground mb-1 block text-xs font-medium lg:hidden">
@@ -68,7 +48,7 @@ function Field({
       </span>
       {children}
     </div>
-  );
+  )
 }
 
 /** Salary credits: each applies the FOLLOWING month and carries forward. */
@@ -77,9 +57,9 @@ function SalaryEditor({
   today,
   onChange,
 }: {
-  salaries: SalaryEntry[];
-  today: string;
-  onChange: (next: SalaryEntry[]) => void;
+  salaries: SalaryEntry[]
+  today: string
+  onChange: (next: SalaryEntry[]) => void
 }) {
   return (
     <div>
@@ -98,25 +78,19 @@ function SalaryEditor({
             <DateCell
               ariaLabel="Salary credit date"
               value={row.date}
-              onChange={(date) =>
-                onChange(patchRow(salaries, row.id, { date }))
-              }
+              onChange={(date) => onChange(patchRow(salaries, row.id, { date }))}
             />
             <NumberCell
               ariaLabel="Monthly salary"
               value={row.amount}
               min={0}
-              onChange={(amount) =>
-                onChange(patchRow(salaries, row.id, { amount }))
-              }
+              onChange={(amount) => onChange(patchRow(salaries, row.id, { amount }))}
             />
             <TextCell
               ariaLabel="Salary note"
               value={row.note}
               placeholder="e.g. Joined ACME, FY19 appraisal"
-              onChange={(note) =>
-                onChange(patchRow(salaries, row.id, { note }))
-              }
+              onChange={(note) => onChange(patchRow(salaries, row.id, { note }))}
             />
             <RemoveRowButton
               label={`Remove salary from ${fmtDisplayDate(row.date)}`}
@@ -129,7 +103,7 @@ function SalaryEditor({
         <AddRowButton
           label="Add salary / increment"
           onClick={() => {
-            const latest = latestByDate(salaries);
+            const latest = latestByDate(salaries)
             onChange([
               ...salaries,
               makeSalaryEntry({
@@ -137,7 +111,7 @@ function SalaryEditor({
                 amount: latest?.amount ?? 0,
                 note: "",
               }),
-            ]);
+            ])
           }}
         />
         <SortRowsButton
@@ -146,7 +120,7 @@ function SalaryEditor({
         />
       </div>
     </div>
-  );
+  )
 }
 
 /** One-off bonuses / windfalls deployed the FOLLOWING month by an editable split. */
@@ -155,9 +129,9 @@ function BonusEditor({
   today,
   onChange,
 }: {
-  bonuses: BonusEntry[];
-  today: string;
-  onChange: (next: BonusEntry[]) => void;
+  bonuses: BonusEntry[]
+  today: string
+  onChange: (next: BonusEntry[]) => void
 }) {
   return (
     <div>
@@ -180,9 +154,7 @@ function BonusEditor({
               <DateCell
                 ariaLabel="Bonus received date"
                 value={row.date}
-                onChange={(date) =>
-                  onChange(patchRow(bonuses, row.id, { date }))
-                }
+                onChange={(date) => onChange(patchRow(bonuses, row.id, { date }))}
               />
             </Field>
             <Field label="Amount (₹)">
@@ -190,9 +162,7 @@ function BonusEditor({
                 ariaLabel="Bonus amount"
                 value={row.amount}
                 min={0}
-                onChange={(amount) =>
-                  onChange(patchRow(bonuses, row.id, { amount }))
-                }
+                onChange={(amount) => onChange(patchRow(bonuses, row.id, { amount }))}
               />
             </Field>
             <Field label="Needs %">
@@ -200,9 +170,7 @@ function BonusEditor({
                 ariaLabel="Bonus needs percent"
                 value={row.needsPct}
                 min={0}
-                onChange={(needsPct) =>
-                  onChange(patchRow(bonuses, row.id, { needsPct }))
-                }
+                onChange={(needsPct) => onChange(patchRow(bonuses, row.id, { needsPct }))}
               />
             </Field>
             <Field label="Wants %">
@@ -210,9 +178,7 @@ function BonusEditor({
                 ariaLabel="Bonus wants percent"
                 value={row.wantsPct}
                 min={0}
-                onChange={(wantsPct) =>
-                  onChange(patchRow(bonuses, row.id, { wantsPct }))
-                }
+                onChange={(wantsPct) => onChange(patchRow(bonuses, row.id, { wantsPct }))}
               />
             </Field>
             <Field label="Savings %">
@@ -220,9 +186,7 @@ function BonusEditor({
                 ariaLabel="Bonus savings percent"
                 value={row.savingsPct}
                 min={0}
-                onChange={(savingsPct) =>
-                  onChange(patchRow(bonuses, row.id, { savingsPct }))
-                }
+                onChange={(savingsPct) => onChange(patchRow(bonuses, row.id, { savingsPct }))}
               />
             </Field>
             <Field label="Note">
@@ -230,9 +194,7 @@ function BonusEditor({
                 ariaLabel="Bonus note"
                 value={row.note}
                 placeholder="e.g. Diwali bonus, FD maturity"
-                onChange={(note) =>
-                  onChange(patchRow(bonuses, row.id, { note }))
-                }
+                onChange={(note) => onChange(patchRow(bonuses, row.id, { note }))}
               />
             </Field>
             <RemoveRowButton
@@ -245,9 +207,7 @@ function BonusEditor({
       <div className="flex flex-wrap items-center gap-2">
         <AddRowButton
           label="Add bonus / windfall"
-          onClick={() =>
-            onChange([...bonuses, blankBonusEntry(today || "2016-01-31")])
-          }
+          onClick={() => onChange([...bonuses, blankBonusEntry(today || "2016-01-31")])}
         />
         <SortRowsButton
           label="bonus rows"
@@ -255,7 +215,7 @@ function BonusEditor({
         />
       </div>
     </div>
-  );
+  )
 }
 
 /** All editable inputs for the MNWS plan: salaries, bonuses and settings. */
@@ -270,15 +230,15 @@ export function MnwsInputs({
   onBonusesChange,
   onSettingsChange,
 }: {
-  meta: MnwsMeta;
-  salaries: SalaryEntry[];
-  bonuses: BonusEntry[];
-  settings: MnwsSettings;
-  today: string;
-  onMetaChange: (patch: Partial<MnwsMeta>) => void;
-  onSalariesChange: (next: SalaryEntry[]) => void;
-  onBonusesChange: (next: BonusEntry[]) => void;
-  onSettingsChange: (patch: Partial<MnwsSettings>) => void;
+  meta: MnwsMeta
+  salaries: SalaryEntry[]
+  bonuses: BonusEntry[]
+  settings: MnwsSettings
+  today: string
+  onMetaChange: (patch: Partial<MnwsMeta>) => void
+  onSalariesChange: (next: SalaryEntry[]) => void
+  onBonusesChange: (next: BonusEntry[]) => void
+  onSettingsChange: (patch: Partial<MnwsSettings>) => void
 }) {
   return (
     <div className="space-y-6">
@@ -286,27 +246,19 @@ export function MnwsInputs({
         title="Salary history"
         description="Enter every salary and increment. Each applies from the following month and carries forward until the next entry; rows stay put while you edit - use the sort button to order them by date."
       >
-        <SalaryEditor
-          salaries={salaries}
-          today={today}
-          onChange={onSalariesChange}
-        />
+        <SalaryEditor salaries={salaries} today={today} onChange={onSalariesChange} />
       </ToolCard>
 
       <ToolCard
         title="Bonuses & windfalls"
         description="Bonuses, FD maturities and other one-offs. Each is deployed once, the month after it is received, by its own split (default 25 % needs / 0 % wants / 75 % savings)."
       >
-        <BonusEditor
-          bonuses={bonuses}
-          today={today}
-          onChange={onBonusesChange}
-        />
+        <BonusEditor bonuses={bonuses} today={today} onChange={onBonusesChange} />
         <p className="text-muted-foreground mt-3 text-xs">
           To change how a windfall is split, edit its <strong>Needs %</strong>,{" "}
-          <strong>Wants %</strong> and <strong>Savings %</strong> on that row
-          (default 25 / 0 / 75). Splits should total 100 %; any shortfall is
-          treated as ordinary spending and is not deployed.
+          <strong>Wants %</strong> and <strong>Savings %</strong> on that row (default 25 / 0 / 75).
+          Splits should total 100 %; any shortfall is treated as ordinary spending and is not
+          deployed.
         </p>
       </ToolCard>
 
@@ -329,15 +281,12 @@ export function MnwsInputs({
             suffix="% p.a."
             onChange={(annualReturnPct) =>
               onSettingsChange({
-                annualReturnPct: Math.min(
-                  RETURN_MAX,
-                  Math.max(RETURN_MIN, annualReturnPct),
-                ),
+                annualReturnPct: Math.min(RETURN_MAX, Math.max(RETURN_MIN, annualReturnPct)),
               })
             }
           />
         </div>
       </ToolCard>
     </div>
-  );
+  )
 }

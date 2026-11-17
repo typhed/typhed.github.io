@@ -103,20 +103,20 @@ function ChartTooltip({
 }) {
   if (!active || !payload || payload.length === 0) return null
   return (
-    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
-      <p className="mb-1 font-medium text-foreground">
+    <div className="border-border bg-popover rounded-lg border px-3 py-2 text-xs shadow-md">
+      <p className="text-foreground mb-1 font-medium">
         {xLabel ? `${xLabel}: ` : ""}
         {label}
       </p>
       {payload.map((entry) => (
-        <p key={String(entry.dataKey)} className="flex items-center gap-2 text-muted-foreground">
+        <p key={String(entry.dataKey)} className="text-muted-foreground flex items-center gap-2">
           <span
             className="inline-block h-2 w-2 shrink-0 rounded-full"
             style={{ backgroundColor: entry.color }}
             aria-hidden="true"
           />
           <span className="text-foreground">{entry.name}</span>
-          <span className="ml-3 font-mono tabular-nums text-foreground">
+          <span className="text-foreground ml-3 font-mono tabular-nums">
             {typeof entry.value === "number" ? entry.value.toFixed(3) : entry.value}
           </span>
         </p>
@@ -153,7 +153,7 @@ export default function ChartInner({ spec }: { spec: string }) {
 
   if ("error" in parsed) {
     return (
-      <pre className="my-6 overflow-x-auto rounded-lg border border-destructive/50 bg-card p-4 font-mono text-sm text-destructive">
+      <pre className="border-destructive/50 bg-card text-destructive my-6 overflow-x-auto rounded-lg border p-4 font-mono text-sm">
         {`Chart spec error: ${parsed.error}\n\n${spec}`}
       </pre>
     )
@@ -201,9 +201,7 @@ export default function ChartInner({ spec }: { spec: string }) {
       content={<ChartTooltip xLabel={xLabel} />}
       cursor={{ stroke: theme.axis, strokeDasharray: "3 3" }}
     />,
-    series.length > 1 ? (
-      <Legend key="legend" align="right" verticalAlign="bottom" />
-    ) : null,
+    series.length > 1 ? <Legend key="legend" align="right" verticalAlign="bottom" /> : null,
     ...(refLines ?? []).map((r, i) => (
       <ReferenceLine
         key={`ref-${i}`}
@@ -280,9 +278,9 @@ export default function ChartInner({ spec }: { spec: string }) {
   }
 
   return (
-    <figure className="my-6 rounded-lg border border-border bg-card/50 p-4">
+    <figure className="border-border bg-card/50 my-6 rounded-lg border p-4">
       {title ? (
-        <figcaption className="mb-3 text-center text-sm font-medium text-foreground">
+        <figcaption className="text-foreground mb-3 text-center text-sm font-medium">
           {title}
         </figcaption>
       ) : null}

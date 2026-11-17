@@ -31,19 +31,19 @@ export function ThemeToggle() {
       aria-label="Toggle color theme"
       title="Toggle color theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border border-border bg-secondary px-1 ring-offset-background transition-colors hover:border-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      className="border-border bg-secondary ring-offset-background hover:border-brand/50 focus-visible:ring-ring relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border px-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
     >
       <Sun
-        className="pointer-events-none absolute left-1.5 h-3.5 w-3.5 text-muted-foreground"
+        className="text-muted-foreground pointer-events-none absolute left-1.5 h-3.5 w-3.5"
         aria-hidden="true"
       />
       <Moon
-        className="pointer-events-none absolute right-1.5 h-3.5 w-3.5 text-muted-foreground"
+        className="text-muted-foreground pointer-events-none absolute right-1.5 h-3.5 w-3.5"
         aria-hidden="true"
       />
       <span
         className={cn(
-          "pointer-events-none relative z-10 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform duration-200",
+          "bg-primary text-primary-foreground pointer-events-none relative z-10 inline-flex h-6 w-6 items-center justify-center rounded-full shadow-sm transition-transform duration-200",
           isDark ? "translate-x-6" : "translate-x-0",
         )}
       >

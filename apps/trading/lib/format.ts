@@ -6,24 +6,24 @@
  * grouping across one page reads as a defect in a numbers product.
  */
 
-const LOCALE = "en-IN";
+const LOCALE = "en-IN"
 
 export function fmtMoney(value: number, digits = 2): string {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) return "-"
   return value.toLocaleString(LOCALE, {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
-  });
+  })
 }
 
 export function fmtPercent(fraction: number, digits = 2): string {
-  if (!Number.isFinite(fraction)) return "-";
-  return `${(fraction * 100).toFixed(digits)}%`;
+  if (!Number.isFinite(fraction)) return "-"
+  return `${(fraction * 100).toFixed(digits)}%`
 }
 
 export function fmtNumber(value: number, digits = 2): string {
-  if (!Number.isFinite(value)) return "-";
-  return value.toLocaleString(LOCALE, { maximumFractionDigits: digits });
+  if (!Number.isFinite(value)) return "-"
+  return value.toLocaleString(LOCALE, { maximumFractionDigits: digits })
 }
 
 /**
@@ -32,54 +32,52 @@ export function fmtNumber(value: number, digits = 2): string {
  * would paint missing values red).
  */
 export function signTone(value: number): "positive" | "negative" | "default" {
-  if (!Number.isFinite(value)) return "default";
-  return value >= 0 ? "positive" : "negative";
+  if (!Number.isFinite(value)) return "default"
+  return value >= 0 ? "positive" : "negative"
 }
 
 /** Indian-rupee currency with lakh/crore grouping, e.g. `₹14,924.00`. */
 export function fmtInr(value: number, digits = 2): string {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) return "-"
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
-  }).format(value);
+  }).format(value)
 }
 
 /** Compact Indian-rupee label for chart axes, e.g. `₹1.2Cr`, `₹6.5L`, `₹45k`. */
 export function fmtInrShort(value: number): string {
-  if (!Number.isFinite(value)) return "-";
-  const sign = value < 0 ? "-" : "";
-  const abs = Math.abs(value);
-  const compact = (n: number) =>
-    n >= 10 ? String(Math.round(n)) : n.toFixed(1);
-  if (abs >= 1e7) return `${sign}₹${compact(abs / 1e7)}Cr`;
-  if (abs >= 1e5) return `${sign}₹${compact(abs / 1e5)}L`;
-  if (abs >= 1e3) return `${sign}₹${Math.round(abs / 1e3)}k`;
-  return `${sign}₹${Math.round(abs)}`;
+  if (!Number.isFinite(value)) return "-"
+  const sign = value < 0 ? "-" : ""
+  const abs = Math.abs(value)
+  const compact = (n: number) => (n >= 10 ? String(Math.round(n)) : n.toFixed(1))
+  if (abs >= 1e7) return `${sign}₹${compact(abs / 1e7)}Cr`
+  if (abs >= 1e5) return `${sign}₹${compact(abs / 1e5)}L`
+  if (abs >= 1e3) return `${sign}₹${Math.round(abs / 1e3)}k`
+  return `${sign}₹${Math.round(abs)}`
 }
 
 /** Rupee amount expressed in crores, e.g. `₹0.016 Cr`. */
 export function fmtInrCrore(value: number, digits = 3): string {
-  if (!Number.isFinite(value)) return "-";
-  return `₹${(value / 1e7).toFixed(digits)} Cr`;
+  if (!Number.isFinite(value)) return "-"
+  return `₹${(value / 1e7).toFixed(digits)} Cr`
 }
 
 /** Compact axis label: thousands collapse to "1.5K", smaller values round to integers. */
 export function fmtCompact(value: number): string {
-  const abs = Math.abs(value);
-  if (abs >= 1000)
-    return `${(value / 1000).toLocaleString(LOCALE, { maximumFractionDigits: 1 })}K`;
-  return value.toLocaleString(LOCALE, { maximumFractionDigits: 0 });
+  const abs = Math.abs(value)
+  if (abs >= 1000) return `${(value / 1000).toLocaleString(LOCALE, { maximumFractionDigits: 1 })}K`
+  return value.toLocaleString(LOCALE, { maximumFractionDigits: 0 })
 }
 
 /** Render an ISO "yyyy-mm-dd" date as "dd-mm-yyyy" (matching the source sheet). */
 export function fmtDisplayDate(iso: string): string {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (!match) return iso || "-";
-  const [, yyyy, mm, dd] = match;
-  return `${dd}-${mm}-${yyyy}`;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  if (!match) return iso || "-"
+  const [, yyyy, mm, dd] = match
+  return `${dd}-${mm}-${yyyy}`
 }
 
 const MONTH_ABBREVIATIONS = [
@@ -95,22 +93,22 @@ const MONTH_ABBREVIATIONS = [
   "Oct",
   "Nov",
   "Dec",
-] as const;
+] as const
 
 /** Short "dd Mon" label for chart axes, e.g. "14 Jul". */
 export function fmtDayMonth(iso: string): string {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
-  if (!match) return iso || "-";
-  const [, , mm, dd] = match;
-  const month = MONTH_ABBREVIATIONS[Number(mm) - 1] ?? mm;
-  return `${dd} ${month}`;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  if (!match) return iso || "-"
+  const [, , mm, dd] = match
+  const month = MONTH_ABBREVIATIONS[Number(mm) - 1] ?? mm
+  return `${dd} ${month}`
 }
 
 /** Short "Mon'YY" month label, e.g. "Dec'16". Accepts ISO "yyyy-mm-dd" or "yyyy-mm". */
 export function fmtMonthYear(iso: string): string {
-  const match = /^(\d{4})-(\d{2})/.exec(iso);
-  if (!match) return iso || "-";
-  const [, yyyy, mm] = match;
-  const month = MONTH_ABBREVIATIONS[Number(mm) - 1] ?? mm;
-  return `${month}'${(yyyy ?? "").slice(2)}`;
+  const match = /^(\d{4})-(\d{2})/.exec(iso)
+  if (!match) return iso || "-"
+  const [, yyyy, mm] = match
+  const month = MONTH_ABBREVIATIONS[Number(mm) - 1] ?? mm
+  return `${month}'${(yyyy ?? "").slice(2)}`
 }

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 /**
  * Track an element's rendered pixel width with a `ResizeObserver`.
@@ -10,24 +10,24 @@
  * first measurement; callers should guard that frame.
  */
 
-import * as React from "react";
+import * as React from "react"
 
 export function useElementWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
-  const ref = React.useRef<T>(null);
-  const [width, setWidth] = React.useState(0);
+  const ref = React.useRef<T>(null)
+  const [width, setWidth] = React.useState(0)
 
   React.useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const element = ref.current
+    if (!element) return
 
-    setWidth(element.getBoundingClientRect().width);
+    setWidth(element.getBoundingClientRect().width)
     const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (entry) setWidth(entry.contentRect.width);
-    });
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
+      const entry = entries[0]
+      if (entry) setWidth(entry.contentRect.width)
+    })
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [])
 
-  return [ref, width];
+  return [ref, width]
 }

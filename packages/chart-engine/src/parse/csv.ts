@@ -1,6 +1,6 @@
-import Papa from "papaparse";
+import Papa from "papaparse"
 
-import type { ParsedTable } from "../types";
+import type { ParsedTable } from "../types"
 
 /**
  * Parse CSV text into a table. Values stay as strings (no dynamic typing) so
@@ -15,8 +15,8 @@ export function parseCsv(text: string): ParsedTable {
     skipEmptyLines: "greedy",
     dynamicTyping: false,
     transformHeader: (header) => header.trim(),
-  });
+  })
 
-  const headers = result.meta.fields ?? [];
-  return { headers, rows: result.data };
+  const headers = result.meta.fields ?? []
+  return { headers, rows: result.data }
 }

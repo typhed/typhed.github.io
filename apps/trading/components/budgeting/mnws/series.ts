@@ -6,19 +6,19 @@
  * fixed, theme-stable hues distinct from the cyan/indigo brand accent.
  */
 
-export type SeriesKey = "needs" | "wants" | "savings";
+export type SeriesKey = "needs" | "wants" | "savings"
 
 export interface SeriesMeta {
-  key: SeriesKey;
-  label: string;
+  key: SeriesKey
+  label: string
   /** CSS colour for SVG fills / strokes (theme-stable, works in light + dark). */
-  color: string;
+  color: string
   /** Tailwind text-colour class for inline figures. */
-  textClass: string;
+  textClass: string
   /** Tinted KPI-card surface: a light shade of the bucket colour + border. */
-  cardClass: string;
+  cardClass: string
   /** The prominent amount chip: deeper-tone text and fill, blackish border. */
-  chipClass: string;
+  chipClass: string
 }
 
 // Hues validated with the dataviz palette checker (light + dark surfaces):
@@ -52,13 +52,13 @@ export const SERIES: Record<SeriesKey, SeriesMeta> = {
     chipClass:
       "border-black/40 bg-emerald-600/20 text-emerald-700 dark:border-black/60 dark:text-emerald-400",
   },
-};
+}
 
 /** Fixed render order: needs, wants, savings (left→right, bottom→top in stacks). */
-export const SERIES_ORDER: readonly SeriesKey[] = ["needs", "wants", "savings"];
+export const SERIES_ORDER: readonly SeriesKey[] = ["needs", "wants", "savings"]
 
 /** Colour for the two corpus lines: nominal cash saved vs invested corpus. */
 export const CORPUS_COLORS = {
   cash: SERIES.savings.color,
   invested: "hsl(var(--brand))",
-} as const;
+} as const

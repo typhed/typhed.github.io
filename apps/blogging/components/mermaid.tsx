@@ -63,7 +63,7 @@ export function Mermaid({ chart }: { chart: string }) {
 
   if (error) {
     return (
-      <pre className="my-6 overflow-x-auto rounded-lg border border-destructive/50 bg-card p-4 font-mono text-sm text-destructive">
+      <pre className="border-destructive/50 bg-card text-destructive my-6 overflow-x-auto rounded-lg border p-4 font-mono text-sm">
         {`Diagram failed to render: ${error}\n\n${chart}`}
       </pre>
     )
@@ -71,7 +71,7 @@ export function Mermaid({ chart }: { chart: string }) {
 
   if (!svg) {
     return (
-      <div className="my-6 flex min-h-[8rem] items-center justify-center rounded-lg border border-border bg-card/50 text-sm text-muted-foreground">
+      <div className="border-border bg-card/50 text-muted-foreground my-6 flex min-h-[8rem] items-center justify-center rounded-lg border text-sm">
         Rendering diagram…
       </div>
     )
@@ -79,7 +79,7 @@ export function Mermaid({ chart }: { chart: string }) {
 
   return (
     <div
-      className="my-6 flex justify-center overflow-x-auto rounded-lg border border-border bg-card/50 p-4 [&_svg]:h-auto [&_svg]:max-w-full"
+      className="border-border bg-card/50 my-6 flex justify-center overflow-x-auto rounded-lg border p-4 [&_svg]:h-auto [&_svg]:max-w-full"
       // svg is produced by mermaid from trusted post content and sanitised by
       // securityLevel:"strict"; there is no user-supplied markup here.
       dangerouslySetInnerHTML={{ __html: svg }}

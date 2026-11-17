@@ -46,12 +46,12 @@ export function AccessPanel({ links }: { links: Record<string, AccessLink> }) {
   return (
     <section
       aria-label="Trade with"
-      className="rounded-xl border border-border bg-card/50 px-1.5 pb-1.5"
+      className="border-border bg-card/50 rounded-xl border px-1.5 pb-1.5"
     >
-      <p className="px-2 pb-1 pt-2.5 font-display text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <p className="font-display text-muted-foreground px-2 pb-1 pt-2.5 text-xs font-semibold uppercase tracking-wide">
         Trade With
       </p>
-      <ul className="divide-y divide-border/60">
+      <ul className="divide-border/60 divide-y">
         {entries.map(([slug, entry]) => {
           const { label, Icon } = resolvePlatform(slug)
           const active = isPopulated(entry.link)
@@ -76,7 +76,7 @@ export function AccessPanel({ links }: { links: Record<string, AccessLink> }) {
                     {label}
                   </span>
                   {entry.type ? (
-                    <span className="block truncate text-[calc(10px*var(--font-scale,1))] leading-tight text-muted-foreground/70">
+                    <span className="text-muted-foreground/70 block truncate text-[calc(10px*var(--font-scale,1))] leading-tight">
                       {entry.type}
                     </span>
                   ) : null}
@@ -88,7 +88,7 @@ export function AccessPanel({ links }: { links: Record<string, AccessLink> }) {
                   href={entry.link as string}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="mt-2 flex w-full items-center justify-center gap-1 rounded-lg bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground transition-opacity hover:opacity-90"
+                  className="bg-brand text-brand-foreground mt-2 flex w-full items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90"
                 >
                   {rtag}
                   <ArrowRight />
@@ -96,7 +96,7 @@ export function AccessPanel({ links }: { links: Record<string, AccessLink> }) {
               ) : (
                 <span
                   aria-disabled="true"
-                  className="mt-2 flex w-full cursor-not-allowed items-center justify-center gap-1 rounded-lg bg-muted px-3 py-1.5 text-xs font-medium text-muted-foreground/60"
+                  className="bg-muted text-muted-foreground/60 mt-2 flex w-full cursor-not-allowed items-center justify-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium"
                 >
                   {rtag}
                   <ArrowRight />

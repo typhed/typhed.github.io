@@ -1,6 +1,6 @@
-export { wilderAtr } from "./atr";
+export { wilderAtr } from "./atr"
 
-export { runBacktest } from "./backtest";
+export { runBacktest } from "./backtest"
 
 export {
   runSweep,
@@ -10,7 +10,7 @@ export {
   type SweepParams,
   type SweepResult,
   type SweepRow,
-} from "./sweep";
+} from "./sweep"
 
 export type {
   BacktestParams,
@@ -19,4 +19,4 @@ export type {
   BacktestTrade,
   ExitReason,
   StrategyTemplate,
-} from "./types";
+} from "./types"

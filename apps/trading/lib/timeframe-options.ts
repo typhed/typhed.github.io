@@ -1,10 +1,10 @@
-import { canAggregate, TIMEFRAMES, type Timeframe } from "@typhed/chart-engine";
+import { canAggregate, TIMEFRAMES, type Timeframe } from "@typhed/chart-engine"
 
 function formatInterval(seconds: number): string {
-  if (seconds % 86400 === 0) return `${seconds / 86400}D`;
-  if (seconds % 3600 === 0) return `${seconds / 3600}h`;
-  if (seconds % 60 === 0) return `${seconds / 60}m`;
-  return `${seconds}s`;
+  if (seconds % 86400 === 0) return `${seconds / 86400}D`
+  if (seconds % 3600 === 0) return `${seconds / 3600}h`
+  if (seconds % 60 === 0) return `${seconds / 60}m`
+  return `${seconds}s`
 }
 
 /**
@@ -13,10 +13,10 @@ function formatInterval(seconds: number): string {
  * unusual sampling interval still charts and aggregates correctly.
  */
 export function baseTimeframe(intervalSeconds: number | null): Timeframe {
-  if (intervalSeconds === null) return TIMEFRAMES[0]!;
+  if (intervalSeconds === null) return TIMEFRAMES[0]!
 
-  const known = TIMEFRAMES.find((tf) => tf.seconds === intervalSeconds);
-  if (known) return known;
+  const known = TIMEFRAMES.find((tf) => tf.seconds === intervalSeconds)
+  if (known) return known
 
   const unit: Timeframe["unit"] =
     intervalSeconds >= 604800
@@ -25,14 +25,14 @@ export function baseTimeframe(intervalSeconds: number | null): Timeframe {
         ? "day"
         : intervalSeconds >= 3600
           ? "hour"
-          : "minute";
+          : "minute"
 
   return {
     id: formatInterval(intervalSeconds),
     label: formatInterval(intervalSeconds),
     seconds: intervalSeconds,
     unit,
-  };
+  }
 }
 
 /**
@@ -40,10 +40,10 @@ export function baseTimeframe(intervalSeconds: number | null): Timeframe {
  * timeframe that is a whole multiple of it (so buckets nest cleanly).
  */
 export function timeframeOptions(base: Timeframe): Timeframe[] {
-  const options: Timeframe[] = [base];
+  const options: Timeframe[] = [base]
   for (const tf of TIMEFRAMES) {
-    if (tf.id === base.id) continue;
-    if (canAggregate(base, tf)) options.push(tf);
+    if (tf.id === base.id) continue
+    if (canAggregate(base, tf)) options.push(tf)
   }
-  return options.sort((a, b) => a.seconds - b.seconds);
+  return options.sort((a, b) => a.seconds - b.seconds)
 }

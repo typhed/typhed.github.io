@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 /**
  * Small, unstyled-cell building blocks for editable tables / grids, shared by
@@ -9,7 +9,7 @@
  * renders one header row) and every row is keyed by an ephemeral `id`.
  */
 
-import * as React from "react";
+import * as React from "react"
 import {
   ArrowDownNarrowWide,
   ArrowDownWideNarrow,
@@ -18,26 +18,22 @@ import {
   Plus,
   RotateCcw,
   Trash2,
-} from "lucide-react";
+} from "lucide-react"
 
-import { cn } from "@typhed/ui/lib/utils";
-import { Button } from "@typhed/ui/components/ui/button";
+import { cn } from "@typhed/ui/lib/utils"
+import { Button } from "@typhed/ui/components/ui/button"
 
 const cellClass =
-  "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
 
 /** Immutably patch the row with the given id. */
-export function patchRow<T extends { id: string }>(
-  rows: T[],
-  id: string,
-  patch: Partial<T>,
-): T[] {
-  return rows.map((row) => (row.id === id ? { ...row, ...patch } : row));
+export function patchRow<T extends { id: string }>(rows: T[], id: string, patch: Partial<T>): T[] {
+  return rows.map((row) => (row.id === id ? { ...row, ...patch } : row))
 }
 
 /** Immutably drop the row with the given id. */
 export function dropRow<T extends { id: string }>(rows: T[], id: string): T[] {
-  return rows.filter((row) => row.id !== id);
+  return rows.filter((row) => row.id !== id)
 }
 
 /** A bare text cell input. */
@@ -47,10 +43,10 @@ export function TextCell({
   placeholder,
   ariaLabel,
 }: {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  ariaLabel: string;
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  ariaLabel: string
 }) {
   return (
     <input
@@ -61,7 +57,7 @@ export function TextCell({
       onChange={(e) => onChange(e.target.value)}
       className={cellClass}
     />
-  );
+  )
 }
 
 /** A bare numeric cell input. `disabled` greys it out and blocks edits. */
@@ -73,12 +69,12 @@ export function NumberCell({
   ariaLabel,
   disabled = false,
 }: {
-  value: number;
-  onChange: (value: number) => void;
-  step?: string | number;
-  min?: number;
-  ariaLabel: string;
-  disabled?: boolean;
+  value: number
+  onChange: (value: number) => void
+  step?: string | number
+  min?: number
+  ariaLabel: string
+  disabled?: boolean
 }) {
   return (
     <input
@@ -89,17 +85,14 @@ export function NumberCell({
       min={min}
       disabled={disabled}
       value={Number.isFinite(value) ? value : ""}
-      onChange={(e) =>
-        onChange(e.target.value === "" ? 0 : Number(e.target.value))
-      }
+      onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
       className={cn(
         cellClass,
         "tabular-nums",
-        disabled &&
-          "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
+        disabled && "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
       )}
     />
-  );
+  )
 }
 
 /** A bare select cell bound to one of a fixed set of options. */
@@ -109,10 +102,10 @@ export function SelectCell<T extends string>({
   onChange,
   ariaLabel,
 }: {
-  value: T;
-  options: ReadonlyArray<{ value: T; label: string }>;
-  onChange: (value: T) => void;
-  ariaLabel: string;
+  value: T
+  options: ReadonlyArray<{ value: T; label: string }>
+  onChange: (value: T) => void
+  ariaLabel: string
 }) {
   return (
     <select
@@ -127,7 +120,7 @@ export function SelectCell<T extends string>({
         </option>
       ))}
     </select>
-  );
+  )
 }
 
 /** A bare native date cell input, bound to an ISO "yyyy-mm-dd" string. */
@@ -136,9 +129,9 @@ export function DateCell({
   onChange,
   ariaLabel,
 }: {
-  value: string;
-  onChange: (value: string) => void;
-  ariaLabel: string;
+  value: string
+  onChange: (value: string) => void
+  ariaLabel: string
 }) {
   return (
     <input
@@ -148,17 +141,11 @@ export function DateCell({
       onChange={(e) => onChange(e.target.value)}
       className={cn(cellClass, "[color-scheme:light] dark:[color-scheme:dark]")}
     />
-  );
+  )
 }
 
 /** A ghost icon button that removes the row it sits in. */
-export function RemoveRowButton({
-  onClick,
-  label,
-}: {
-  onClick: () => void;
-  label: string;
-}) {
+export function RemoveRowButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <Button
       variant="ghost"
@@ -169,7 +156,7 @@ export function RemoveRowButton({
     >
       <Trash2 className="h-4 w-4" />
     </Button>
-  );
+  )
 }
 
 /** Up / down icon buttons that move a row within its group; disabled at each edge. */
@@ -180,11 +167,11 @@ export function ReorderButtons({
   canMoveDown,
   label,
 }: {
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-  canMoveUp: boolean;
-  canMoveDown: boolean;
-  label: string;
+  onMoveUp: () => void
+  onMoveDown: () => void
+  canMoveUp: boolean
+  canMoveDown: boolean
+  label: string
 }) {
   return (
     <div className="flex shrink-0 items-center">
@@ -209,17 +196,11 @@ export function ReorderButtons({
         <ChevronDown className="h-4 w-4" />
       </Button>
     </div>
-  );
+  )
 }
 
 /** A red ghost button that clears a section back to its blank state. */
-export function ResetButton({
-  onClick,
-  label,
-}: {
-  onClick: () => void;
-  label: string;
-}) {
+export function ResetButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <Button
       variant="ghost"
@@ -230,7 +211,7 @@ export function ResetButton({
       <RotateCcw className="h-4 w-4" />
       {label}
     </Button>
-  );
+  )
 }
 
 /**
@@ -244,20 +225,20 @@ export function SortRowsButton({
   onSort,
   label,
 }: {
-  onSort: (direction: "asc" | "desc") => void;
+  onSort: (direction: "asc" | "desc") => void
   /** What gets sorted, for the accessible label, e.g. "salary rows". */
-  label: string;
+  label: string
 }) {
-  const [direction, setDirection] = React.useState<"asc" | "desc">("asc");
-  const oldestFirst = direction === "asc";
+  const [direction, setDirection] = React.useState<"asc" | "desc">("asc")
+  const oldestFirst = direction === "asc"
   return (
     <Button
       variant="outline"
       size="sm"
       aria-label={`Sort ${label} by date, ${oldestFirst ? "oldest" : "newest"} first`}
       onClick={() => {
-        onSort(direction);
-        setDirection(oldestFirst ? "desc" : "asc");
+        onSort(direction)
+        setDirection(oldestFirst ? "desc" : "asc")
       }}
       className="mt-3"
     >
@@ -268,21 +249,15 @@ export function SortRowsButton({
       )}
       Sort {oldestFirst ? "oldest" : "newest"} first
     </Button>
-  );
+  )
 }
 
 /** An outline button that appends a new row. */
-export function AddRowButton({
-  onClick,
-  label,
-}: {
-  onClick: () => void;
-  label: string;
-}) {
+export function AddRowButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <Button variant="outline" size="sm" onClick={onClick} className="mt-3">
       <Plus className="h-4 w-4" />
       {label}
     </Button>
-  );
+  )
 }

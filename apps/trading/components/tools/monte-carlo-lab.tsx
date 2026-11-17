@@ -1,45 +1,40 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { RotateCcw, Square } from "lucide-react";
-import type { Candle } from "@typhed/chart-engine";
+import * as React from "react"
+import { RotateCcw, Square } from "lucide-react"
+import type { Candle } from "@typhed/chart-engine"
 import {
   logReturns,
   type DataDrivenMode,
   type SimulateInput,
   type SimulationSummary,
-} from "@typhed/risk-toolkit";
+} from "@typhed/risk-toolkit"
 
-import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format";
-import { useSimulation } from "@/lib/use-simulation";
-import { Button } from "@typhed/ui/components/ui/button";
-import {
-  NumberField,
-  Segmented,
-  StatTile,
-  ToolCard,
-} from "@/components/tools/controls";
-import { Distribution } from "@/components/tools/distribution";
-import { FanChart } from "@/components/tools/fan-chart";
+import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format"
+import { useSimulation } from "@/lib/use-simulation"
+import { Button } from "@typhed/ui/components/ui/button"
+import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls"
+import { Distribution } from "@/components/tools/distribution"
+import { FanChart } from "@/components/tools/fan-chart"
 
 const MODE_OPTIONS: ReadonlyArray<{ value: DataDrivenMode; label: string }> = [
   { value: "iid", label: "IID bootstrap" },
   { value: "block", label: "Block bootstrap" },
   { value: "gbm", label: "GBM (normal)" },
   { value: "studentT", label: "Student-t" },
-];
+]
 
 const PATH_TIERS = [
   { value: "1k", label: "1k", paths: 1000 },
   { value: "10k", label: "10k", paths: 10000 },
   { value: "50k", label: "50k", paths: 50000 },
   { value: "100k", label: "100k", paths: 100000 },
-] as const;
+] as const
 
-type PathTier = (typeof PATH_TIERS)[number]["value"];
+type PathTier = (typeof PATH_TIERS)[number]["value"]
 
 function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
+  return Math.min(max, Math.max(min, value))
 }
 
 /**
@@ -50,26 +45,21 @@ function clamp(value: number, min: number, max: number): number {
  * button is the honest stability check.
  */
 export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
-  const [mode, setMode] = React.useState<DataDrivenMode>("iid");
-  const [horizon, setHorizon] = React.useState(252);
-  const [tier, setTier] = React.useState<PathTier>("10k");
-  const [seed, setSeed] = React.useState(1);
-  const [antithetic, setAntithetic] = React.useState(false);
-  const [blockOverride, setBlockOverride] = React.useState(0);
-  const [ruinPct, setRuinPct] = React.useState(50);
-  const [targetGainPct, setTargetGainPct] = React.useState(20);
+  const [mode, setMode] = React.useState<DataDrivenMode>("iid")
+  const [horizon, setHorizon] = React.useState(252)
+  const [tier, setTier] = React.useState<PathTier>("10k")
+  const [seed, setSeed] = React.useState(1)
+  const [antithetic, setAntithetic] = React.useState(false)
+  const [blockOverride, setBlockOverride] = React.useState(0)
+  const [ruinPct, setRuinPct] = React.useState(50)
+  const [targetGainPct, setTargetGainPct] = React.useState(20)
 
-  const { status, progress, summary, error, run, cancel } = useSimulation();
+  const { status, progress, summary, error, run, cancel } = useSimulation()
 
-  const returns = React.useMemo(
-    () => logReturns(candles.map((c) => c.close)),
-    [candles],
-  );
-  const lastClose = candles.length
-    ? candles[candles.length - 1]!.close
-    : 1;
+  const returns = React.useMemo(() => logReturns(candles.map((c) => c.close)), [candles])
+  const lastClose = candles.length ? candles[candles.length - 1]!.close : 1
 
-  const parametric = mode === "gbm" || mode === "studentT";
+  const parametric = mode === "gbm" || mode === "studentT"
 
   const input = React.useMemo<SimulateInput>(
     () => ({
@@ -84,9 +74,7 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
       targetMultiple: 1 + Math.max(0, targetGainPct) / 100,
       samplePaths: 12,
       collectTerminals: true,
-      ...(mode === "block" && blockOverride > 0
-        ? { blockLength: blockOverride }
-        : {}),
+      ...(mode === "block" && blockOverride > 0 ? { blockLength: blockOverride } : {}),
     }),
     [
       returns,
@@ -101,24 +89,24 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
       targetGainPct,
       blockOverride,
     ],
-  );
+  )
 
   // Debounced auto-run: keystrokes never freeze anything (the simulation is
   // in the worker), and rapid edits collapse into one run.
   React.useEffect(() => {
-    if (returns.length < 2) return;
-    const timer = setTimeout(() => run(input), 400);
-    return () => clearTimeout(timer);
-  }, [input, run, returns.length]);
+    if (returns.length < 2) return
+    const timer = setTimeout(() => run(input), 400)
+    return () => clearTimeout(timer)
+  }, [input, run, returns.length])
 
   if (returns.length < 2) {
     return (
       <ToolCard title="Monte Carlo Lab">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Not enough bars to fit the simulation - upload a longer series.
         </p>
       </ToolCard>
-    );
+    )
   }
 
   return (
@@ -198,14 +186,14 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
         {status === "running" && (
           <div className="flex items-center gap-2">
             <div
-              className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
+              className="bg-secondary h-1.5 w-40 overflow-hidden rounded-full"
               role="progressbar"
               aria-valuenow={Math.round(progress * 100)}
               aria-valuemin={0}
               aria-valuemax={100}
             >
               <div
-                className="h-full bg-brand transition-[width]"
+                className="bg-brand h-full transition-[width]"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
@@ -218,48 +206,44 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
       </div>
 
       {error && (
-        <p role="alert" className="mt-4 text-sm text-destructive">
+        <p role="alert" className="text-destructive mt-4 text-sm">
           {error}
         </p>
       )}
 
-      {summary && (
-        <LabResults summary={summary} targetGainPct={targetGainPct} />
-      )}
+      {summary && <LabResults summary={summary} targetGainPct={targetGainPct} />}
 
-      <p className="mt-6 text-xs text-muted-foreground">
-        Simulation, not prediction: these are the odds your own history
-        implies under each model&apos;s assumptions, nothing more. IID and
-        block bootstraps resample the uploaded returns (block preserves
-        short-range dependence; the block length defaults to the
-        Patton-Politis-White automatic estimate). GBM and Student-t fit the
-        sample moments; the t degrees of freedom are moment-matched to the
-        sample kurtosis and capped at 50. All runs execute in a background
-        worker; the same seed with the same inputs always reproduces the
+      <p className="text-muted-foreground mt-6 text-xs">
+        Simulation, not prediction: these are the odds your own history implies under each
+        model&apos;s assumptions, nothing more. IID and block bootstraps resample the uploaded
+        returns (block preserves short-range dependence; the block length defaults to the
+        Patton-Politis-White automatic estimate). GBM and Student-t fit the sample moments; the t
+        degrees of freedom are moment-matched to the sample kurtosis and capped at 50. All runs
+        execute in a background worker; the same seed with the same inputs always reproduces the
         same numbers. Not investment advice.
       </p>
     </ToolCard>
-  );
+  )
 }
 
 function LabResults({
   summary,
   targetGainPct,
 }: {
-  summary: SimulationSummary;
-  targetGainPct: number;
+  summary: SimulationSummary
+  targetGainPct: number
 }) {
   const modeFacts: string[] = [
     `drift/bar ${fmtPercent(Math.expm1(summary.drift), 3)}`,
     `sigma/bar ${fmtPercent(summary.sigma, 3)}`,
-  ];
+  ]
   if (summary.blockLength !== null) {
-    modeFacts.push(`block length ${fmtNumber(summary.blockLength, 1)}`);
+    modeFacts.push(`block length ${fmtNumber(summary.blockLength, 1)}`)
   }
   if (summary.nu !== null) {
-    modeFacts.push(`t degrees of freedom ${summary.nu}`);
+    modeFacts.push(`t degrees of freedom ${summary.nu}`)
   }
-  if (summary.antithetic) modeFacts.push("antithetic on");
+  if (summary.antithetic) modeFacts.push("antithetic on")
 
   return (
     <>
@@ -267,17 +251,12 @@ function LabResults({
         <FanChart summary={summary} anchorLabel="anchored at the last close" />
       </div>
 
-      <p className="mt-2 text-xs text-muted-foreground">
-        {summary.paths.toLocaleString("en-IN")} paths, seed {summary.seed} -{" "}
-        {modeFacts.join(", ")}
+      <p className="text-muted-foreground mt-2 text-xs">
+        {summary.paths.toLocaleString("en-IN")} paths, seed {summary.seed} - {modeFacts.join(", ")}
       </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatTile
-          label="Median terminal"
-          value={fmtMoney(summary.terminal.p50, 0)}
-          tone="brand"
-        />
+        <StatTile label="Median terminal" value={fmtMoney(summary.terminal.p50, 0)} tone="brand" />
         <StatTile
           label="5th percentile"
           value={fmtMoney(summary.terminal.p05, 0)}
@@ -296,9 +275,7 @@ function LabResults({
         <StatTile
           label={`P(+${fmtNumber(targetGainPct, 0)}%)`}
           value={
-            summary.terminal.probTarget === null
-              ? "-"
-              : fmtPercent(summary.terminal.probTarget)
+            summary.terminal.probTarget === null ? "-" : fmtPercent(summary.terminal.probTarget)
           }
           note="reaches target"
         />
@@ -319,10 +296,7 @@ function LabResults({
           value={fmtPercent(summary.ruinProbability)}
           tone={summary.ruinProbability > 0.1 ? "negative" : "positive"}
         />
-        <StatTile
-          label="Median max DD"
-          value={fmtPercent(summary.maxDrawdown.median)}
-        />
+        <StatTile label="Median max DD" value={fmtPercent(summary.maxDrawdown.median)} />
         <StatTile
           label="P95 max DD"
           value={fmtPercent(summary.maxDrawdown.p95)}
@@ -344,7 +318,5 @@ function LabResults({
         />
       </div>
     </>
-  );
+  )
 }
-
-
