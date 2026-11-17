@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { FileUp, Upload } from "lucide-react"
+import { faFileArrowUp, faUpload } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 
@@ -52,12 +53,16 @@ export function UploadPanel({
           dragging ? "border-brand bg-brand/5" : "border-border bg-card hover:border-brand/50",
         )}
       >
-        <span className="bg-brand/10 text-brand flex h-12 w-12 items-center justify-center rounded-full">
-          {dragging ? <FileUp className="h-6 w-6" /> : <Upload className="h-6 w-6" />}
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand/10 text-brand">
+          {dragging ? (
+            <Icon icon={faFileArrowUp} className="h-6 w-6" />
+          ) : (
+            <Icon icon={faUpload} className="h-6 w-6" />
+          )}
         </span>
         <div>
           <p className="font-display text-base font-semibold">Drop a CSV or XLSX file</p>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="mt-1 text-sm text-muted-foreground">
             or click to browse. Your data is parsed in the browser and never uploaded.
           </p>
         </div>
@@ -70,9 +75,9 @@ export function UploadPanel({
         />
       </div>
 
-      {error && <p className="text-destructive mt-3 text-center text-sm">{error}</p>}
+      {error && <p className="mt-3 text-center text-sm text-destructive">{error}</p>}
 
-      <p className="text-muted-foreground mt-4 text-center text-xs">
+      <p className="mt-4 text-center text-xs text-muted-foreground">
         Expected columns: a timestamp plus open, high, low, close, and (optionally) volume.
       </p>
     </div>

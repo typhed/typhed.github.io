@@ -299,7 +299,7 @@ sizes:
 
   external_link_arrow:
     file: "packages/ui/components/site-footer.tsx"
-    icon: "h-3.5 w-3.5 (14px) ArrowUpRight, gap-1 (4px) after the label"
+    icon: "h-3.5 w-3.5 (14px) faArrowUpRightFromSquare, gap-1 (4px) after the label"
     why: "14px matches the text-sm label, so the glyph reads as part of the words rather than as a separate control."
 
   measure_caps:

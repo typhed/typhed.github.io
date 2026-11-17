@@ -134,7 +134,7 @@ export function TimelineEditor({
   return (
     <div>
       <div className="space-y-2">
-        <div className="text-muted-foreground hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs sm:grid">
+        <div className="hidden grid-cols-[1fr_150px_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Milestone</span>
           <span>Date</span>
           <span className="sr-only">Actions</span>
@@ -148,7 +148,7 @@ export function TimelineEditor({
               className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[1fr_150px_auto]"
             >
               {fixed ? (
-                <div className="border-input bg-muted text-muted-foreground flex items-center rounded-md border px-2.5 py-1.5 text-sm font-medium">
+                <div className="flex items-center rounded-md border border-input bg-muted px-2.5 py-1.5 text-sm font-medium text-muted-foreground">
                   {milestone.label}
                 </div>
               ) : (
@@ -213,7 +213,7 @@ export function GmpEditor({
   return (
     <div>
       <div className="space-y-2">
-        <div className="text-muted-foreground hidden grid-cols-[150px_1fr_auto] gap-2 px-1 text-xs sm:grid">
+        <div className="hidden grid-cols-[150px_1fr_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Date</span>
           <span>GMP (₹)</span>
           <span className="sr-only">Remove</span>
@@ -265,7 +265,7 @@ export function FinancialsEditor({
   return (
     <div>
       <div className="space-y-2">
-        <div className="text-muted-foreground hidden grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 px-1 text-xs sm:grid">
+        <div className="hidden grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Period</span>
           <span>Assets</span>
           <span>Revenue</span>

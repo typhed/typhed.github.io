@@ -30,8 +30,7 @@ downtime. Work top to bottom; every step is reversible until the DNS records cha
 
 ## 3. Land The Branch And Check The Workers
 
-  - [ ] Push `monorepo` and `cutover/routes`, then merge `monorepo` into `master` with **Create a merge commit**, or
-    fast-forward locally: `git switch master && git merge --ff-only monorepo && git push origin master`.
+  - [ ] Push `master` and `cutover/routes`: `git push origin master cutover/routes`.
   - [ ] The **Deploy to Cloudflare Workers** run publishes `typhed-web`, `typhed-trading`, and `typhed-blogging`. Each
     Worker's `*.workers.dev` URL is under Workers & Pages -> the Worker -> Settings -> Domains & Routes.
   - [ ] Open each `workers.dev` URL and check the header, footer, theme toggle, trading sidebar, `/about/`, a blog post,

@@ -15,16 +15,7 @@
     "gen:fixtures": "python scripts/gen_fixtures.py",
     "clean": "rimraf .turbo"
   },
-  "dependencies": {
-    "papaparse": "^5.5.4",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
-  },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/papaparse": "^5.3.15",
-    "@typhed/tsconfig": "workspace:*",
-    "rimraf": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

@@ -17,19 +17,19 @@ function RuleCard({
 }) {
   const total = SERIES_ORDER.reduce((sum, key) => sum + Math.max(0, split[key]), 0) || 1
   return (
-    <div className="border-border bg-background rounded-lg border p-4">
-      <p className="text-muted-foreground text-[11px] font-semibold uppercase tracking-wide">
+    <div className="rounded-lg border border-border bg-background p-4">
+      <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
         {step}
       </p>
-      <h3 className="font-display mt-0.5 text-base font-semibold">{title}</h3>
-      <p className="text-muted-foreground mt-1 text-xs">{description}</p>
+      <h3 className="mt-0.5 font-display text-base font-semibold">{title}</h3>
+      <p className="mt-1 text-xs text-muted-foreground">{description}</p>
       <SplitBar split={split} className="mt-3" />
       <div className="mt-2 flex justify-between text-xs">
         {SERIES_ORDER.map((key) => (
           <span key={key} className="inline-flex items-center gap-1">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: SERIES[key].color }} />
             <span className="text-muted-foreground">{SERIES[key].label}</span>
-            <span className="text-foreground font-semibold tabular-nums">
+            <span className="font-semibold text-foreground tabular-nums">
               {Math.round((Math.max(0, split[key]) / total) * 100)}%
             </span>
           </span>
@@ -78,7 +78,7 @@ export function MnwsRuleExplainer() {
           }}
         />
       </div>
-      <p className="text-muted-foreground mt-4 text-sm">
+      <p className="mt-4 text-sm text-muted-foreground">
         Because increments lean 50 % into savings, your recurring{" "}
         <span className="font-medium text-emerald-500">
           savings rate climbs from 20 % toward 50 %

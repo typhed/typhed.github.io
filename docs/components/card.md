@@ -44,7 +44,7 @@ Compose the parts in this order inside a `Card`. Each is optional; use the ones 
 
 | Part | Base Classes | Role |
 | :---: | --- | --- |
-| `Card` | `rounded-lg border border-border bg-card text-card-foreground shadow-sm` | The outer surface. |
+| `Card` | `rounded-lg border border-border bg-card text-card-foreground shadow-xs` | The outer surface. |
 | `CardHeader` | `flex flex-col space-y-1.5 p-6` | Header block, usually title plus description. |
 | `CardTitle` | `text-2xl font-semibold leading-none tracking-tight` | The card heading. |
 | `CardDescription` | `text-sm text-muted-foreground` | The supporting subline. |

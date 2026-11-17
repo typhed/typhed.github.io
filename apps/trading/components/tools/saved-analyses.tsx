@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Download, FolderOpen, Trash2, Upload } from "lucide-react"
+import { faDownload, faFolderOpen, faTrashCan, faUpload } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 
 import {
@@ -56,6 +57,7 @@ export function SavedAnalyses({ onLoad }: { onLoad: (analysis: SavedAnalysis) =>
   }, [])
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the list comes from IndexedDB, a browser-only store; state updates when the read resolves
     void refresh()
   }, [refresh])
 
@@ -108,9 +110,9 @@ export function SavedAnalyses({ onLoad }: { onLoad: (analysis: SavedAnalysis) =>
   return (
     <div className="mx-auto mt-10 max-w-xl">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-muted-foreground text-sm font-semibold">Saved analyses</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground">Saved analyses</h2>
         <Button variant="ghost" size="sm" onClick={() => importRef.current?.click()}>
-          <Upload className="h-4 w-4" />
+          <Icon icon={faUpload} className="h-4 w-4" />
           Import JSON
         </Button>
         <input
@@ -129,30 +131,30 @@ export function SavedAnalyses({ onLoad }: { onLoad: (analysis: SavedAnalysis) =>
       {importError && (
         <p
           role="alert"
-          className="border-destructive/40 bg-destructive/10 text-destructive mb-2 rounded-md border p-2 text-xs"
+          className="mb-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive"
         >
           {importError}
         </p>
       )}
 
       {items.length === 0 ? (
-        <p className="border-border bg-card text-muted-foreground rounded-lg border border-dashed p-4 text-center text-sm">
+        <p className="rounded-lg border border-dashed border-border bg-card p-4 text-center text-sm text-muted-foreground">
           No saved analyses yet. Load data and save it to keep it on this device.
         </p>
       ) : (
-        <ul className="divide-border border-border bg-card divide-y rounded-lg border">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {items.map((item) => (
             <li key={item.id} className="flex items-center justify-between gap-3 p-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{item.name}</p>
-                <p className="text-muted-foreground text-xs">
+                <p className="text-xs text-muted-foreground">
                   {item.candles.length.toLocaleString("en-IN")} bars &middot;{" "}
                   {fmtSavedAt(item.savedAt)}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={() => onLoad(item)}>
-                  <FolderOpen className="h-4 w-4" />
+                  <Icon icon={faFolderOpen} className="h-4 w-4" />
                   Load
                 </Button>
                 <Button
@@ -161,7 +163,7 @@ export function SavedAnalyses({ onLoad }: { onLoad: (analysis: SavedAnalysis) =>
                   aria-label="Export"
                   onClick={() => handleExport(item)}
                 >
-                  <Download className="h-4 w-4" />
+                  <Icon icon={faDownload} className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -169,7 +171,7 @@ export function SavedAnalyses({ onLoad }: { onLoad: (analysis: SavedAnalysis) =>
                   aria-label="Delete"
                   onClick={() => handleDelete(item.id)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Icon icon={faTrashCan} className="h-4 w-4" />
                 </Button>
               </div>
             </li>

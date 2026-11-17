@@ -1,12 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "@typhed/tailwind-config/base.css";
+@config "../tailwind.config.ts";
 
-/* The theme palettes are NOT declared here. Both Aurora Glass (light, :root)
-   and Midnight Indigo (dark, .dark) are emitted into the base layer by the
-   shared Tailwind preset, which reads their HSL triplets from
-   packages/brand/tokens/colors.json. Editing a colour there recolours
-   every TyPhed property on its next build.
+/* The theme palettes are NOT declared here. typhed-brand-sync writes Aurora
+   Glass (light, :root) and Midnight Indigo (dark, .dark) into app/theme.css
+   from packages/brand/tokens/colors.json, and the root layout imports that
+   file ahead of this one. Editing a colour there recolours every TyPhed
+   property on its next build.
 
    What stays in this file is the app-level CSS that is not part of the brand
    contract: the single-page scroll model, scrollbar hiding, and the selection

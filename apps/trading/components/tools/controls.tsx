@@ -17,9 +17,9 @@ export function ToolCard({
   className?: string
 }) {
   return (
-    <div className={cn("border-border bg-card rounded-lg border p-6", className)}>
+    <div className={cn("rounded-lg border border-border bg-card p-6", className)}>
       <h2 className="font-display text-lg font-semibold">{title}</h2>
-      {description && <p className="text-muted-foreground mt-1 text-sm">{description}</p>}
+      {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
       <div className="mt-5">{children}</div>
     </div>
   )
@@ -46,7 +46,7 @@ export function NumberField({
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
+      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
         <input
           type="number"
           inputMode="decimal"
@@ -55,9 +55,9 @@ export function NumberField({
           max={max}
           value={Number.isFinite(value) ? value : ""}
           onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))}
-          className="w-full bg-transparent px-3 py-2 text-sm outline-none"
+          className="w-full bg-transparent px-3 py-2 text-sm outline-hidden"
         />
-        {suffix && <span className="text-muted-foreground px-3 text-xs">{suffix}</span>}
+        {suffix && <span className="px-3 text-xs text-muted-foreground">{suffix}</span>}
       </div>
     </label>
   )
@@ -78,13 +78,13 @@ export function TextField({
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
+      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
         <input
           type="text"
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent px-3 py-2 text-sm outline-none"
+          className="w-full bg-transparent px-3 py-2 text-sm outline-hidden"
         />
       </div>
     </label>
@@ -104,12 +104,12 @@ export function DateField({
   return (
     <label className="block text-sm">
       <span className="mb-1 block font-medium">{label}</span>
-      <div className="border-input bg-background focus-within:ring-ring flex items-center rounded-md border focus-within:ring-2">
+      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
         <input
           type="date"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent px-3 py-2 text-sm outline-none [color-scheme:light] dark:[color-scheme:dark]"
+          className="w-full bg-transparent px-3 py-2 text-sm [color-scheme:light] outline-hidden dark:[color-scheme:dark]"
         />
       </div>
     </label>
@@ -136,10 +136,10 @@ export function StatTile({
   }[tone]
 
   return (
-    <div className="border-border bg-background rounded-lg border p-4">
-      <p className="text-muted-foreground text-xs">{label}</p>
-      <p className={cn("font-display mt-1 text-2xl font-semibold", toneClass)}>{value}</p>
-      {note && <p className="text-muted-foreground mt-1 text-xs">{note}</p>}
+    <div className="rounded-lg border border-border bg-background p-4">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className={cn("mt-1 font-display text-2xl font-semibold", toneClass)}>{value}</p>
+      {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
     </div>
   )
 }
@@ -147,7 +147,7 @@ export function StatTile({
 /** Dashed empty-state placeholder shown where a chart would render. */
 export function ChartEmptyState({ message }: { message: string }) {
   return (
-    <div className="border-border text-muted-foreground flex h-48 items-center justify-center rounded-md border border-dashed text-sm">
+    <div className="flex h-48 items-center justify-center rounded-md border border-dashed border-border text-sm text-muted-foreground">
       {message}
     </div>
   )
@@ -164,7 +164,7 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="border-border bg-card inline-flex rounded-md border p-1">
+    <div className="inline-flex rounded-md border border-border bg-card p-1">
       {options.map((option) => (
         <button
           key={option.value}
@@ -173,7 +173,7 @@ export function Segmented<T extends string>({
           onClick={() => onChange(option.value)}
           className={cn(
             "rounded px-3 py-1 text-xs font-medium transition-colors",
-            "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-hidden",
             option.value === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:text-foreground",

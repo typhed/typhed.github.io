@@ -42,7 +42,7 @@ export function SiteHeader({
   mobileAuthSlot?: React.ReactNode
 } = {}) {
   return (
-    <header className="border-border/40 bg-background/70 sticky top-0 z-40 w-full border-b backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/70 backdrop-blur-md">
       {/*
         Applies the saved text size before the page below paints. Everything
         readable renders after this point, so a visitor on a non-default size
@@ -54,7 +54,7 @@ export function SiteHeader({
         <a
           href="/"
           aria-label={`${SITE.name} home`}
-          className="focus-visible:ring-ring rounded-md outline-none focus-visible:ring-2"
+          className="rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         >
           <BrandMark />
         </a>
@@ -66,7 +66,7 @@ export function SiteHeader({
                 key={link.label}
                 href={link.href}
                 {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.label}
               </a>

@@ -13,33 +13,13 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .turbo node_modules"
+    "clean": "rimraf .turbo"
   },
   "dependencies": {
-    "@radix-ui/react-slot": "catalog:",
-    "@typhed/brand": "workspace:*",
-    "class-variance-authority": "catalog:",
-    "clsx": "catalog:",
-    "framer-motion": "^11.15.0",
-    "lucide-react": "catalog:",
-    "next-themes": "catalog:",
-    "tailwind-merge": "catalog:"
+    "@typhed/brand": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@typhed/tsconfig": "workspace:*",
-    "next": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "rimraf": "catalog:",
-    "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "@typhed/tsconfig": "workspace:*"
   },
   "description": "Shared React component library for every TyPhed property."
 }

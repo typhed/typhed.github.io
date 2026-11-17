@@ -1,15 +1,16 @@
 # TyPhed Monorepo
 
 This monorepo builds the TyPhed web estate: the brand hub `apps/web` (typhed.com) and two product subdomains,
-`apps/trading` (trading.typhed.com) and `apps/blogging` (blog.typhed.com). Each app is a Next.js 15 static export served
+`apps/trading` (trading.typhed.com) and `apps/blogging` (blog.typhed.com). Each app is a Next.js 16 static export served
 by its own Cloudflare Worker, and all three render one shared brand layer from `packages/`. The rule every change keeps:
 one source of truth, so a value lives in exactly one place and everything else reads it.
 
 ## Commands
 
 ```shell
-# install once (Node 20.9+, pnpm via corepack, Python 3.13 for the web build)
-$ corepack enable && pnpm install && pip install -r permalink/requirements.txt
+# install once: pnpm switches to the pinned 12.x and runs every script on the pinned Node.js 26;
+# Python 3.13 builds the web app's redirect pages
+$ npm install --global pnpm && pnpm install && pip install -r permalink/requirements.txt
 
 # run every app (web 3000, trading 3001, blogging 3002), or one
 $ pnpm dev
@@ -28,12 +29,16 @@ $ pnpm --filter web preview
 
 ## Architecture
 
+  * **Dependencies**: every third-party package and its one version is in the root `package.json`, with one
+    `node_modules` at the root; an app or package lists only the `@typhed/*` packages it uses.
   * **Apps** (`apps/*`): static exports; the folder name is the package name and the Worker name suffix (`typhed-<app>`).
   * **Brand** (`packages/brand`): brand JSON, `properties.json` (one entry per app), tokens, artwork, and the
     `typhed-brand-sync` bin that writes each app's `app/theme.css` and `public/brand/` before every dev run and build.
   * **Shell** (`packages/ui`): `SiteShell` renders the identical header and footer, plus a property's sidebar menu.
+    Every icon is Font Awesome, rendered through `Icon` from `@typhed/ui/components/icon`.
   * **Auth** (`packages/auth`): the only package that imports Clerk; `@typhed/ui` takes auth as a slot.
-  * **Config** (`packages/config-*`): `createNextConfig()`, the Tailwind preset and shared content globs, tsconfig bases.
+  * **Config** (`packages/config-*`): `createNextConfig()`; Tailwind 4's base stylesheet, preset, content globs, and
+    PostCSS config; tsconfig bases. The root `eslint.config.mjs` lints every app.
   * **Deploy**: `.github/workflows/deploy.yml` deploys every affected app that has an `apps/*/wrangler.jsonc`.
 
 ## Rules
@@ -58,7 +63,8 @@ Read the row that matches the task, never a whole directory.
 | :---: | --- |
 | Product scope, a new page or feature | `docs/PRD.md` |
 | Build, workspace, packages, theming, shell, auth, redirects, deploy | `docs/architecture.md` |
-| Why the repository is one monorepo | `docs/adr/README.md`, then the dated record |
+| Why the repository is one monorepo, why icons are Font Awesome | `docs/adr/README.md`, then the dated record |
+| Adding or upgrading a dependency, the held-back versions | `docs/architecture.md`, Workspace And Task Graph |
 | A shared component in `packages/ui` | `docs/components/README.md`, then the component's page |
 | Colours, spacing, type | `docs/design/colors.yml`, `spacing.yml`, `typography.yml` |
 | Domains, DNS, Workers, adding a subdomain | `docs/brand/subdomain-model.md` |

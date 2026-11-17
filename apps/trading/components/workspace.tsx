@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { RefreshCw, Save } from "lucide-react"
+import { faArrowsRotate, faFloppyDisk } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import {
   aggregate,
   autoDetectMapping,
@@ -88,6 +89,7 @@ export function Workspace() {
   React.useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("view")
     if (requested && VIEW_OPTIONS.some((o) => o.value === requested)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the deep link is in the URL, which only the browser has; reading it after hydration keeps the pre-rendered HTML valid
       setView(requested as WorkspaceView)
     }
   }, [])
@@ -214,17 +216,17 @@ export function Workspace() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-display text-xl font-semibold">{fileName}</h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {fmtNumber(dataset.stats.outputRows, 0)} bars &middot; base {base.label}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={saveCurrent}>
-              <Save className="h-4 w-4" />
+              <Icon icon={faFloppyDisk} className="h-4 w-4" />
               Save
             </Button>
             <Button variant="outline" size="sm" onClick={reset}>
-              <RefreshCw className="h-4 w-4" />
+              <Icon icon={faArrowsRotate} className="h-4 w-4" />
               New file
             </Button>
           </div>
@@ -239,7 +241,7 @@ export function Workspace() {
               <TimeframeSelect options={options} value={selected.id} onChange={setTimeframeId} />
             </div>
 
-            <div className="border-border bg-card rounded-lg border p-2">
+            <div className="rounded-lg border border-border bg-card p-2">
               <div className="h-[560px] w-full">
                 <ChartView
                   candles={candles}
@@ -305,7 +307,7 @@ function WorkspaceIntro() {
       <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
         Chart your own market data
       </h1>
-      <p className="text-muted-foreground mt-3">
+      <p className="mt-3 text-muted-foreground">
         Upload a CSV or XLSX of OHLCV bars. Aggregate to any timeframe and read a fluid candlestick
         chart - the substrate for the sizing and risk tools.
       </p>

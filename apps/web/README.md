@@ -2,7 +2,7 @@
 
 # TyPhed Brand Hub
 
-[![Next.js](https://img.shields.io/badge/Next.js-%2015-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-%2016-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-%20Workers-F38020?style=plastic&logo=cloudflareworkers)](https://workers.cloudflare.com)
 
 </div>

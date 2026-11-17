@@ -2,10 +2,10 @@
 
 # TyPhed Blog
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-20232A?style=plastic&logo=react)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=plastic&logo=typescript)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?style=plastic&logo=typescript)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
 [![MDX](https://img.shields.io/badge/MDX-%20+%20LaTeX-1B1F24?style=plastic&logo=mdx)](https://mdxjs.com)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-%20Workers-F38020?style=plastic&logo=cloudflareworkers)](https://workers.cloudflare.com)
 
@@ -19,7 +19,7 @@ shared TyPhed brand. Analytics and ad slots are wired in and switch on the momen
 
 ## 🧠 Overview
 
-  * **Framework** - Next.js 15 (App Router, React 19), exported to static files and served by the `typhed-blogging`
+  * **Framework** - Next.js 16 (App Router, React 19), exported to static files and served by the `typhed-blogging`
     Cloudflare Worker.
   * **Content** - posts are `.mdx` files in [content/blog/](content/blog/). Frontmatter drives the title, description,
     date, tags, and access tier; the body is Markdown plus optional JSX, LaTeX, and fenced code.

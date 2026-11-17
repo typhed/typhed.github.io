@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { AlertTriangle } from "lucide-react"
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 import { fmtInr, fmtPercent } from "@/lib/format"
@@ -99,7 +100,7 @@ export function IpoApplications({
         {/* LEFT - applications */}
         <div className="min-w-0 space-y-4">
           {applications.length === 0 && (
-            <p className="border-border text-muted-foreground rounded-md border border-dashed p-4 text-sm">
+            <p className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
               No applications yet. Add one to start tracking. Each application can carry multiple
               contributors - for example, a ₹50L bHNI application funded by two people - and every
               contributor&apos;s share, expected profit and, once allotted, take-home profit is
@@ -189,7 +190,7 @@ function ApplicationCard({
   const actualTone = (metrics?.actualProfit ?? 0) >= 0 ? "positive" : "negative"
 
   return (
-    <div className="border-border bg-background rounded-lg border p-4">
+    <div className="rounded-lg border border-border bg-background p-4">
       {/* header */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-[10rem] flex-1">
@@ -208,7 +209,7 @@ function ApplicationCard({
             type="checkbox"
             checked={app.allotted}
             onChange={(e) => onAllottedChange(e.target.checked)}
-            className="border-input h-4 w-4 rounded"
+            className="h-4 w-4 rounded border-input"
             style={{ accentColor: "hsl(var(--brand))" }}
           />
           ALLOTTED
@@ -217,12 +218,12 @@ function ApplicationCard({
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-        <span className="border-brand/30 bg-brand/10 text-brand rounded-full border px-2 py-0.5 font-medium">
+        <span className="rounded-full border border-brand/30 bg-brand/10 px-2 py-0.5 font-medium text-brand">
           Win Probability: {probText}
         </span>
         {(metrics?.flags ?? []).map((flag) => (
-          <span key={flag} className="text-warning inline-flex items-center gap-1">
-            <AlertTriangle className="h-3 w-3" aria-hidden />
+          <span key={flag} className="inline-flex items-center gap-1 text-warning">
+            <Icon icon={faTriangleExclamation} className="h-3 w-3" aria-hidden />
             {flag}
           </span>
         ))}
@@ -230,7 +231,7 @@ function ApplicationCard({
 
       {/* corpus input mode */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
           Corpus Input
         </p>
         <Segmented
@@ -242,7 +243,7 @@ function ApplicationCard({
 
       {/* contributor table */}
       <div className="mt-3">
-        <div className="text-muted-foreground hidden items-center gap-2 px-1 pb-1 text-[11px] font-medium sm:flex">
+        <div className="hidden items-center gap-2 px-1 pb-1 text-[11px] font-medium text-muted-foreground sm:flex">
           <span className="w-6" />
           <span className="min-w-[8rem] flex-1">Contributor(s) Details</span>
           <span className="w-16 text-right">QTY</span>
@@ -256,7 +257,7 @@ function ApplicationCard({
             const cm = contribMetricsById.get(c.id)
             return (
               <div key={c.id} className="flex flex-wrap items-center gap-2">
-                <span className="text-muted-foreground w-6 text-xs tabular-nums">#{i + 1}</span>
+                <span className="w-6 text-xs text-muted-foreground tabular-nums">#{i + 1}</span>
                 <div className="min-w-[8rem] flex-1">
                   <TextCell
                     ariaLabel="Contributor Name"
@@ -304,7 +305,7 @@ function ApplicationCard({
                     {fmtInr(cm?.contribution ?? c.units * c.price, 0)}
                   </span>
                 )}
-                <span className="text-muted-foreground w-16 text-right text-sm tabular-nums">
+                <span className="w-16 text-right text-sm text-muted-foreground tabular-nums">
                   {fmtPercent(cm?.sharePct ?? 0, 1)}
                 </span>
                 <RemoveRowButton
@@ -317,7 +318,7 @@ function ApplicationCard({
         </div>
 
         {/* totals row */}
-        <div className="border-border mt-2 flex flex-wrap items-center gap-2 border-t pt-2">
+        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-border pt-2">
           <span className="w-6" />
           <span className="min-w-[8rem] flex-1 text-sm font-medium">Total Corpus</span>
           <span className="w-16" />
@@ -325,7 +326,7 @@ function ApplicationCard({
           <span className="w-24 text-right text-sm font-semibold tabular-nums">
             {fmtInr(applicationTotal, 0)}
           </span>
-          <span className="text-muted-foreground w-16 text-right text-sm tabular-nums">100%</span>
+          <span className="w-16 text-right text-sm text-muted-foreground tabular-nums">100%</span>
           <span className="w-8" />
         </div>
 
@@ -360,9 +361,9 @@ function ApplicationCard({
 
       {/* allotment panel */}
       {app.allotted && (
-        <div className="border-border bg-card mt-4 rounded-md border p-3">
+        <div className="mt-4 rounded-md border border-border bg-card p-3">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+            <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
               Allotment
             </p>
             <Segmented
@@ -399,7 +400,7 @@ function ApplicationCard({
             />
           )}
           <div className="mt-3">
-            <p className="text-muted-foreground mb-1 text-xs">Profit share per contributor</p>
+            <p className="mb-1 text-xs text-muted-foreground">Profit share per contributor</p>
             <ul className="space-y-1 text-sm">
               {contributors.map((c) => {
                 const cm = contribMetricsById.get(c.id)
@@ -503,10 +504,10 @@ function SubscriptionPanel({
           )}
         </div>
         <div className="mt-1.5 flex items-center gap-2">
-          <div className="bg-muted h-1.5 flex-1 overflow-hidden rounded-full">
-            <div className="bg-brand h-full rounded-full" style={{ width: `${barPct}%` }} />
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div className="h-full rounded-full bg-brand" style={{ width: `${barPct}%` }} />
           </div>
-          <span className="text-muted-foreground w-16 text-right text-[11px] tabular-nums">
+          <span className="w-16 text-right text-[11px] text-muted-foreground tabular-nums">
             {isApp ? `P ${formatPercentShort(p)}` : `${row.timesSubscribed}x`}
           </span>
         </div>
@@ -516,7 +517,7 @@ function SubscriptionPanel({
 
   return (
     <div className="min-w-0">
-      <div className="border-border bg-background rounded-lg border p-4">
+      <div className="rounded-lg border border-border bg-background p-4">
         <h3 className="font-display text-sm font-semibold">Subscription Status</h3>
 
         <div className="mt-4 space-y-3">
@@ -526,7 +527,7 @@ function SubscriptionPanel({
         <AddRowButton label="Add Custom Category" onClick={addCustom} />
 
         {overallRow && (
-          <div className="border-border mt-3 border-t pt-3">{renderRow(overallRow, false)}</div>
+          <div className="mt-3 border-t border-border pt-3">{renderRow(overallRow, false)}</div>
         )}
       </div>
     </div>

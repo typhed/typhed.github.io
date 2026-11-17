@@ -1,8 +1,5 @@
 {
   "extends": "@typhed/tsconfig/base.json",
-  "compilerOptions": {
-    "baseUrl": "."
-  },
   "include": ["**/*.ts", "**/*.json"],
   "exclude": ["node_modules"]
 }

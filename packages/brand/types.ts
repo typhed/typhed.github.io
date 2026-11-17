@@ -41,7 +41,7 @@ export type FooterColumnGroup = readonly FooterColumn[]
 export type SocialLink = {
   label: string
   href: string
-  /** lucide-react icon name; resolved to a glyph by the footer's icon map. */
+  /** Icon key; the footer's icon map resolves it to a Font Awesome icon. */
   icon: "github" | "mail" | "linkedin" | "twitter" | "instagram" | "youtube" | "facebook"
   external: boolean
 }

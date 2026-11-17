@@ -35,8 +35,8 @@ The root is a `<button>` fixed at the bottom-center of the viewport:
   * **Shape**: `h-10 w-10 rounded-full` (a 40x40 circular button).
   * **Surface**: `border border-border bg-background/70 backdrop-blur-md` (translucent frosted glass surface with a
     subtle border).
-  * **Icon**: a lucide `ChevronUp` sized `h-5 w-5`, centered inside the button. On hover, the chevron lifts upward with
-    `group-hover:-translate-y-0.5`.
+  * **Icon**: Font Awesome's `faChevronUp` through `Icon`, sized `h-5 w-5`, centered inside the button. On hover, the
+    chevron lifts upward with `group-hover:-translate-y-0.5`.
   * **Visibility**: controlled by scroll position. Near the top (scrollY <= 400), `pointer-events-none opacity-0`
     (invisible and non-interactive). Below that, `opacity-100` (visible and clickable).
   * **Interaction**: on click, calls `window.scrollTo({ top: 0, behavior: "smooth" })` to scroll smoothly to the top. On

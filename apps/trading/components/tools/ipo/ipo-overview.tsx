@@ -20,7 +20,7 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
   const gainTone = signTone(metrics.listingGainPct)
 
   return (
-    <section className="border-border bg-card rounded-lg border p-6">
+    <section className="rounded-lg border border-border bg-card p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
@@ -28,13 +28,13 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               {meta.companyName || "Untitled IPO"}
             </h2>
             {meta.nseSymbol && (
-              <span className="border-border bg-muted text-muted-foreground rounded-full border px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide">
+              <span className="rounded-full border border-border bg-muted px-2 py-0.5 font-mono text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
                 NSE: {meta.nseSymbol}
               </span>
             )}
             <span
               className={cn(
-                "rounded-full border px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+                "rounded-full border px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase",
                 meta.applicationType === "SME"
                   ? "border-warning/40 bg-warning/10 text-warning"
                   : "border-brand/30 bg-brand/10 text-brand",
@@ -43,14 +43,14 @@ export function IpoOverview({ meta, metrics }: { meta: IpoMeta; metrics: IpoMetr
               {meta.applicationType}
             </span>
           </div>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="mt-1 text-sm text-muted-foreground">
             Price band {fmtInr(meta.priceBand.min, 0)} - {fmtInr(meta.priceBand.max, 0)} &middot;
             Lot {fmtNumber(meta.lotSize, 0)} shares &middot; Min investment{" "}
             {fmtInr(metrics.minInvestment, 0)}
           </p>
         </div>
         {countdown && (
-          <span className="border-brand/30 bg-brand/10 text-brand rounded-full border px-3 py-1 text-xs font-medium">
+          <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-medium text-brand">
             {countdown}
           </span>
         )}

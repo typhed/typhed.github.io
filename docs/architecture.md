@@ -21,7 +21,8 @@ The source code is the truth. When this page and the code disagree, fix the page
 | If You Are Changing | Read | Primary Source |
 | :---: | --- | --- |
 | Next.js config, routing, or anything server-shaped | [Static Export Model](#static-export-model) | [config-next](../packages/config-next/index.mjs) |
-| A workspace script, task order, caching, or a version | [Workspace And Task Graph](#workspace-and-task-graph) | [turbo.json](../turbo.json), [pnpm-workspace.yaml](../pnpm-workspace.yaml) |
+| A workspace script, task order, caching, or a version | [Workspace And Task Graph](#workspace-and-task-graph) | [package.json](../package.json), [turbo.json](../turbo.json), [pnpm-workspace.yaml](../pnpm-workspace.yaml) |
+| An icon | [Icons](#icons) | [icon.tsx](../packages/ui/components/icon.tsx) |
 | A shared package, import path, or tsconfig | [Shared Packages](#shared-packages-consumed-from-source) | [packages/](../packages) |
 | A colour, a token, or a themed surface | [Theming And Colour Tokens](#theming-and-colour-tokens) | [colors.json](../packages/brand/tokens/colors.json) |
 | Brand copy, nav, a property's name or menu | [Content Single Source Of Truth](#content-single-source-of-truth) | [packages/brand](../packages/brand) |
@@ -42,11 +43,11 @@ The repository is a pnpm workspace driven by Turborepo. It builds three static s
   2. **[apps/trading](../apps/trading)** - `trading.typhed.com`, the trading tools, with its domain libraries in
      `packages/chart-engine`, `packages/risk-toolkit`, and `packages/backtest`.
   3. **[apps/blogging](../apps/blogging)** - `blog.typhed.com`, the MDX blog.
-  4. **[permalink/](../permalink)** - a Python and Jinja2 generator that writes the `/permalink/` redirects into the
-     web app's export.
+  4. **[permalink/](../permalink)** - a Python and Jinja2 generator that writes the `/permalink/` redirects into the web
+     app's export.
 
-Each app is a Next.js 15 App Router application on React 19, exported to static HTML and served by its own Cloudflare
-Worker.
+Each app is a Next.js 16 App Router application on React 19, built with Turbopack, exported to static HTML, and served
+by its own Cloudflare Worker.
 
 ```text
   packages/brand  (tokens, artwork, properties.json) --typhed-brand-sync--> apps/*/app/theme.css, apps/*/public/brand/
@@ -69,10 +70,10 @@ Worker.
 | :---: | --- |
 | [apps/web](../apps/web), [apps/trading](../apps/trading), [apps/blogging](../apps/blogging) | The three sites. Each owns its routes, page metadata, and app-level CSS. |
 | [packages/brand](../packages/brand) | `@typhed/brand`: the brand JSON contract, `properties.json`, design tokens, brand artwork, and the `typhed-brand-sync` bin. |
-| [packages/ui](../packages/ui) | `@typhed/ui`: the page shell, header, footer, sidebar, theme components, Button, and the metadata helpers. |
+| [packages/ui](../packages/ui) | `@typhed/ui`: the page shell, header, footer, sidebar, theme components, Button, Icon, and the metadata helpers. |
 | [packages/auth](../packages/auth) | `@typhed/auth`: the only Clerk wiring - provider, header control, sign-in gate, entitlements. |
 | [packages/config-next](../packages/config-next) | `@typhed/next-config`: `createNextConfig()`, the static-export configuration. |
-| [packages/config-tailwind](../packages/config-tailwind), [packages/config-typescript](../packages/config-typescript) | `@typhed/tailwind-config` (preset and shared content globs) and `@typhed/tsconfig` (bases). |
+| [packages/config-tailwind](../packages/config-tailwind), [packages/config-typescript](../packages/config-typescript) | `@typhed/tailwind-config` (base stylesheet, preset, shared content globs, PostCSS config) and `@typhed/tsconfig` (bases). |
 | [packages/chart-engine](../packages/chart-engine), [risk-toolkit](../packages/risk-toolkit), [backtest](../packages/backtest) | Trading domain libraries, tested with Vitest. |
 | [packages/entitlement-gate](../packages/entitlement-gate) | A Clerk-backed server-side entitlement check. Not deployed. |
 | [packages/analytics-python](../packages/analytics-python) | A NumPy/SciPy reference test for the trading app's in-browser Python analytics. Not a workspace package. |
@@ -84,9 +85,29 @@ Worker.
 
 ## Workspace And Task Graph
 
-[pnpm-workspace.yaml](../pnpm-workspace.yaml) globs `apps/*` and `packages/*`. Its `catalog` holds the one version of
-every dependency more than one package uses; a package lists such a dependency as `"catalog:"`. The same file carries
-the security `overrides` and the `allowBuilds` list of install scripts that may run (`esbuild` and `workerd` only).
+The root [package.json](../package.json) declares every dependency the workspace uses, each with its one version, and
+links every `@typhed/*` package. An app or package lists only the `@typhed/*` packages it uses, as `workspace:*`;
+Turborepo reads those links to order tasks and to find the apps a change affects.
+[pnpm-workspace.yaml](../pnpm-workspace.yaml) globs `apps/*` and `packages/*` and sets `dedupeDirectDeps`, so the one
+`node_modules` at the root serves every app and package; Vitest keeps its cache there too, under
+`node_modules/.vite/<package>`. The same file lists the install scripts that may run (`esbuild` and `workerd` only).
+
+The root `package.json` also pins the toolchain: pnpm through `packageManager`, and Node.js through
+`devEngines.runtime`. pnpm downloads that Node.js release, records it in the lockfile, and runs every script with it, so
+a machine needs only pnpm to build. pnpm installs a release only once it is a day old, its default `minimumReleaseAge`.
+Three versions are held below the newest release on purpose:
+
+<div align = "center">
+
+| Package | Held At | Because |
+| :---: | :---: | --- |
+| `typescript` | `~6.0` | `typescript-eslint`, which `eslint-config-next` lints with, supports TypeScript below 6.1. |
+| `katex` | `^0.16` | `rehype-katex` renders with KaTeX 0.16, and the stylesheet must match the renderer. |
+| `eslint-plugin-react`, `-import`, `-jsx-a11y` | ESLint 10 accepted | They still declare ESLint 9, which is past end of life; their rules run on ESLint 10, so `peerDependencyRules` accepts it. |
+
+</div>
+
+[dependabot.yml](../.github/dependabot.yml) skips the TypeScript and KaTeX updates these holds rule out.
 
 [turbo.json](../turbo.json) defines the tasks. Every root script is a `turbo run <task>` fan-out:
 
@@ -103,9 +124,9 @@ the security `overrides` and the `allowBuilds` list of install scripts that may 
 </div>
 
 `globalDependencies` lists `**/.env.*local`, so editing a local env file invalidates the cache. Each app's `dev` and
-`build` scripts run `typhed-brand-sync` first, then Next. Each app has a fixed port: web `3000`, trading `3001`, blogging
-`3002` for `pnpm dev`, and `8787`, `8788`, `8789` for `pnpm --filter <app> preview`, which serves the built `out/`
-through `wrangler dev` exactly as Cloudflare serves it.
+`build` scripts run `typhed-brand-sync` first, then Next. Each app has a fixed port: web `3000`, trading `3001`,
+blogging `3002` for `pnpm dev`, and `8787`, `8788`, `8789` for `pnpm --filter <app> preview`, which serves the built
+`out/` through `wrangler dev` exactly as Cloudflare serves it.
 
 ## Static Export Model
 
@@ -132,12 +153,18 @@ middleware, server session reads, incremental regeneration, rewrites, and redire
 
 No shared package is pre-built. `@typhed/ui` exports `./components/*` and `./lib/*`; `@typhed/brand` exports `.` and
 every raw file (`@typhed/brand/tokens/colors.json`); `@typhed/auth` exports `.`. A new file inside an exported directory
-is importable with no packaging change. React, React DOM, and Next are peer dependencies, so each app owns one copy.
+is importable with no packaging change. React, React DOM, and Next resolve from the root `node_modules`, so every app
+and package shares one copy.
 
 `@typhed/tsconfig` ships `base.json`, `nextjs.json` (extended by the apps), and `react-library.json` (extended by the
-packages). `@typhed/tailwind-config` is the shared preset with an empty `content` array; every app supplies its own globs
-and spreads `@typhed/tailwind-config/content.js`, the list of shared source directories that render Tailwind classes. A
-new shared source directory is added to that one list, never to each app.
+packages); `paths` resolve from each tsconfig's own folder, with no `baseUrl`.
+
+`@typhed/tailwind-config` carries the Tailwind CSS 4 setup. Each app's `globals.css` starts with
+`@import "@typhed/tailwind-config/base.css"`, which loads Tailwind and then Font Awesome's icon styles in Tailwind's
+base layer, followed by `@config "../tailwind.config.ts"`. That app config extends the shared preset (an empty `content`
+array) and spreads `@typhed/tailwind-config/content.js`, the list of shared source directories that render Tailwind
+classes; a new shared source directory is added to that one list, never to each app. Each app's `postcss.config.mjs`
+re-exports `@typhed/tailwind-config/postcss.config.mjs`.
 
 ## Theming And Colour Tokens
 
@@ -153,11 +180,22 @@ into `public/brand/`; both paths are generated and gitignored. Each app's layout
 tile colours, and the OG images carry literal hex that matches the dark theme; [colors.yml](design/colors.yml) lists
 every token and every baked value.
 
+The base stylesheet also sets the theme colours on `html body` outside any cascade layer. Next's built-in 404 page ships
+an unlayered `body` colour rule that would otherwise beat Tailwind's layered base styles.
+
+## Icons
+
+Every icon comes from Font Awesome Free, the solid set for interface icons and the brand set for social networks,
+through [Icon](../packages/ui/components/icon.tsx) in `@typhed/ui`: `<Icon icon={faSun} className="h-4 w-4" />`. `Icon`
+switches off Font Awesome's runtime style injection, so the stylesheet that `base.css` places in the base layer is the
+only one, and Tailwind utilities size every icon. No icon or logo is drawn by hand; the
+[decision record](adr/2026-11-17-font-awesome-for-every-icon.md) explains the choice.
+
 ## Content Single Source Of Truth
 
 Brand strings, navigation, the footer, contact details, the launch schedule, and the properties all live in
-[packages/brand](../packages/brand) as JSON, with [index.ts](../packages/brand/index.ts) as the typed view. Edit the JSON,
-never the TypeScript.
+[packages/brand](../packages/brand) as JSON, with [index.ts](../packages/brand/index.ts) as the typed view. Edit the
+JSON, never the TypeScript.
 
 <div align = "center">
 
@@ -202,11 +240,11 @@ Action that a static export cannot build. [packages/auth](../packages/auth/src) 
     sign-in in a modal; signed in, it shows Clerk's user menu.
   * `SignedInGate` shows its children to a signed-in visitor and its `fallback` to everyone else. Trading's workspace
     and members-only sections and the blog's freemium posts use it with their own prompts.
-  * `useEntitlements()` reports the account's tier and grants from Clerk `publicMetadata`; trading resolves them
-    against its feature catalogue.
+  * `useEntitlements()` reports the account's tier and grants from Clerk `publicMetadata`; trading resolves them against
+    its feature catalogue.
 
-The publishable key is public and inlined at build time from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`. Without it, auth is off
-and every gate passes through; the deploy workflow refuses to build production without it. One Clerk production
+The publishable key is public and inlined at build time from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`. Without it, auth is
+off and every gate passes through; the deploy workflow refuses to build production without it. One Clerk production
 instance (`clerk.typhed.com`) serves every subdomain. `@typhed/ui` stays auth-free: the header takes the control as a
 slot.
 
@@ -218,22 +256,22 @@ keyed by its output filename, it writes:
 
   * an HTML page at `out/permalink/<key>` that redirects through a canonical link, a zero-delay meta refresh, and a
     `location.replace` fallback, marked `noindex, nofollow`;
-  * with `--redirects out/_redirects`, a `302` rule for `/permalink/<key>` (and for `.html` keys, the extension-less
-    and trailing-slash forms) inside a `# permalink:begin` / `# permalink:end` block that later runs replace in place.
+  * with `--redirects out/_redirects`, a `302` rule for `/permalink/<key>` (and for `.html` keys, the extension-less and
+    trailing-slash forms) inside a `# permalink:begin` / `# permalink:end` block that later runs replace in place.
 
 Cloudflare answers a matching path with the 302 at the edge; the HTML page serves plain file servers. Keys must be one
-safe path segment, and targets must be absolute `http` or `https` URLs, or the build stops. The web app's `build`
-script runs the generator after `next build`. Adding a redirect is a new table in `links.toml`.
+safe path segment, and targets must be absolute `http` or `https` URLs, or the build stops. The web app's `build` script
+runs the generator after `next build`. Adding a redirect is a new table in `links.toml`.
 
 ## Deployment Pipeline
 
 [deploy.yml](../.github/workflows/deploy.yml) deploys on every push to `master` and on a manual run whose `apps` input
-is `all` or a comma-separated list. The `targets` job runs
-[deploy-targets.mjs](../scripts/deploy-targets.mjs): an app is deployable when `apps/<name>/wrangler.jsonc` exists, and
-a push deploys the apps Turborepo marks as affected since the previous tip (every app when that tip is unknown). For
-each app the `deploy` job installs with `--frozen-lockfile`, exports every `NEXT_PUBLIC_*` repository Variable, fails
-when the Clerk key is missing, builds the app, and runs `wrangler deploy` with the `CLOUDFLARE_API_TOKEN` and
-`CLOUDFLARE_ACCOUNT_ID` secrets. One deployment per app runs at a time.
+is `all` or a comma-separated list. The `targets` job runs [deploy-targets.mjs](../scripts/deploy-targets.mjs): an app
+is deployable when `apps/<name>/wrangler.jsonc` exists, and a push deploys the apps Turborepo marks as affected since
+the previous tip (every app when that tip is unknown). Both workflows set up with `pnpm/setup`, which installs the
+pinned pnpm and Node.js and then the frozen lockfile. For each app the `deploy` job exports every `NEXT_PUBLIC_*`
+repository Variable, fails when the Clerk key is missing, builds the app, and runs `wrangler deploy` with the
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. One deployment per app runs at a time.
 
 Each `wrangler.jsonc` describes an assets-only Worker named `typhed-<app>`: assets from `./out`,
 `html_handling: "auto-trailing-slash"` for the trailing-slash export, `not_found_handling: "404-page"` for the exported
@@ -249,7 +287,7 @@ Cloudflare Redirect Rule.
 | Command | Checks |
 | :---: | --- |
 | `pnpm format:check` | Prettier, with `prettier-plugin-tailwindcss` sorting class names |
-| `pnpm lint` | ESLint through `next lint`, extending `next/core-web-vitals` |
+| `pnpm lint` | ESLint 10, `eslint .` in each app, with the root [eslint.config.mjs](../eslint.config.mjs) spreading `eslint-config-next/core-web-vitals` |
 | `pnpm typecheck` | `tsc --noEmit` in every app and package |
 | `pnpm test` | Vitest suites of `apps/trading`, `chart-engine`, `risk-toolkit`, and `backtest` |
 | `pnpm build` | The three static exports, which fail loudly on server-only code |
@@ -271,6 +309,8 @@ Cloudflare Redirect Rule.
 | Copy, nav, and property values come from `@typhed/brand` | Header, footer, metadata, and JSON-LD agree on every property. |
 | Only `@typhed/auth` imports Clerk | `@typhed/ui` stays usable by any property, whatever its auth. |
 | Every shared source directory is in `content.js` | Tailwind generates only classes it has scanned. |
+| Third-party versions live only in the root `package.json` | One version per dependency on every site, and one `node_modules`. |
+| Icons render through `@typhed/ui`'s `Icon` | It keeps Font Awesome's styles in the base layer, where utilities size every icon. |
 | The header height and `scroll-padding-top` change together | Anchors land under the sticky header. |
 | Redirect keys are one safe segment; targets are absolute http(s) | Validated at build time; anything else stops the build. |
 | An app is deployable only through its `wrangler.jsonc` | The deploy workflow discovers apps from that file. |
@@ -281,8 +321,8 @@ Cloudflare Redirect Rule.
 
 A new subdomain is one entry in `properties.json`, an `apps/<name>` folder, and its `wrangler.jsonc`; the
 [domain and subdomain model](brand/subdomain-model.md) lists the steps. A new shared package goes in `packages/`, is
-consumed with `workspace:*`, extends a `@typhed/tsconfig` base, and, if it renders Tailwind classes, joins
-`content.js`. A new shared version goes in the catalog.
+consumed with `workspace:*`, is linked from the root `package.json`, extends a `@typhed/tsconfig` base, and, if it
+renders Tailwind classes, joins `content.js`. A new dependency, with its version, goes in the root `package.json`.
 
 ## Related References
 

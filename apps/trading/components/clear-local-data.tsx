@@ -18,7 +18,7 @@ export function ClearLocalDataButton() {
   }
 
   return (
-    <button type="button" onClick={handleClick} className="hover:text-brand transition-colors">
+    <button type="button" onClick={handleClick} className="transition-colors hover:text-brand">
       Clear local data
     </button>
   )

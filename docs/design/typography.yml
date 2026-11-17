@@ -248,7 +248,7 @@ treatments:
     where:
       - "'Tomorrow' in the hero h1"
       - "'TyPhed' split across two spans in the about h1"
-    technique: "bg-gradient-to-r from-brand via-brand to-brand-2 + bg-clip-text + text-transparent"
+    technique: "bg-linear-to-r from-brand via-brand to-brand-2 + bg-clip-text + text-transparent"
     caution: >
       text-transparent means the word is invisible if the gradient background
       fails to paint. Keep the gradient classes and text-transparent on the SAME

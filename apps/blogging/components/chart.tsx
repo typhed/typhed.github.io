@@ -11,7 +11,7 @@ import dynamic from "next/dynamic"
 const ChartInner = dynamic(() => import("./chart-inner"), {
   ssr: false,
   loading: () => (
-    <div className="border-border bg-card/50 text-muted-foreground my-6 flex min-h-[8rem] items-center justify-center rounded-lg border text-sm">
+    <div className="my-6 flex min-h-[8rem] items-center justify-center rounded-lg border border-border bg-card/50 text-sm text-muted-foreground">
       Loading chart…
     </div>
   ),

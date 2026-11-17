@@ -25,14 +25,14 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
       title="Financial-year schedule"
       description="Every Indian financial year (Apr–Mar) from your first allocation to today: income, how the rule split it, and the corpus building."
     >
-      <div className="border-border max-h-[28rem] overflow-auto rounded-md border">
+      <div className="max-h-[28rem] overflow-auto rounded-md border border-border">
         <table className="w-full min-w-[760px] text-xs">
           <caption className="sr-only">
             Per financial year: income, needs, wants, savings, windfalls, cumulative cash saved and
             invested corpus.
           </caption>
-          <thead className="bg-card sticky top-0 z-10">
-            <tr className="border-border text-muted-foreground border-b text-left">
+          <thead className="sticky top-0 z-10 bg-card">
+            <tr className="border-b border-border text-left text-muted-foreground">
               <th scope="col" className="px-2 py-2 font-medium">
                 Financial year
               </th>
@@ -63,9 +63,9 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
             {financialYears.map((fy) => (
               <tr
                 key={fy.startYear}
-                className={`border-border/60 border-b ${fy.windfall > 0 ? "bg-brand/5" : ""}`}
+                className={`border-b border-border/60 ${fy.windfall > 0 ? "bg-brand/5" : ""}`}
               >
-                <th scope="row" className="whitespace-nowrap px-2 py-1.5 text-left font-normal">
+                <th scope="row" className="px-2 py-1.5 text-left font-normal whitespace-nowrap">
                   {fy.label}
                 </th>
                 <Num value={fy.income} muted />
@@ -74,13 +74,13 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
                 <Num value={fy.totalSavings} />
                 <Num value={fy.windfall} />
                 <Num value={fy.cashCumulative} />
-                <td className="text-brand px-2 py-1.5 text-right font-medium tabular-nums">
+                <td className="px-2 py-1.5 text-right font-medium text-brand tabular-nums">
                   {fmtInr(fy.investedCumulative, 0)}
                 </td>
               </tr>
             ))}
           </tbody>
-          <tfoot className="border-border bg-card border-t-2 font-medium">
+          <tfoot className="border-t-2 border-border bg-card font-medium">
             <tr>
               <th scope="row" className="px-2 py-2 text-left">
                 Total
@@ -90,8 +90,8 @@ export function MnwsSchedule({ result }: { result: MnwsResult }) {
               <Num value={summary.totalWants} />
               <Num value={summary.totalSavings} />
               <Num value={summary.bonusReceived} />
-              <td className="text-muted-foreground px-2 py-2 text-right tabular-nums">-</td>
-              <td className="text-brand px-2 py-2 text-right tabular-nums">
+              <td className="px-2 py-2 text-right text-muted-foreground tabular-nums">-</td>
+              <td className="px-2 py-2 text-right text-brand tabular-nums">
                 {fmtInr(summary.investedCorpus, 0)}
               </td>
             </tr>

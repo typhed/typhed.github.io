@@ -15,6 +15,7 @@ record that names the one it supersedes.
 | Date | Decision | Status |
 | :---: | --- | :---: |
 | 2026-11-17 | [Monorepo Over Multiple Repositories](2026-11-17-monorepo-over-multiple-repositories.md) | Accepted |
+| 2026-11-17 | [Font Awesome For Every Icon](2026-11-17-font-awesome-for-every-icon.md) | Accepted |
 
 </div>
 

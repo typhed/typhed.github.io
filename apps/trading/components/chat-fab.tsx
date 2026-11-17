@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { MessageCircle, X } from "lucide-react"
+import { faComment, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 import { ChatPanel } from "@/components/chat/chat-panel"
@@ -14,7 +15,7 @@ export function ChatFab() {
   const [open, setOpen] = React.useState(false)
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed right-5 bottom-5 z-50 flex flex-col items-end gap-3">
       {open && (
         <div role="dialog" aria-label="AI assistant" className="animate-fade-up">
           <ChatPanel />
@@ -27,12 +28,16 @@ export function ChatFab() {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
         className={cn(
-          "text-brand-foreground flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105",
-          "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-          "from-brand to-brand-2 bg-gradient-to-br",
+          "flex h-14 w-14 items-center justify-center rounded-full text-brand-foreground shadow-lg transition-transform hover:scale-105",
+          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-hidden",
+          "bg-linear-to-br from-brand to-brand-2",
         )}
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {open ? (
+          <Icon icon={faXmark} className="h-6 w-6" />
+        ) : (
+          <Icon icon={faComment} className="h-6 w-6" />
+        )}
       </button>
     </div>
   )

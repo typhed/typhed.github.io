@@ -3,7 +3,6 @@
   "extends": "@typhed/tsconfig/nextjs.json",
   "compilerOptions": {
     "noUncheckedIndexedAccess": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

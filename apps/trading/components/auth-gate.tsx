@@ -1,7 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { Lock } from "lucide-react"
+import { faLock } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import { SITE, getProperty } from "@typhed/brand"
 import { SignInButton, SignedInGate } from "@typhed/auth"
 import { Button } from "@typhed/ui/components/ui/button"
@@ -29,7 +30,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
 function WorkspaceLoading() {
   return (
     <div className="container py-24">
-      <div className="bg-muted mx-auto h-40 max-w-3xl animate-pulse rounded-lg" />
+      <div className="mx-auto h-40 max-w-3xl animate-pulse rounded-lg bg-muted" />
     </div>
   )
 }
@@ -37,13 +38,13 @@ function WorkspaceLoading() {
 function SignInPrompt() {
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 text-center">
-      <span className="border-border bg-card text-brand mb-6 flex h-14 w-14 items-center justify-center rounded-full border">
-        <Lock className="h-6 w-6" />
+      <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-border bg-card text-brand">
+        <Icon icon={faLock} className="h-6 w-6" />
       </span>
       <h1 className="font-display text-2xl font-semibold tracking-tight">
         Sign in to open the workspace
       </h1>
-      <p className="text-muted-foreground mt-3 text-sm">
+      <p className="mt-3 text-sm text-muted-foreground">
         {TRADING.name} uses the same free {SITE.tagline} account as the main site and the blog. Sign
         in once and you are signed in everywhere.
       </p>

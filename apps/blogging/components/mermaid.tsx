@@ -21,13 +21,13 @@ function loadMermaid() {
   return mermaidPromise
 }
 
-let instanceCounter = 0
-
 export function Mermaid({ chart }: { chart: string }) {
   const { resolvedTheme } = useTheme()
   const [svg, setSvg] = React.useState("")
   const [error, setError] = React.useState("")
-  const idRef = React.useRef(`mermaid-${(instanceCounter += 1)}`)
+  // A stable id per diagram for mermaid's render target. React's id contains
+  // characters a CSS selector rejects, so only letters, digits, - and _ stay.
+  const diagramId = `mermaid-${React.useId().replace(/[^\w-]/g, "")}`
 
   React.useEffect(() => {
     let cancelled = false
@@ -43,10 +43,7 @@ export function Mermaid({ chart }: { chart: string }) {
         // directive in the source instead, which is deterministic per render.
         const themed = `%%{init: {"theme": "${isDark ? "dark" : "default"}"}}%%\n${chart}`
         // A theme-suffixed id keeps re-renders from colliding in mermaid's cache.
-        const { svg: rendered } = await mermaid.render(
-          `${idRef.current}-${isDark ? "d" : "l"}`,
-          themed,
-        )
+        const { svg: rendered } = await mermaid.render(`${diagramId}-${isDark ? "d" : "l"}`, themed)
         if (!cancelled) {
           setSvg(rendered)
           setError("")
@@ -59,11 +56,11 @@ export function Mermaid({ chart }: { chart: string }) {
     return () => {
       cancelled = true
     }
-  }, [chart, resolvedTheme])
+  }, [chart, diagramId, resolvedTheme])
 
   if (error) {
     return (
-      <pre className="border-destructive/50 bg-card text-destructive my-6 overflow-x-auto rounded-lg border p-4 font-mono text-sm">
+      <pre className="my-6 overflow-x-auto rounded-lg border border-destructive/50 bg-card p-4 font-mono text-sm text-destructive">
         {`Diagram failed to render: ${error}\n\n${chart}`}
       </pre>
     )
@@ -71,7 +68,7 @@ export function Mermaid({ chart }: { chart: string }) {
 
   if (!svg) {
     return (
-      <div className="border-border bg-card/50 text-muted-foreground my-6 flex min-h-[8rem] items-center justify-center rounded-lg border text-sm">
+      <div className="my-6 flex min-h-[8rem] items-center justify-center rounded-lg border border-border bg-card/50 text-sm text-muted-foreground">
         Rendering diagram…
       </div>
     )
@@ -79,7 +76,7 @@ export function Mermaid({ chart }: { chart: string }) {
 
   return (
     <div
-      className="border-border bg-card/50 my-6 flex justify-center overflow-x-auto rounded-lg border p-4 [&_svg]:h-auto [&_svg]:max-w-full"
+      className="my-6 flex justify-center overflow-x-auto rounded-lg border border-border bg-card/50 p-4 [&_svg]:h-auto [&_svg]:max-w-full"
       // svg is produced by mermaid from trusted post content and sanitised by
       // securityLevel:"strict"; there is no user-supplied markup here.
       dangerouslySetInnerHTML={{ __html: svg }}

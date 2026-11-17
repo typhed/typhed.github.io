@@ -1,7 +1,7 @@
 {
   "extends": "@typhed/tsconfig/react-library.json",
   "compilerOptions": {
-    "baseUrl": "."
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", ".turbo"]

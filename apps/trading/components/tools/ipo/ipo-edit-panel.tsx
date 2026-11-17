@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { X } from "lucide-react"
+import { faXmark } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import type { FinancialRow, GmpRow, IpoDataset, IpoMeta, Milestone } from "@/lib/ipo/types"
 import { Button } from "@typhed/ui/components/ui/button"
@@ -15,7 +16,7 @@ import {
 function EditorSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="font-display text-muted-foreground mb-3 text-xs font-semibold uppercase tracking-wide">
+      <h3 className="mb-3 font-display text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         {title}
       </h3>
       {children}
@@ -95,7 +96,7 @@ export function IpoEditPanel({
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="bg-background/70 animate-in fade-in absolute inset-0 backdrop-blur-sm duration-200"
+        className="absolute inset-0 bg-background/70 backdrop-blur-xs duration-200 animate-in fade-in"
         onClick={onClose}
         aria-hidden
       />
@@ -104,9 +105,9 @@ export function IpoEditPanel({
         role="dialog"
         aria-modal="true"
         aria-label="Edit IPO data"
-        className="border-border bg-card animate-in slide-in-from-right absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l shadow-xl duration-200"
+        className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-border bg-card shadow-xl duration-200 animate-in slide-in-from-right"
       >
-        <header className="border-border flex items-center justify-between border-b p-4">
+        <header className="flex items-center justify-between border-b border-border p-4">
           <h2 className="font-display text-lg font-semibold">Edit IPO Data</h2>
           <Button
             ref={closeRef}
@@ -115,7 +116,7 @@ export function IpoEditPanel({
             aria-label="Close editor"
             onClick={onClose}
           >
-            <X className="h-4 w-4" />
+            <Icon icon={faXmark} className="h-4 w-4" />
           </Button>
         </header>
 
@@ -134,7 +135,7 @@ export function IpoEditPanel({
           </EditorSection>
         </div>
 
-        <footer className="border-border border-t p-4">
+        <footer className="border-t border-border p-4">
           <Button variant="brand" className="w-full" onClick={onClose}>
             Done
           </Button>

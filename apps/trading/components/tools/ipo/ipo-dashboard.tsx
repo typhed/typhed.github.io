@@ -1,7 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { Download, Pencil, RotateCcw, Upload, X } from "lucide-react"
+import {
+  faDownload,
+  faPencil,
+  faRotateLeft,
+  faUpload,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import type { IpoDataset, IpoMeta } from "@/lib/ipo/types"
 import { IPO_STORAGE_KEY, LEGACY_IPO_STORAGE_KEYS } from "@/lib/ipo/types"
@@ -42,6 +49,7 @@ export function IpoDashboard() {
 
   // Client-only: set today and restore the last-edited dataset from this browser.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date and the saved dataset exist only in the browser, so they load after hydration
     setToday(localIsoDate())
     try {
       const raw = window.localStorage.getItem(IPO_STORAGE_KEY)
@@ -140,7 +148,7 @@ export function IpoDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-xl font-semibold">IPO Dashboard</h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Edit any value, then download a single JSON file to reuse it later.
           </p>
         </div>
@@ -150,19 +158,19 @@ export function IpoDashboard() {
             size="sm"
             onClick={() => setPanelOpen(true)}
           >
-            <Pencil className="h-4 w-4" />
+            <Icon icon={faPencil} className="h-4 w-4" />
             Edit data
           </Button>
           <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
-            <Upload className="h-4 w-4" />
+            <Icon icon={faUpload} className="h-4 w-4" />
             Import
           </Button>
           <Button variant="brand" size="sm" onClick={handleDownload}>
-            <Download className="h-4 w-4" />
+            <Icon icon={faDownload} className="h-4 w-4" />
             Download JSON
           </Button>
           <Button variant="ghost" size="sm" onClick={handleReset}>
-            <RotateCcw className="h-4 w-4" />
+            <Icon icon={faRotateLeft} className="h-4 w-4" />
             Reset
           </Button>
           <input
@@ -182,16 +190,16 @@ export function IpoDashboard() {
       {importError && (
         <div
           role="alert"
-          className="border-destructive/40 bg-destructive/10 text-destructive flex items-start justify-between gap-3 rounded-lg border p-3 text-sm"
+          className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
         >
           <span>{importError}</span>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={() => setImportError(null)}
-            className="hover:bg-destructive/10 shrink-0 rounded p-0.5"
+            className="shrink-0 rounded p-0.5 hover:bg-destructive/10"
           >
-            <X className="h-4 w-4" />
+            <Icon icon={faXmark} className="h-4 w-4" />
           </button>
         </div>
       )}
@@ -229,7 +237,7 @@ export function IpoDashboard() {
         />
       </MembersOnly>
 
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         Your edits stay in this browser and in the JSON file you download - nothing is uploaded. GMP
         and estimated-listing figures are grey-market indications, not investment advice.
       </p>

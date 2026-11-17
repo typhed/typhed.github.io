@@ -154,7 +154,7 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
           role="img"
           tabIndex={0}
           aria-label={`Reported GMP from ${currencyLabel}${rows[0]!.value} on ${fmtDisplayDate(rows[0]!.date)} to ${currencyLabel}${rows[lastIdx]!.value} on ${fmtDisplayDate(rows[lastIdx]!.date)}.`}
-          className="focus-visible:ring-ring touch-none rounded-md outline-none focus-visible:ring-2"
+          className="touch-none rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           onPointerMove={moveHover}
           onPointerLeave={() => setHover(null)}
           onKeyDown={onKeyDown}
@@ -184,7 +184,7 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
                 dy="0.32em"
                 textAnchor="end"
                 fill="currentColor"
-                className="text-muted-foreground fill-current text-[11px] tabular-nums"
+                className="fill-current text-[11px] text-muted-foreground tabular-nums"
               >
                 {currencyLabel}
                 {tick}
@@ -200,7 +200,7 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
                 y={HEIGHT - 8}
                 textAnchor="middle"
                 fill="currentColor"
-                className="text-muted-foreground text-[11px]"
+                className="text-[11px] text-muted-foreground"
               >
                 {fmtDayMonth(row.date)}
               </text>
@@ -248,7 +248,7 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
             dy="0.32em"
             textAnchor="start"
             fill="currentColor"
-            className="text-foreground text-[13px] font-semibold tabular-nums"
+            className="text-[13px] font-semibold text-foreground tabular-nums"
           >
             {currencyLabel}
             {rows[lastIdx]!.value}
@@ -258,10 +258,10 @@ function GmpChart({ rows, currencyLabel }: { rows: GmpRow[]; currencyLabel: stri
 
       {hover !== null && hovered && width > 0 && (
         <div
-          className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2 py-1 text-xs shadow-md"
+          className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-border bg-popover px-2 py-1 text-xs shadow-md"
           style={{ left: x(hover), top: Math.max(0, y(hovered.value) - 46) }}
         >
-          <div className="text-popover-foreground font-semibold tabular-nums">
+          <div className="font-semibold text-popover-foreground tabular-nums">
             {currencyLabel}
             {hovered.value}
           </div>

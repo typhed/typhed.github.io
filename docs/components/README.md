@@ -3,10 +3,10 @@
 # TyPhed Component Library
 
 [![React](https://img.shields.io/badge/React-%2019-003B57?style=plastic&logo=react)](https://react.dev)
-[![Next.js](https://img.shields.io/badge/Next.js-%2015-003B57?style=plastic&logo=nextdotjs)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-%205-003B57?style=plastic&logo=typescript)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-%203.4-003B57?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
-[![Framer Motion](https://img.shields.io/badge/Framer%20Motion-%2011-003B57?style=plastic&logo=framer)](https://www.framer.com/motion/)
+[![Next.js](https://img.shields.io/badge/Next.js-%2016-003B57?style=plastic&logo=nextdotjs)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%206-003B57?style=plastic&logo=typescript)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-%204.3-003B57?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
+[![Framer Motion](https://img.shields.io/badge/Framer%20Motion-%2014-003B57?style=plastic&logo=framer)](https://www.framer.com/motion/)
 [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-%20primitives-003B57?style=plastic&logo=shadcnui)](https://ui.shadcn.com)
 
 </div>
@@ -42,6 +42,7 @@ component runs as a React Server Component or ships a client bundle (`"use clien
 | ThemeProvider | [theme-provider.tsx](../../packages/ui/components/theme-provider.tsx) | Client | [theme-provider.md](theme-provider.md) |
 | Button | [ui/button.tsx](../../packages/ui/components/ui/button.tsx) | Server | [button.md](button.md) |
 | Card | [ui/card.tsx](../../packages/ui/components/ui/card.tsx) | Server | [card.md](card.md) |
+| Icon | [icon.tsx](../../packages/ui/components/icon.tsx) | Server | [icon.md](icon.md) |
 
 Today only [ThemeToggle](theme-toggle.md) renders Button, and no surface renders Card yet. Both stay documented as ready
 primitives for the components the final product will build.

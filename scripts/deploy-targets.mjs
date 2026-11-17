@@ -14,7 +14,7 @@
  * much is safe, deploying nothing is not.
  */
 
-import { execFileSync } from "node:child_process"
+import { execSync } from "node:child_process"
 import { existsSync, readdirSync } from "node:fs"
 
 const deployable = readdirSync("apps", { withFileTypes: true })
@@ -27,9 +27,10 @@ function affected() {
   if (!base || /^0+$/.test(base)) return deployable
 
   try {
-    const output = execFileSync("pnpm", ["exec", "turbo", "ls", "--affected", "--output=json"], {
+    // One fixed command line through the platform shell, which also finds
+    // pnpm's Windows shim; nothing in it comes from outside the script.
+    const output = execSync("pnpm exec turbo ls --affected --output=json", {
       encoding: "utf8",
-      shell: process.platform === "win32",
       stdio: ["ignore", "pipe", "inherit"],
     })
     const names = new Set(JSON.parse(output).packages.items.map((item) => item.name))

@@ -109,7 +109,7 @@ export function MonteCarlo() {
         />
       </div>
 
-      <p className="text-muted-foreground mt-4 text-xs">
+      <p className="mt-4 text-xs text-muted-foreground">
         A what-if under a fixed win rate and per-trade returns you typed in - it never reads real
         data, so treat it as an intuition pump. The trade-sequence card above resamples real trades;
         prefer it for decisions. Not investment advice.
@@ -150,7 +150,7 @@ function EquityFan({ paths, startEquity }: { paths: number[][]; startEquity: num
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="border-border bg-background h-48 w-full rounded-md border"
+      className="h-48 w-full rounded-md border border-border bg-background"
       preserveAspectRatio="none"
       role="img"
       aria-label="Sample equity paths"

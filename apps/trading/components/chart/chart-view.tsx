@@ -32,12 +32,18 @@ export function ChartView({ candles, hasVolume, indicators }: ChartProps) {
   const handlesRef = React.useRef<Handles | null>(null)
 
   const propsRef = React.useRef<ChartProps>({ candles, hasVolume, indicators })
-  propsRef.current = { candles, hasVolume, indicators }
 
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme !== "light"
   const isDarkRef = React.useRef(isDark)
-  isDarkRef.current = isDark
+
+  // The effects and callbacks below read the latest props and theme through
+  // these refs, so they need not re-run on every change. A layout effect keeps
+  // the refs current after each render, before any of those effects runs.
+  React.useLayoutEffect(() => {
+    propsRef.current = { candles, hasVolume, indicators }
+    isDarkRef.current = isDark
+  })
 
   // The pane composition. Changing it rebuilds the chart; changing only data
   // does not. Overlay ids are stable across timeframes, so a timeframe switch

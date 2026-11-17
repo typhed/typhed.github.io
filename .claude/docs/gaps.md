@@ -14,7 +14,7 @@ it. Remove an entry when it is resolved.
   * **AdSense publisher id.** `apps/blogging/public/ads.txt` carries the placeholder `pub-0000000000000000`.
   * **Legal entity in blog copy.** The brand contract names no legal entity, but the blog's description and keywords in
     `packages/brand/properties.json` do.
-  * **Lint toolchain.** `next lint` is deprecated in Next 15.5 and runs on ESLint 8; the move to the ESLint 9 flat
-    config is open.
+  * **Trading and blog logos.** Neither site has its own artwork yet; the owner designs it and adds it under
+    `packages/brand/assets`. Until then both sites show the TyPhed mark and favicon set, and no logo is drawn in code.
 
 </div>

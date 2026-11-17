@@ -1,7 +1,14 @@
 "use client"
 
 import * as React from "react"
-import { AlertTriangle, Download, RotateCcw, Upload, X } from "lucide-react"
+import {
+  faDownload,
+  faRotateLeft,
+  faTriangleExclamation,
+  faUpload,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import type { MnwsDataset, MnwsMeta, MnwsSettings } from "@/lib/budgeting/mnws/types"
 import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types"
@@ -28,6 +35,7 @@ export function MnwsDashboard() {
 
   // Client-only: set today and restore the last-edited plan from this browser.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date and the saved plan exist only in the browser, so they load after hydration
     setToday(new Date().toISOString().slice(0, 10))
     try {
       const raw = window.localStorage.getItem(MNWS_STORAGE_KEY)
@@ -109,22 +117,22 @@ export function MnwsDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-xl font-semibold">50-30-20 (modified) Rule</h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             A disciplined 50-30-20: edit your salary history and windfalls, then download a single
             JSON file to reuse it later.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
-            <Upload className="h-4 w-4" />
+            <Icon icon={faUpload} className="h-4 w-4" />
             Import
           </Button>
           <Button variant="brand" size="sm" onClick={handleDownload}>
-            <Download className="h-4 w-4" />
+            <Icon icon={faDownload} className="h-4 w-4" />
             Download JSON
           </Button>
           <Button variant="ghost" size="sm" onClick={handleReset}>
-            <RotateCcw className="h-4 w-4" />
+            <Icon icon={faRotateLeft} className="h-4 w-4" />
             Reset
           </Button>
           <input
@@ -144,16 +152,16 @@ export function MnwsDashboard() {
       {importError && (
         <div
           role="alert"
-          className="border-destructive/40 bg-destructive/10 text-destructive flex items-start justify-between gap-3 rounded-lg border p-3 text-sm"
+          className="flex items-start justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
         >
           <span>{importError}</span>
           <button
             type="button"
             aria-label="Dismiss"
             onClick={() => setImportError(null)}
-            className="hover:bg-destructive/10 shrink-0 rounded p-0.5"
+            className="shrink-0 rounded p-0.5 hover:bg-destructive/10"
           >
-            <X className="h-4 w-4" />
+            <Icon icon={faXmark} className="h-4 w-4" />
           </button>
         </div>
       )}
@@ -163,7 +171,7 @@ export function MnwsDashboard() {
           role="status"
           className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-600 dark:text-amber-400"
         >
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <Icon icon={faTriangleExclamation} className="mt-0.5 h-4 w-4 shrink-0" />
           <ul className="space-y-1">
             {result.warnings.map((warning) => (
               <li key={warning}>{warning}</li>
@@ -192,7 +200,7 @@ export function MnwsDashboard() {
 
       <MnwsSchedule result={result} />
 
-      <p className="text-muted-foreground text-xs">
+      <p className="text-xs text-muted-foreground">
         Your edits stay in this browser and in the JSON file you download - nothing is uploaded.
         Figures are projections based on your inputs and the assumed return, not financial advice.
       </p>

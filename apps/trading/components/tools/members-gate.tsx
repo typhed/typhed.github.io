@@ -1,7 +1,8 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { Lock } from "lucide-react"
+import { faLock } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import { SignInButton, SignedInGate } from "@typhed/auth"
 import { Button } from "@typhed/ui/components/ui/button"
 
@@ -30,7 +31,7 @@ export function MembersOnly({
   return (
     <SignedInGate
       fallback={<LockedFeature title={title} description={description} />}
-      loading={<div className="bg-muted h-40 animate-pulse rounded-lg" />}
+      loading={<div className="h-40 animate-pulse rounded-lg bg-muted" />}
     >
       {children}
     </SignedInGate>
@@ -39,13 +40,13 @@ export function MembersOnly({
 
 function LockedFeature({ title, description }: { title: string; description: string }) {
   return (
-    <div className="border-border bg-card rounded-lg border border-dashed p-10 text-center">
-      <span className="bg-brand/10 text-brand mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-        <Lock className="h-5 w-5" />
+    <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center">
+      <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand/10 text-brand">
+        <Icon icon={faLock} className="h-5 w-5" />
       </span>
       <h3 className="font-display text-lg font-semibold">{title}</h3>
-      <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">{description}</p>
-      <p className="text-muted-foreground mx-auto mt-1 max-w-md text-sm">
+      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{description}</p>
+      <p className="mx-auto mt-1 max-w-md text-sm text-muted-foreground">
         A free members-only feature. Sign in to unlock it - every other tool on this page stays
         free.
       </p>

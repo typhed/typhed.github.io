@@ -11,26 +11,13 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .turbo node_modules"
+    "clean": "rimraf .turbo"
   },
   "dependencies": {
-    "@clerk/react": "catalog:",
     "@typhed/brand": "workspace:*",
-    "@typhed/ui": "workspace:*",
-    "next-themes": "catalog:"
+    "@typhed/ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@typhed/tsconfig": "workspace:*",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "rimraf": "catalog:",
-    "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

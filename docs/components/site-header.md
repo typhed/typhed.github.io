@@ -77,7 +77,7 @@ The `MobileNav` child component is a Client Component that handles the hamburger
 Button (the hamburger toggle) and a conditionally rendered full-width panel.
 
   * **Toggle button**: a `Button` with `aria-label` ("Open menu" when closed, "Close menu" when open), `aria-expanded`
-    (true/false), and `aria-controls="mobile-menu"`. The icon swaps between `Menu` and `X` from `lucide-react`.
+    (true/false), and `aria-controls="mobile-menu"`. The icon swaps between Font Awesome's `faBars` and `faXmark`.
   * **Menu panel**: a `<div id="mobile-menu">` positioned `absolute inset-x-0 top-full z-50` below the header. It
     contains a `<nav aria-label="Primary">` listing the same `NAV_LINKS` plus a full-width Login button (from
     `LOGIN_CTA`). Each link has an `onClick` that closes the menu.

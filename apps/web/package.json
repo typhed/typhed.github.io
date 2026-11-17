@@ -2,37 +2,23 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "typhed-brand-sync && next dev --port 3000",
     "build": "typhed-brand-sync && next build && python ../../permalink/src/build.py --output out/permalink --redirects out/_redirects",
     "preview": "wrangler dev --port 8787",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .next out .turbo .wrangler node_modules"
+    "clean": "rimraf .next out .turbo .wrangler"
   },
   "dependencies": {
     "@typhed/auth": "workspace:*",
     "@typhed/brand": "workspace:*",
-    "@typhed/ui": "workspace:*",
-    "next": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:"
+    "@typhed/ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "@typhed/next-config": "workspace:*",
     "@typhed/tailwind-config": "workspace:*",
-    "@typhed/tsconfig": "workspace:*",
-    "autoprefixer": "catalog:",
-    "eslint": "catalog:",
-    "eslint-config-next": "catalog:",
-    "postcss": "catalog:",
-    "rimraf": "catalog:",
-    "tailwindcss": "catalog:",
-    "tailwindcss-animate": "catalog:",
-    "typescript": "catalog:",
-    "wrangler": "catalog:"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

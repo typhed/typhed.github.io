@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Menu, X } from "lucide-react"
+import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "./icon"
 
 import { LOGIN_CTA, NAV_LINKS } from "@typhed/brand"
 import { Button } from "./ui/button"
@@ -44,13 +45,13 @@ export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
         aria-controls="mobile-menu"
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? <X /> : <Menu />}
+        {open ? <Icon icon={faXmark} /> : <Icon icon={faBars} />}
       </Button>
 
       {open ? (
         <div
           id="mobile-menu"
-          className="border-border/40 bg-background/95 absolute inset-x-0 top-full z-50 border-b backdrop-blur-md"
+          className="absolute inset-x-0 top-full z-50 border-b border-border/40 bg-background/95 backdrop-blur-md"
         >
           <nav aria-label="Primary" className="container flex flex-col gap-1 py-4">
             {NAV_LINKS.map((link) => (
@@ -59,7 +60,7 @@ export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="text-muted-foreground hover:bg-accent hover:text-foreground rounded-md px-3 py-2 text-sm font-medium transition-colors"
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 {link.label}
               </a>

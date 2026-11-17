@@ -22,12 +22,12 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
   const hasSalary = currentSalary > 0
 
   return (
-    <div className="border-border bg-background rounded-lg border p-4">
+    <div className="rounded-lg border border-border bg-background p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-muted-foreground text-xs font-medium">
+        <p className="text-xs font-medium text-muted-foreground">
           Current needs / wants / savings goal
         </p>
-        <p className="text-muted-foreground text-xs">
+        <p className="text-xs text-muted-foreground">
           at {hasSalary ? `${fmtInr(currentSalary, 0)} / month` : "your latest salary"}
         </p>
       </div>
@@ -43,7 +43,7 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
       <div className="mt-3 grid gap-2 lg:grid-cols-3">
         {SERIES_ORDER.map((key) => (
           <div key={key} className={cn("rounded-md border p-3 text-center", SERIES[key].cardClass)}>
-            <p className="text-muted-foreground inline-flex items-center gap-1.5 text-xs">
+            <p className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
               <span
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: SERIES[key].color }}
@@ -51,20 +51,20 @@ function CurrentGoal({ result }: { result: MnwsResult }) {
               {SERIES[key].label}
             </p>
             <div className="mt-1.5 flex flex-wrap items-baseline justify-center gap-x-2.5 gap-y-1.5">
-              <span className="font-display text-foreground text-xl font-semibold tabular-nums">
+              <span className="font-display text-xl font-semibold text-foreground tabular-nums">
                 {hasSalary ? fmtPercent(currentRates[key], 1) : "-"}
               </span>
               {hasSalary ? (
                 <span
                   className={cn(
-                    "font-display rounded-md border px-2 py-0.5 text-2xl font-semibold tabular-nums",
+                    "rounded-md border px-2 py-0.5 font-display text-2xl font-semibold tabular-nums",
                     SERIES[key].chipClass,
                   )}
                 >
                   {fmtInr(currentAlloc[key], 0)} / month
                 </span>
               ) : (
-                <span className="text-muted-foreground text-[11px] tabular-nums">-</span>
+                <span className="text-[11px] text-muted-foreground tabular-nums">-</span>
               )}
             </div>
           </div>
@@ -89,15 +89,15 @@ export function MnwsOverview({ result }: { result: MnwsResult }) {
           <>
             <CurrentGoal result={result} />
             {firstAlloc && (
-              <p className="text-muted-foreground mt-3 text-sm">
-                Allocations begin <span className="text-foreground font-medium">{firstAlloc}</span>,
+              <p className="mt-3 text-sm text-muted-foreground">
+                Allocations begin <span className="font-medium text-foreground">{firstAlloc}</span>,
                 the month after your first salary. Add earlier salaries or wait for that month to
                 see the full timeline.
               </p>
             )}
           </>
         ) : (
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             No salary entries yet. Add your first salary below to get started.
           </p>
         )}
@@ -160,14 +160,14 @@ export function MnwsBottomLine({ result }: { result: MnwsResult }) {
   ).join(" · ")
 
   return (
-    <div className="border-brand/30 bg-brand/10 rounded-lg border p-5">
-      <p className="text-brand text-[11px] font-semibold uppercase tracking-wide">Bottom line</p>
-      <p className="text-foreground mt-1.5 text-sm leading-relaxed sm:text-base">
+    <div className="rounded-lg border border-brand/30 bg-brand/10 p-5">
+      <p className="text-[11px] font-semibold tracking-wide text-brand uppercase">Bottom line</p>
+      <p className="mt-1.5 text-sm leading-relaxed text-foreground sm:text-base">
         Over <span className="font-semibold">{fmtDuration(summary.monthCount)}</span> of disciplined
         50-30-20 (modified) budgeting, you set aside{" "}
         <span className="font-semibold tabular-nums">{fmtInr(summary.totalSavings, 0)}</span> in
         savings — compounding to a corpus of{" "}
-        <span className="text-brand font-semibold tabular-nums">
+        <span className="font-semibold text-brand tabular-nums">
           {fmtInr(summary.investedCorpus, 0)}
         </span>{" "}
         at {fmtPercent(summary.annualReturnPct / 100, 0)} p.a. Your current goal is{" "}

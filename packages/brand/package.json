@@ -16,11 +16,9 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "clean": "rimraf .turbo node_modules"
+    "clean": "rimraf .turbo"
   },
   "devDependencies": {
-    "@typhed/tsconfig": "workspace:*",
-    "rimraf": "catalog:",
-    "typescript": "catalog:"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

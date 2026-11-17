@@ -15,7 +15,7 @@ export function TimeframeSelect({
   onChange: (id: string) => void
 }) {
   return (
-    <div className="border-border bg-card flex flex-wrap items-center gap-1 rounded-md border p-1">
+    <div className="flex flex-wrap items-center gap-1 rounded-md border border-border bg-card p-1">
       {options.map((tf) => (
         <button
           key={tf.id}
@@ -24,7 +24,7 @@ export function TimeframeSelect({
           onClick={() => onChange(tf.id)}
           className={cn(
             "rounded px-2.5 py-1 text-xs font-medium transition-colors",
-            "focus-visible:ring-ring focus-visible:ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-hidden",
             tf.id === value
               ? "bg-brand text-brand-foreground"
               : "text-muted-foreground hover:bg-accent hover:text-foreground",

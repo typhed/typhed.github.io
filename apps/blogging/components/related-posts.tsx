@@ -16,7 +16,7 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
 
   return (
     <nav aria-label="Related posts" className="text-sm">
-      <p className="font-display text-muted-foreground mb-3 text-xs font-semibold uppercase tracking-wide">
+      <p className="mb-3 font-display text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         Related
       </p>
       <ul className="space-y-3">
@@ -25,10 +25,10 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
           return (
             <li key={post.slug}>
               <Link href={`/blog/${post.slug}/`} className="group block">
-                <span className="text-foreground group-hover:text-brand block font-medium leading-snug transition-colors">
+                <span className="block leading-snug font-medium text-foreground transition-colors group-hover:text-brand">
                   {post.title}
                 </span>
-                <span className="text-muted-foreground mt-1 block text-[calc(11px*var(--font-scale,1))]">
+                <span className="mt-1 block text-[calc(11px*var(--font-scale,1))] text-muted-foreground">
                   <span aria-hidden="true">{access.emoji}</span>{" "}
                   <span className="sr-only">{access.label}. </span>
                   {post.readingTimeText}

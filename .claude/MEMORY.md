@@ -16,17 +16,25 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
     Commits follow `git-commiter`.
   * Do not tune code or config to one machine; fix the environment or record a task for the owner instead.
   * Tokens are costly: no speculative research or agent fan-out; use known facts and verify locally.
+  * Every dependency and its one version lives in the root `package.json`, with one `node_modules` at the root; apps
+    and packages list only `@typhed/*` links. No exceptions.
+  * Versions are the newest stable (LTS where one exists) that every other module supports; never an alpha, beta, or
+    release candidate. Check compatibility before upgrading, and explain any version held back.
+  * Font Awesome is the only icon source; lucide and hand-drawn icons are not used.
 
 ## Environment
 
-  * pnpm 11.9.0 (`packageManager`), Node 20.9 or newer (CI uses 22), Python 3.13 with Jinja2 for `permalink/`.
+  * pnpm 12.21.0 (`packageManager`) and Node.js 26.13.1 LTS (`devEngines.runtime`, downloaded by pnpm); Python 3.13 with
+    Jinja2 for `permalink/`. Node 26 ships no Corepack, so pnpm is installed with `npm install --global pnpm`.
   * Windows checkouts use Git Bash; `.gitattributes` keeps LF in the repository.
 
 ## Decisions And Changes
 
   * 2026-11-17: one monorepo for all three properties; see `docs/adr/2026-11-17-monorepo-over-multiple-repositories.md`.
+  * 2026-11-17: Font Awesome for every icon; see `docs/adr/2026-11-17-font-awesome-for-every-icon.md`.
 
 ## Open Items
 
   * Owner questions: `.claude/docs/gaps.md`.
   * Going live on Cloudflare Workers: `.claude/docs/tasks/cloudflare-cutover.md`.
+  * Checks that need the owner's full machine: `.claude/docs/tasks/owner-machine-checks.md`.

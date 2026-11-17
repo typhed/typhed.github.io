@@ -1,16 +1,17 @@
 "use client"
 
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import {
-  Banknote,
-  CalendarCheck,
-  CircleDot,
-  ClipboardCheck,
-  Flag,
-  FlagOff,
-  Landmark,
-  Rocket,
-  type LucideIcon,
-} from "lucide-react"
+  faCalendarCheck,
+  faCircleDot,
+  faClipboardCheck,
+  faFlag,
+  faFlagCheckered,
+  faLandmark,
+  faMoneyBill,
+  faRocket,
+} from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 import { fmtDisplayDate } from "@/lib/format"
@@ -20,16 +21,16 @@ import { ToolCard } from "@/components/tools/controls"
 
 type Status = "past" | "today" | "upcoming"
 
-function iconFor(label: string): LucideIcon {
+function iconFor(label: string): IconDefinition {
   const key = label.toLowerCase()
-  if (isListingMilestone(label)) return Rocket
-  if (key.includes("start") || key.includes("open")) return Flag
-  if (key.includes("end") || key.includes("close")) return FlagOff
-  if (key.includes("allot")) return ClipboardCheck
-  if (key.includes("refund")) return Banknote
-  if (key.includes("demat") || key.includes("transfer")) return Landmark
-  if (key.includes("mandate")) return CalendarCheck
-  return CircleDot
+  if (isListingMilestone(label)) return faRocket
+  if (key.includes("start") || key.includes("open")) return faFlag
+  if (key.includes("end") || key.includes("close")) return faFlagCheckered
+  if (key.includes("allot")) return faClipboardCheck
+  if (key.includes("refund")) return faMoneyBill
+  if (key.includes("demat") || key.includes("transfer")) return faLandmark
+  if (key.includes("mandate")) return faCalendarCheck
+  return faCircleDot
 }
 
 function statusOf(date: string, today: string): Status {
@@ -46,7 +47,7 @@ export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; to
   if (ordered.length === 0) {
     return (
       <ToolCard title="IPO Timeline" description="Key dates in the offer lifecycle.">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           No timeline dates set yet - add them from &ldquo;Edit data&rdquo;.
         </p>
       </ToolCard>
@@ -61,12 +62,12 @@ export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; to
       >
         <span
           aria-hidden
-          className="bg-border pointer-events-none absolute left-[18px] top-0 h-full w-px md:left-0 md:right-0 md:top-[18px] md:h-px md:w-auto"
+          className="pointer-events-none absolute top-0 left-[18px] h-full w-px bg-border md:top-[18px] md:right-0 md:left-0 md:h-px md:w-auto"
         />
         {ordered.map((milestone) => {
           const status = statusOf(milestone.date, today)
           const emphasis = isListingMilestone(milestone.label)
-          const Icon = iconFor(milestone.label)
+          const icon = iconFor(milestone.label)
           return (
             <li
               key={milestone.id}
@@ -76,16 +77,16 @@ export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; to
             >
               <span
                 className={cn(
-                  "bg-card z-10 grid size-9 shrink-0 place-items-center rounded-full border-2 transition-colors",
+                  "z-10 grid size-9 shrink-0 place-items-center rounded-full border-2 bg-card transition-colors",
                   status === "past" && "border-brand text-brand",
                   status === "today" &&
-                    "border-brand bg-brand text-brand-foreground ring-brand/25 ring-4",
+                    "border-brand bg-brand text-brand-foreground ring-4 ring-brand/25",
                   status === "upcoming" && "border-border text-muted-foreground",
-                  emphasis && status !== "today" && "ring-brand/25 ring-2",
+                  emphasis && status !== "today" && "ring-2 ring-brand/25",
                   emphasis && status === "upcoming" && "border-brand text-brand",
                 )}
               >
-                <Icon className="size-4" strokeWidth={2.25} aria-hidden />
+                <Icon icon={icon} className="size-4" aria-hidden />
               </span>
               <div className="min-w-0">
                 <p
@@ -97,12 +98,12 @@ export function IpoTimeline({ milestones, today }: { milestones: Milestone[]; to
                 >
                   {milestone.label}
                   {status === "today" && (
-                    <span className="bg-brand text-brand-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                    <span className="rounded bg-brand px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-brand-foreground uppercase">
                       Today
                     </span>
                   )}
                 </p>
-                <p className="text-muted-foreground text-xs tabular-nums">
+                <p className="text-xs text-muted-foreground tabular-nums">
                   {fmtDisplayDate(milestone.date)}
                 </p>
               </div>

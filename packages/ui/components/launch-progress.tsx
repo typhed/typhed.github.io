@@ -43,8 +43,8 @@ export function LaunchProgress({ className }: { className?: string }) {
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-2 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground uppercase tracking-[0.18em]">Launch progress</span>
-        <span className="text-foreground font-medium tabular-nums" suppressHydrationWarning>
+        <span className="tracking-[0.18em] text-muted-foreground uppercase">Launch progress</span>
+        <span className="font-medium text-foreground tabular-nums" suppressHydrationWarning>
           {mounted ? `${rounded}%` : "0%"}
         </span>
       </div>
@@ -56,16 +56,16 @@ export function LaunchProgress({ className }: { className?: string }) {
         aria-valuemax={100}
         aria-valuenow={mounted ? rounded : 0}
         aria-valuetext={mounted ? `${rounded} percent, ${daysLeft} days to launch` : undefined}
-        className="border-border/50 bg-secondary/60 h-2.5 w-full overflow-hidden rounded-full border"
+        className="h-2.5 w-full overflow-hidden rounded-full border border-border/50 bg-secondary/60"
       >
         <div
-          className="from-brand via-brand to-brand-2 h-full rounded-full bg-gradient-to-r shadow-[0_0_12px_hsl(var(--brand)/0.55)] transition-[width] duration-1000 ease-out motion-reduce:transition-none"
+          className="h-full rounded-full bg-linear-to-r from-brand via-brand to-brand-2 shadow-[0_0_12px_hsl(var(--brand)/0.55)] transition-[width] duration-1000 ease-out motion-reduce:transition-none"
           style={{ width: mounted ? `${percent}%` : "0%" }}
         />
       </div>
 
       <p
-        className="text-muted-foreground mt-2 text-right text-xs tabular-nums"
+        className="mt-2 text-right text-xs text-muted-foreground tabular-nums"
         suppressHydrationWarning
       >
         {mounted ? `${daysLeft} days to launch` : ""}

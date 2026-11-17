@@ -18,19 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Setup Package Manager (pnpm)
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      # pnpm comes from "packageManager" and Node.js from "devEngines.runtime"
+      # in package.json; the step then installs from the committed lockfile.
+      - name: Setup pnpm, Node, And Dependencies
+        uses: pnpm/setup@v3
         with:
-          node-version: 22
-          cache: pnpm
+          cache: true
+          require-lockfile: true
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
           cache: pip
@@ -38,9 +37,6 @@ jobs:
 
       - name: Install Redirect Generator Dependencies
         run: python -m pip install -r permalink/requirements.txt
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Format
         run: pnpm format:check

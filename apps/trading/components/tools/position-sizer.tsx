@@ -103,7 +103,7 @@ export function PositionSizer() {
         />
       </div>
 
-      <p className="text-muted-foreground mt-4 text-xs">
+      <p className="mt-4 text-xs text-muted-foreground">
         Sizing arithmetic on your inputs, nothing more: it does not know your broker&apos;s margin
         rules, lot constraints, or liquidity. Verify every figure before you trade. Not investment
         advice.

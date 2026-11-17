@@ -17,7 +17,7 @@ switch (`role="switch"` with `aria-checked`).
 ## Source And Import
 
   * **Source**: [packages/ui/components/theme-toggle.tsx](../../packages/ui/components/theme-toggle.tsx)
-  * **Depends on**: `useTheme` from `next-themes`, `Sun` and `Moon` from `lucide-react`
+  * **Depends on**: `useTheme` from `next-themes`, `faSun` and `faMoon` from Font Awesome, rendered through `Icon`
   * **Requires**: a [ThemeProvider](theme-provider.md) ancestor
 
 ```tsx

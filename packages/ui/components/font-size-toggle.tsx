@@ -19,7 +19,7 @@ import { cn } from "../lib/utils"
  * the control must never resize itself, wherever it is placed.
  */
 const CONTROL =
-  "inline-flex h-full w-7 items-center justify-center font-semibold leading-none text-muted-foreground transition-colors hover:text-brand focus-visible:relative focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-30"
+  "inline-flex h-full w-7 items-center justify-center font-semibold leading-none text-muted-foreground transition-colors hover:text-brand focus-visible:relative focus-visible:z-10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-30"
 
 /**
  * Text-size control for the page's reading area: a small "A" to step down and a
@@ -91,7 +91,7 @@ export function FontSizeToggle() {
     <div
       role="group"
       aria-label="Text size"
-      className="border-border bg-secondary hover:border-brand/50 inline-flex h-8 shrink-0 items-center overflow-hidden rounded-full border transition-colors"
+      className="inline-flex h-8 shrink-0 items-center overflow-hidden rounded-full border border-border bg-secondary transition-colors hover:border-brand/50"
     >
       <button
         type="button"

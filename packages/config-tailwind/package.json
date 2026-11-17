@@ -6,14 +6,14 @@
   "main": "./tailwind.config.js",
   "types": "./tailwind.config.d.ts",
   "files": [
-    "tailwind.config.js",
-    "tailwind.config.d.ts"
+    "base.css",
+    "content.d.ts",
+    "content.js",
+    "postcss.config.mjs",
+    "tailwind.config.d.ts",
+    "tailwind.config.js"
   ],
   "dependencies": {
-    "@typhed/brand": "workspace:*",
-    "tailwindcss-animate": "catalog:"
-  },
-  "devDependencies": {
-    "tailwindcss": "catalog:"
+    "@typhed/brand": "workspace:*"
   }
 }

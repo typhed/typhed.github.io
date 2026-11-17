@@ -6,14 +6,14 @@ import { ACCESS_CATEGORIES } from "@/lib/constants"
 
 function SignInCard() {
   return (
-    <div className="border-border bg-card/50 my-8 rounded-xl border p-8 text-center">
+    <div className="my-8 rounded-xl border border-border bg-card/50 p-8 text-center">
       <p className="text-2xl" aria-hidden="true">
         {ACCESS_CATEGORIES.freemium.emoji}
       </p>
-      <h2 className="font-display text-foreground mt-3 text-xl font-semibold">
+      <h2 className="mt-3 font-display text-xl font-semibold text-foreground">
         Sign in to keep reading
       </h2>
-      <p className="text-muted-foreground mx-auto mt-2 max-w-md text-sm">
+      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
         This is a freemium post. Sign in with a free TyPhed account, the same login as the main
         site, to read the rest.
       </p>
@@ -21,7 +21,7 @@ function SignInCard() {
         <SignInButton mode="modal">
           <button
             type="button"
-            className="bg-brand text-brand-foreground rounded-md px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+            className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90"
           >
             Sign in to read
           </button>
@@ -46,7 +46,7 @@ export function FreemiumGate({ children }: { children: React.ReactNode }) {
     <SignedInGate
       fallback={<SignInCard />}
       loading={
-        <div className="border-border bg-card/30 my-8 h-40 animate-pulse rounded-xl border" />
+        <div className="my-8 h-40 animate-pulse rounded-xl border border-border bg-card/30" />
       }
     >
       {children}

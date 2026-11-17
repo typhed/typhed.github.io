@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react"
+import { faArrowTrendDown, faArrowTrendUp, faMinus } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 import { fmtCompact, fmtNumber, fmtPercent, signTone } from "@/lib/format"
@@ -54,7 +55,7 @@ export function IpoFinancials({
         {derived.map((row, i) => (
           <span
             key={row.id}
-            className="text-muted-foreground inline-flex items-center gap-1.5 text-xs"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
           >
             <span
               className="inline-block h-2.5 w-2.5 rounded-sm"
@@ -77,7 +78,7 @@ export function IpoFinancials({
             Reported financials in {unit} with year-over-year change
           </caption>
           <thead>
-            <tr className="border-border text-muted-foreground border-b">
+            <tr className="border-b border-border text-muted-foreground">
               <th scope="col" className="py-2 pr-2 text-left font-medium">
                 Metric ({unit})
               </th>
@@ -100,16 +101,16 @@ export function IpoFinancials({
               const yoy = latest ? latest[metric.growthKey] : NaN
               const hasYoy = Number.isFinite(yoy)
               const up = yoy >= 0
-              const Arrow = !hasYoy ? Minus : up ? ArrowUpRight : ArrowDownRight
+              const trend = !hasYoy ? faMinus : up ? faArrowTrendUp : faArrowTrendDown
               return (
-                <tr key={metric.key} className="border-border/60 border-b">
-                  <th scope="row" className="whitespace-nowrap py-2 pr-2 text-left font-medium">
+                <tr key={metric.key} className="border-b border-border/60">
+                  <th scope="row" className="py-2 pr-2 text-left font-medium whitespace-nowrap">
                     {metric.label}
                   </th>
                   {derived.map((row) => (
                     <td
                       key={row.id}
-                      className="whitespace-nowrap py-2 pl-2 text-right tabular-nums"
+                      className="py-2 pl-2 text-right whitespace-nowrap tabular-nums"
                     >
                       ₹{fmtNumber(row[metric.key], 2)}
                     </td>
@@ -121,7 +122,7 @@ export function IpoFinancials({
                     )}
                   >
                     <span className="inline-flex items-center gap-1">
-                      <Arrow className="size-3.5" aria-hidden />
+                      <Icon icon={trend} className="size-3.5" aria-hidden />
                       {hasYoy ? fmtPercent(Math.abs(yoy), 1) : "-"}
                     </span>
                   </td>
@@ -205,7 +206,7 @@ function FinancialsChart({ derived }: { derived: FinancialDerived[] }) {
                 dy="0.32em"
                 textAnchor="end"
                 fill="currentColor"
-                className="text-muted-foreground text-[11px] tabular-nums"
+                className="text-[11px] text-muted-foreground tabular-nums"
               >
                 {fmtCompact(tick)}
               </text>
@@ -238,7 +239,7 @@ function FinancialsChart({ derived }: { derived: FinancialDerived[] }) {
                   y={HEIGHT - 14}
                   textAnchor="middle"
                   fill="currentColor"
-                  className="text-muted-foreground text-[10px]"
+                  className="text-[10px] text-muted-foreground"
                 >
                   {metric.short}
                 </text>

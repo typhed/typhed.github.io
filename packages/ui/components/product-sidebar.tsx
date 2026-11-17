@@ -3,7 +3,8 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { faAnglesLeft, faAnglesRight } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "./icon"
 import type { SidebarGroup } from "@typhed/brand"
 
 import { cn } from "../lib/utils"
@@ -64,7 +65,7 @@ export function ProductSidebar({
   return (
     <aside
       className={cn(
-        "border-border/60 bg-background/60 shrink-0 border-b backdrop-blur md:border-b-0 md:border-r",
+        "shrink-0 border-b border-border/60 bg-background/60 backdrop-blur md:border-r md:border-b-0",
         open ? "md:w-60" : "md:w-12",
       )}
     >
@@ -77,16 +78,20 @@ export function ProductSidebar({
             aria-controls={menuId}
             aria-label={open ? "Collapse menu" : "Expand menu"}
             title={open ? "Collapse menu" : "Expand menu"}
-            className="text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
           >
-            {open ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeftOpen className="h-4 w-4" />}
+            {open ? (
+              <Icon icon={faAnglesLeft} className="h-4 w-4" />
+            ) : (
+              <Icon icon={faAnglesRight} className="h-4 w-4" />
+            )}
           </button>
         </div>
         <nav id={menuId} aria-label={label} hidden={!open} className="px-3 pb-4">
           {groups.map((group, index) => (
             <div key={group.label ?? index} className="mt-3 first:mt-1">
               {group.label ? (
-                <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
+                <p className="mb-1 px-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                   {group.label}
                 </p>
               ) : null}
@@ -99,9 +104,9 @@ export function ProductSidebar({
                         href={link.href}
                         aria-current={active ? "page" : undefined}
                         className={cn(
-                          "hover:bg-accent hover:text-accent-foreground block rounded-md px-2 py-1.5 text-sm transition-colors",
+                          "block rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
                           active
-                            ? "bg-accent text-foreground font-medium"
+                            ? "bg-accent font-medium text-foreground"
                             : "text-muted-foreground",
                         )}
                       >

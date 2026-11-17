@@ -19,10 +19,6 @@
     "@typhed/risk-toolkit": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@typhed/tsconfig": "workspace:*",
-    "rimraf": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

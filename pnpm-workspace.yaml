@@ -1,49 +1,29 @@
-# pnpm 11 reads its workspace settings from this file.
+# pnpm reads its workspace settings from this file.
 packages:
   - "apps/*"
   - "packages/*"
 
-# One version of every dependency that more than one package uses. A package
-# lists the dependency as "catalog:" instead of repeating a version range.
-catalog:
-  "@clerk/react": ^6.12.4
-  "@radix-ui/react-slot": ^1.1.1
-  "@types/node": ^22.10.5
-  "@types/react": ^19.0.7
-  "@types/react-dom": ^19.0.3
-  autoprefixer: ^10.4.20
-  class-variance-authority: ^0.7.1
-  clsx: ^2.1.1
-  eslint: ^8.57.1
-  eslint-config-next: ^15.5.20
-  lucide-react: ^0.469.0
-  next: ^15.5.20
-  next-themes: ^0.4.6
-  postcss: ^8.5.1
-  react: ^19.2.7
-  react-dom: ^19.2.7
-  rimraf: ^6.0.1
-  tailwind-merge: ^2.6.0
-  tailwindcss: ^3.4.17
-  tailwindcss-animate: ^1.0.7
-  typescript: ^5.7.3
-  vitest: ^3.2.6
-  wrangler: ^4.20.0
+# Every third-party dependency, with its one version, is declared in the root
+# package.json, which also links every @typhed/* package. An app or package
+# lists only the @typhed/* packages it uses. Because the root already links
+# all of them, pnpm creates no node_modules inside an app or package: the one
+# node_modules at the repository root serves the whole workspace.
+dedupeDirectDeps: true
 
-# Force patched transitive versions past known advisories:
-#   vite  >=6.4.3  - server.fs.deny bypass + launch-editor NTLM disclosure
-#   esbuild ^0.25  - dev-server request forwarding (0.24.3 was never published)
-#   postcss >=8.5.10 - unescaped </style> XSS (next pins an older build-time copy)
-overrides:
-  vite: ">=6.4.3 <7"
-  esbuild: "^0.25.0"
-  postcss: ">=8.5.10"
+# eslint-config-next accepts ESLint 9 and later, but three plugins it pulls in
+# still declare ESLint up to 9. ESLint 9 is past end of life, and every rule of
+# these plugins runs on ESLint 10, so ESLint 10 is accepted for them.
+peerDependencyRules:
+  allowedVersions:
+    eslint-plugin-import>eslint: "10"
+    eslint-plugin-jsx-a11y>eslint: "10"
+    eslint-plugin-react>eslint: "10"
 
 # Native and postinstall build scripts are opt-in. The static exports never
 # optimise images, so sharp is declined. unrs-resolver ships prebuilt binaries
 # and its build script is only a fallback compiler. @clerk/shared's postinstall
-# only prints a telemetry notice. esbuild links the platform binary that
-# vitest and wrangler need, so it is allowed.
+# only prints a telemetry notice. esbuild and workerd link the platform
+# binaries that wrangler needs, so they are allowed.
 allowBuilds:
   "@clerk/shared": false
   esbuild: true

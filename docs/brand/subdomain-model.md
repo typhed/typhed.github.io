@@ -17,10 +17,10 @@ property; this page says where each one lives and how they fit together.
   https://trading.typhed.com/    The trading product: tools, indicators, strategies    apps/trading
 ```
 
-The parent domain is the **brand and acquisition layer**; each subdomain is a purpose-built product. All three are
-apps in one monorepo, and they share the brand rather than the product: the header, the footer, the colour and type
-systems, the copy that names the company, and the sign-in. That shared layer lives in `packages/` (`@typhed/brand`,
-`@typhed/ui`, `@typhed/auth`, and the config packages), so a brand change is one commit that every property picks up.
+The parent domain is the **brand and acquisition layer**; each subdomain is a purpose-built product. All three are apps
+in one monorepo, and they share the brand rather than the product: the header, the footer, the colour and type systems,
+the copy that names the company, and the sign-in. That shared layer lives in `packages/` (`@typhed/brand`, `@typhed/ui`,
+`@typhed/auth`, and the config packages), so a brand change is one commit that every property picks up.
 
 ## A Subdomain Is A DNS Record
 
@@ -29,8 +29,8 @@ systems, the copy that names the company, and the sign-in. That shared layer liv
 
 ## One Worker Per Property
 
-Each app is a static export served by its own Cloudflare Worker, which serves the exported files as static assets
-and runs no script:
+Each app is a static export served by its own Cloudflare Worker, which serves the exported files as static assets and
+runs no script:
 
 <div align = "center">
 
@@ -56,11 +56,14 @@ Clerk **secret** key belongs nowhere in this repository and never takes a `NEXT_
 
 ## Adding A New Subdomain
 
-  1. Add an entry to [properties.json](../../packages/brand/properties.json) with the property's URL, name,
-     description, keywords, and, if it has its own menu, its sidebar groups.
-  2. Create `apps/<name>` with a layout that renders `SiteShell` and the auth providers, a `next.config.mjs` that
-     exports `createNextConfig()`, a Tailwind config that uses the shared preset and content globs, and a `package.json`
-     whose name is `<name>` with `dev`, `build`, and `preview` scripts like the other apps.
+  1. Add an entry to [properties.json](../../packages/brand/properties.json) with the property's URL, name, description,
+     keywords, and, if it has its own menu, its sidebar groups.
+  2. Create `apps/<name>` like the other apps: a layout that renders `SiteShell` and the auth providers, a
+     `next.config.mjs` that exports `createNextConfig()`, a `tailwind.config.ts` that uses the shared preset and content
+     globs, a `globals.css` that imports `@typhed/tailwind-config/base.css` and names that config with `@config`, a
+     `postcss.config.mjs` that re-exports the shared one, and a `package.json` named `<name>` with `"type": "module"`,
+     the `dev`, `build`, `lint`, and `preview` scripts, and only its `@typhed/*` packages as `workspace:*`. Any new
+     third-party dependency goes in the root `package.json`.
   3. Add `apps/<name>/wrangler.jsonc` naming the Worker `typhed-<name>` and its route on the `typhed.com` zone. The
      deploy workflow picks the app up from that file; no workflow edit is needed.
   4. In Cloudflare, create a proxied DNS record for the hostname (an originless `AAAA 100::` record is enough).

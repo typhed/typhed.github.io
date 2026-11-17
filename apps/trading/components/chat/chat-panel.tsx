@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { SendHorizontal } from "lucide-react"
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 
@@ -46,10 +47,10 @@ export function ChatPanel() {
   }
 
   return (
-    <div className="border-border bg-card flex h-[28rem] w-80 max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-lg border shadow-xl">
-      <div className="border-border border-b px-4 py-3">
+    <div className="flex h-[28rem] w-80 max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-lg border border-border bg-card shadow-xl">
+      <div className="border-b border-border px-4 py-3">
         <p className="font-display text-sm font-semibold">TyPhed Assistant</p>
-        <p className="text-muted-foreground text-xs">Placeholder - AI answers coming soon</p>
+        <p className="text-xs text-muted-foreground">Placeholder - AI answers coming soon</p>
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
@@ -74,7 +75,7 @@ export function ChatPanel() {
       </div>
 
       <form
-        className="border-border flex items-center gap-2 border-t p-3"
+        className="flex items-center gap-2 border-t border-border p-3"
         onSubmit={(e) => {
           e.preventDefault()
           send()
@@ -84,15 +85,15 @@ export function ChatPanel() {
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Ask about your chart..."
-          className="border-input bg-background focus-visible:ring-ring w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2"
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
         />
         <button
           type="submit"
           aria-label="Send"
           disabled={draft.trim() === ""}
-          className="bg-brand text-brand-foreground focus-visible:ring-ring focus-visible:ring-offset-card flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-brand text-brand-foreground transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card focus-visible:outline-hidden disabled:opacity-50"
         >
-          <SendHorizontal className="h-4 w-4" />
+          <Icon icon={faPaperPlane} className="h-4 w-4" />
         </button>
       </form>
     </div>

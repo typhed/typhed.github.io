@@ -11,20 +11,21 @@
 
 import * as React from "react"
 import {
-  ArrowDownNarrowWide,
-  ArrowDownWideNarrow,
-  ChevronDown,
-  ChevronUp,
-  Plus,
-  RotateCcw,
-  Trash2,
-} from "lucide-react"
+  faArrowDownShortWide,
+  faArrowDownWideShort,
+  faChevronDown,
+  faChevronUp,
+  faPlus,
+  faRotateLeft,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 
 import { cn } from "@typhed/ui/lib/utils"
 import { Button } from "@typhed/ui/components/ui/button"
 
 const cellClass =
-  "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  "w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
 
 /** Immutably patch the row with the given id. */
 export function patchRow<T extends { id: string }>(rows: T[], id: string, patch: Partial<T>): T[] {
@@ -89,7 +90,7 @@ export function NumberCell({
       className={cn(
         cellClass,
         "tabular-nums",
-        disabled && "bg-muted text-muted-foreground cursor-not-allowed opacity-60",
+        disabled && "cursor-not-allowed bg-muted text-muted-foreground opacity-60",
       )}
     />
   )
@@ -154,7 +155,7 @@ export function RemoveRowButton({ onClick, label }: { onClick: () => void; label
       onClick={onClick}
       className="h-8 w-8 shrink-0"
     >
-      <Trash2 className="h-4 w-4" />
+      <Icon icon={faTrashCan} className="h-4 w-4" />
     </Button>
   )
 }
@@ -183,7 +184,7 @@ export function ReorderButtons({
         onClick={onMoveUp}
         className="h-8 w-8"
       >
-        <ChevronUp className="h-4 w-4" />
+        <Icon icon={faChevronUp} className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"
@@ -193,7 +194,7 @@ export function ReorderButtons({
         onClick={onMoveDown}
         className="h-8 w-8"
       >
-        <ChevronDown className="h-4 w-4" />
+        <Icon icon={faChevronDown} className="h-4 w-4" />
       </Button>
     </div>
   )
@@ -206,9 +207,9 @@ export function ResetButton({ onClick, label }: { onClick: () => void; label: st
       variant="ghost"
       size="sm"
       onClick={onClick}
-      className="text-destructive hover:bg-destructive/10 hover:text-destructive mt-3"
+      className="mt-3 text-destructive hover:bg-destructive/10 hover:text-destructive"
     >
-      <RotateCcw className="h-4 w-4" />
+      <Icon icon={faRotateLeft} className="h-4 w-4" />
       {label}
     </Button>
   )
@@ -243,9 +244,9 @@ export function SortRowsButton({
       className="mt-3"
     >
       {oldestFirst ? (
-        <ArrowDownNarrowWide className="h-4 w-4" />
+        <Icon icon={faArrowDownShortWide} className="h-4 w-4" />
       ) : (
-        <ArrowDownWideNarrow className="h-4 w-4" />
+        <Icon icon={faArrowDownWideShort} className="h-4 w-4" />
       )}
       Sort {oldestFirst ? "oldest" : "newest"} first
     </Button>
@@ -256,7 +257,7 @@ export function SortRowsButton({
 export function AddRowButton({ onClick, label }: { onClick: () => void; label: string }) {
   return (
     <Button variant="outline" size="sm" onClick={onClick} className="mt-3">
-      <Plus className="h-4 w-4" />
+      <Icon icon={faPlus} className="h-4 w-4" />
       {label}
     </Button>
   )

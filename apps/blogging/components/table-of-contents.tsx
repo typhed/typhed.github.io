@@ -44,10 +44,10 @@ export function TableOfContents({ headings }: { headings: TocItem[] }) {
 
   return (
     <nav aria-label="Table of contents" className="text-sm">
-      <p className="font-display text-muted-foreground mb-3 text-xs font-semibold uppercase tracking-wide">
+      <p className="mb-3 font-display text-xs font-semibold tracking-wide text-muted-foreground uppercase">
         On this page
       </p>
-      <ul className="border-border/60 border-l">
+      <ul className="border-l border-border/60">
         {headings.map((h) => {
           const isActive = h.id === activeId
           return (
@@ -60,8 +60,8 @@ export function TableOfContents({ headings }: { headings: TocItem[] }) {
                   "-ml-px block border-l-2 py-1 leading-snug transition-colors",
                   INDENT[Math.min(h.depth - minDepth, INDENT.length - 1)],
                   isActive
-                    ? "border-brand text-brand font-medium"
-                    : "text-muted-foreground hover:text-foreground border-transparent",
+                    ? "border-brand font-medium text-brand"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
                 )}
               >
                 {h.text}

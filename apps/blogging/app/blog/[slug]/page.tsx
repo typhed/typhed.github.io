@@ -109,14 +109,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <>
             <Link
               href="/"
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               ← Back to all posts
             </Link>
 
             <article className="mt-8">
-              <header className="border-border/60 mb-8 border-b pb-8">
-                <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+              <header className="mb-8 border-b border-border/60 pb-8">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   <AccessBadge category={post.accessCategory} />
                   <time dateTime={post.date}>{formatDate(post.date)}</time>
                   <span aria-hidden="true">·</span>
@@ -124,16 +124,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                   <span aria-hidden="true">·</span>
                   <span>{post.author ?? SITE.author}</span>
                 </div>
-                <h1 className="font-display text-foreground mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+                <h1 className="mt-3 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                   {post.title}
                 </h1>
-                <p className="text-muted-foreground mt-3 text-lg">{post.description}</p>
+                <p className="mt-3 text-lg text-muted-foreground">{post.description}</p>
                 {post.tags.length > 0 ? (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="bg-muted text-muted-foreground rounded-full px-2.5 py-0.5 text-xs"
+                        className="rounded-full bg-muted px-2.5 py-0.5 text-xs text-muted-foreground"
                       >
                         {tag}
                       </span>

@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "@typhed/tailwind-config/base.css";
+@config "../tailwind.config.ts";
 
 @layer base {
   /* Brand palette note: the theme tokens (--background, --brand, --border, ... )
@@ -86,7 +85,7 @@
 
   /* Inline code (single backticks, not inside a highlighted block). */
   :not(pre) > code {
-    @apply border-border bg-muted text-foreground rounded border px-1.5 py-0.5 font-mono text-[0.85em];
+    @apply rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground;
   }
 
   /* rehype-pretty-code figure + fenced code block */
@@ -95,7 +94,7 @@
   }
 
   [data-rehype-pretty-code-figure] pre {
-    @apply border-border bg-card overflow-x-auto rounded-lg border p-4 text-sm leading-relaxed;
+    @apply overflow-x-auto rounded-lg border border-border bg-card p-4 text-sm leading-relaxed;
   }
 
   [data-rehype-pretty-code-figure] code {
@@ -108,7 +107,7 @@
   }
 
   [data-rehype-pretty-code-title] {
-    @apply border-border bg-muted text-muted-foreground mb-2 rounded-md border px-3 py-1.5 font-mono text-xs;
+    @apply mb-2 rounded-md border border-border bg-muted px-3 py-1.5 font-mono text-xs text-muted-foreground;
   }
 }
 

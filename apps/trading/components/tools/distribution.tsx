@@ -51,10 +51,10 @@ export function Distribution({
 
   return (
     <div>
-      <p className="text-muted-foreground mb-1 text-xs font-medium">{title}</p>
+      <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border-border bg-background h-36 w-full rounded-md border"
+        className="h-36 w-full rounded-md border border-border bg-background"
         preserveAspectRatio="none"
         role="img"
         aria-label={title}
@@ -71,7 +71,7 @@ export function Distribution({
           />
         ))}
       </svg>
-      <div className="text-muted-foreground mt-1 flex justify-between text-xs">
+      <div className="mt-1 flex justify-between text-xs text-muted-foreground">
         <span>{minLabel}</span>
         <span>{maxLabel}</span>
       </div>

@@ -43,7 +43,7 @@ function latestByDate<T extends { date: string }>(rows: T[]): T | undefined {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="lg:contents">
-      <span className="text-muted-foreground mb-1 block text-xs font-medium lg:hidden">
+      <span className="mb-1 block text-xs font-medium text-muted-foreground lg:hidden">
         {label}
       </span>
       {children}
@@ -64,7 +64,7 @@ function SalaryEditor({
   return (
     <div>
       <div className="space-y-2">
-        <div className="text-muted-foreground hidden grid-cols-[150px_1fr_1.5fr_auto] gap-2 px-1 text-xs sm:grid">
+        <div className="hidden grid-cols-[150px_1fr_1.5fr_auto] gap-2 px-1 text-xs text-muted-foreground sm:grid">
           <span>Credit date</span>
           <span>Monthly salary (₹)</span>
           <span>Note</span>
@@ -136,7 +136,7 @@ function BonusEditor({
   return (
     <div>
       <div className="space-y-2">
-        <div className="text-muted-foreground hidden grid-cols-[150px_1fr_5rem_5rem_5rem_1.3fr_auto] gap-2 px-1 text-xs lg:grid">
+        <div className="hidden grid-cols-[150px_1fr_5rem_5rem_5rem_1.3fr_auto] gap-2 px-1 text-xs text-muted-foreground lg:grid">
           <span>Received</span>
           <span>Amount (₹)</span>
           <span>Needs %</span>
@@ -254,7 +254,7 @@ export function MnwsInputs({
         description="Bonuses, FD maturities and other one-offs. Each is deployed once, the month after it is received, by its own split (default 25 % needs / 0 % wants / 75 % savings)."
       >
         <BonusEditor bonuses={bonuses} today={today} onChange={onBonusesChange} />
-        <p className="text-muted-foreground mt-3 text-xs">
+        <p className="mt-3 text-xs text-muted-foreground">
           To change how a windfall is split, edit its <strong>Needs %</strong>,{" "}
           <strong>Wants %</strong> and <strong>Savings %</strong> on that row (default 25 / 0 / 75).
           Splits should total 100 %; any shortfall is treated as ordinary spending and is not

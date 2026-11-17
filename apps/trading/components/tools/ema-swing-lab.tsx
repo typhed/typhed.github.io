@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Square } from "lucide-react"
+import { faStop } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import type { StrategyTemplate, SweepParams, SweepResult, SweepRow } from "@typhed/backtest"
 
@@ -77,12 +78,15 @@ export function EmaSwingLab({
   const [riskPct, setRiskPct] = React.useState(1)
   const [sortKey, setSortKey] = React.useState<SortKey>("emaPeriod")
   const [sortDir, setSortDir] = React.useState<1 | -1>(1)
-  const [selected, setSelected] = React.useState<SweepRow | null>(null)
-
   const { status, progress, sweep, error, run, cancel } = useSweep()
 
-  // A new sweep invalidates the old selection's parameters.
-  React.useEffect(() => setSelected(null), [sweep])
+  // A selection belongs to the sweep it was made in, so a new sweep clears it
+  // on the same render.
+  const [selection, setSelection] = React.useState<{ sweep: typeof sweep; row: SweepRow } | null>(
+    null,
+  )
+  const selected = selection?.sweep === sweep ? selection.row : null
+  const setSelected = (row: SweepRow | null) => setSelection(row ? { sweep, row } : null)
 
   const params = React.useMemo<SweepParams>(() => {
     const lo = clamp(Math.round(minPeriod) || 5, 2, 200)
@@ -123,7 +127,7 @@ export function EmaSwingLab({
   if (candles.length < 120) {
     return (
       <ToolCard title="EMA Swing Lab">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           The sweep needs at least 120 bars - upload a longer series.
         </p>
       </ToolCard>
@@ -184,26 +188,26 @@ export function EmaSwingLab({
       {status === "running" && (
         <div className="mt-4 flex items-center gap-2">
           <div
-            className="bg-secondary h-1.5 w-40 overflow-hidden rounded-full"
+            className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
             role="progressbar"
             aria-valuenow={Math.round(progress * 100)}
             aria-valuemin={0}
             aria-valuemax={100}
           >
             <div
-              className="bg-brand h-full transition-[width]"
+              className="h-full bg-brand transition-[width]"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
           <Button variant="ghost" size="sm" onClick={cancel}>
-            <Square className="h-4 w-4" />
+            <Icon icon={faStop} className="h-4 w-4" />
             Cancel
           </Button>
         </div>
       )}
 
       {error && (
-        <p role="alert" className="text-destructive mt-4 text-sm">
+        <p role="alert" className="mt-4 text-sm text-destructive">
           {error}
         </p>
       )}
@@ -216,7 +220,7 @@ export function EmaSwingLab({
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
-              <tr className="border-border text-muted-foreground border-b text-left text-xs">
+              <tr className="border-b border-border text-left text-xs text-muted-foreground">
                 <SortHeader
                   label="EMA"
                   k="emaPeriod"
@@ -300,7 +304,7 @@ export function EmaSwingLab({
                     key={row.emaPeriod}
                     onClick={() => setSelected(isSelected ? null : row)}
                     className={cn(
-                      "border-border/40 hover:bg-accent/50 cursor-pointer border-b transition-colors",
+                      "cursor-pointer border-b border-border/40 transition-colors hover:bg-accent/50",
                       cell.lowSample && "text-muted-foreground/60",
                       isSelected && "bg-accent/60",
                     )}
@@ -314,7 +318,7 @@ export function EmaSwingLab({
                       {row.emaPeriod}
                       {cell.slowEmaPeriod !== null && `/${cell.slowEmaPeriod}`}
                       {isBest && (
-                        <span className="bg-brand/15 text-brand ml-1 rounded px-1 py-0.5 text-[10px] uppercase tracking-wider">
+                        <span className="ml-1 rounded bg-brand/15 px-1 py-0.5 text-[10px] tracking-wider text-brand uppercase">
                           best
                         </span>
                       )}
@@ -363,7 +367,7 @@ export function EmaSwingLab({
         />
       )}
 
-      <p className="text-muted-foreground mt-6 text-xs">
+      <p className="mt-6 text-xs text-muted-foreground">
         A historical simulation with simplified fills and costs is a study of tendency, not a
         promise of future returns. Signals fill at the next bar&apos;s open, costs are always on,
         and the guards exist to show how fragile a &quot;best&quot; EMA is: grey rows have too few
@@ -395,7 +399,7 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onSort(k)}
-        className="hover:text-foreground focus-visible:ring-ring flex items-center gap-1 rounded font-medium focus-visible:outline-none focus-visible:ring-2"
+        className="flex items-center gap-1 rounded font-medium hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
       >
         {label}
         {active === k && <span aria-hidden>{dir === 1 ? "↑" : "↓"}</span>}
@@ -409,7 +413,7 @@ function SweepSummary({ sweep }: { sweep: SweepResult }) {
   const best = sweep.best
   if (!best) {
     return (
-      <p className="text-muted-foreground mt-6 text-sm">
+      <p className="mt-6 text-sm text-muted-foreground">
         No EMA cleared the {sweep.minTrades}-trade minimum on this series - every row is greyed. A
         longer history (or a shorter EMA range) is needed before any &quot;best EMA&quot; claim
         would be honest.
@@ -479,12 +483,12 @@ function ScoreCurve({ sweep }: { sweep: SweepResult }) {
 
   return (
     <div className="mt-6">
-      <p className="text-muted-foreground mb-1 text-xs font-medium">
+      <p className="mb-1 text-xs font-medium text-muted-foreground">
         Score vs EMA period (raw thin, plateau-smoothed thick)
       </p>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border-border bg-background h-40 w-full rounded-md border"
+        className="h-40 w-full rounded-md border border-border bg-background"
         preserveAspectRatio="none"
         role="img"
         aria-label="Score versus EMA period curve"
@@ -517,7 +521,7 @@ function ScoreCurve({ sweep }: { sweep: SweepResult }) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <div className="text-muted-foreground mt-1 flex justify-between text-xs">
+      <div className="mt-1 flex justify-between text-xs text-muted-foreground">
         <span>{rows[0]?.emaPeriod}</span>
         <span>{rows[rows.length - 1]?.emaPeriod}</span>
       </div>

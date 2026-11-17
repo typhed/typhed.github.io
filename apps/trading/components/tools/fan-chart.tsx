@@ -70,7 +70,7 @@ export function FanChart({
     <div>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border-border bg-background h-64 w-full rounded-md border"
+        className="h-64 w-full rounded-md border border-border bg-background"
         preserveAspectRatio="none"
         role="img"
         aria-label="Percentile fan of simulated paths"
@@ -108,7 +108,7 @@ export function FanChart({
           className="text-muted-foreground"
         />
       </svg>
-      <div className="text-muted-foreground mt-1 flex justify-between text-xs">
+      <div className="mt-1 flex justify-between text-xs text-muted-foreground">
         <span>
           P5-P95 shaded, P25-P75 darker, median line - {anchorLabel}{" "}
           {fmtMoney(summary.startValue, 0)}

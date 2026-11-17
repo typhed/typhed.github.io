@@ -74,6 +74,7 @@ function useChartTheme(resolvedTheme: string | undefined) {
       const value = style.getPropertyValue(name).trim()
       return value ? `hsl(${value})` : ""
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the colours are CSS variables of the rendered document, read again whenever the theme flips
     setColors({
       series: SERIES_TOKENS.map(hsl),
       axis: hsl("--muted-foreground"),
@@ -103,20 +104,20 @@ function ChartTooltip({
 }) {
   if (!active || !payload || payload.length === 0) return null
   return (
-    <div className="border-border bg-popover rounded-lg border px-3 py-2 text-xs shadow-md">
-      <p className="text-foreground mb-1 font-medium">
+    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
+      <p className="mb-1 font-medium text-foreground">
         {xLabel ? `${xLabel}: ` : ""}
         {label}
       </p>
       {payload.map((entry) => (
-        <p key={String(entry.dataKey)} className="text-muted-foreground flex items-center gap-2">
+        <p key={String(entry.dataKey)} className="flex items-center gap-2 text-muted-foreground">
           <span
             className="inline-block h-2 w-2 shrink-0 rounded-full"
             style={{ backgroundColor: entry.color }}
             aria-hidden="true"
           />
           <span className="text-foreground">{entry.name}</span>
-          <span className="text-foreground ml-3 font-mono tabular-nums">
+          <span className="ml-3 font-mono text-foreground tabular-nums">
             {typeof entry.value === "number" ? entry.value.toFixed(3) : entry.value}
           </span>
         </p>
@@ -153,7 +154,7 @@ export default function ChartInner({ spec }: { spec: string }) {
 
   if ("error" in parsed) {
     return (
-      <pre className="border-destructive/50 bg-card text-destructive my-6 overflow-x-auto rounded-lg border p-4 font-mono text-sm">
+      <pre className="my-6 overflow-x-auto rounded-lg border border-destructive/50 bg-card p-4 font-mono text-sm text-destructive">
         {`Chart spec error: ${parsed.error}\n\n${spec}`}
       </pre>
     )
@@ -278,9 +279,9 @@ export default function ChartInner({ spec }: { spec: string }) {
   }
 
   return (
-    <figure className="border-border bg-card/50 my-6 rounded-lg border p-4">
+    <figure className="my-6 rounded-lg border border-border bg-card/50 p-4">
       {title ? (
-        <figcaption className="text-foreground mb-3 text-center text-sm font-medium">
+        <figcaption className="mb-3 text-center text-sm font-medium text-foreground">
           {title}
         </figcaption>
       ) : null}

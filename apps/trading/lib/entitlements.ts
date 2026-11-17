@@ -3,13 +3,7 @@
 import { useEntitlements as useAccountEntitlements, type Tier } from "@typhed/auth"
 
 export type FeatureId =
-  | "chart"
-  | "indicators"
-  | "sizer"
-  | "risk-basic"
-  | "montecarlo"
-  | "advanced"
-  | "risk-parity"
+  "chart" | "indicators" | "sizer" | "risk-basic" | "montecarlo" | "advanced" | "risk-parity"
 
 export type { Tier }
 

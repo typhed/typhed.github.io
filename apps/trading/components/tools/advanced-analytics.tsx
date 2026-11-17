@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Loader2, Play } from "lucide-react"
+import { faCircleNotch, faPlay } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import { simpleReturns } from "@typhed/risk-toolkit"
 
@@ -51,11 +52,15 @@ export function AdvancedAnalytics({ candles }: { candles: readonly Candle[] }) {
       description="Higher-moment risk computed with numpy in your browser via Pyodide. The first run downloads the Python runtime (~10 MB) and caches it."
     >
       <Button variant="brand" onClick={run} disabled={running}>
-        {running ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />}
+        {running ? (
+          <Icon icon={faCircleNotch} className="h-4 w-4 animate-spin" />
+        ) : (
+          <Icon icon={faPlay} className="h-4 w-4" />
+        )}
         {running ? (status ?? "Working") : "Run in Python"}
       </Button>
 
-      {error && <p className="text-destructive mt-3 text-sm">{error}</p>}
+      {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
       {result && (
         <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -91,7 +96,7 @@ export function AdvancedAnalytics({ candles }: { candles: readonly Candle[] }) {
         </div>
       )}
 
-      <p className="text-muted-foreground mt-4 text-xs">
+      <p className="mt-4 text-xs text-muted-foreground">
         Only the Python runtime is downloaded, from a CDN. Your data is computed locally in
         WebAssembly and never leaves the browser.
       </p>

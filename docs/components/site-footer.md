@@ -53,7 +53,8 @@ The root is a `<footer>` with a top border and a faint brand-washed surface. It 
      (`flex flex-col gap-8`) - which is how five equal columns carry six blocks of content. Every group is a heading
      (`<h2>`) over a `<nav>` list of links. Links are quiet at rest (`text-muted-foreground`) and brighten on hover
      (`hover:text-brand`). An external link gets `target="_blank"`, `rel="noopener noreferrer"`, a trailing
-     `ArrowUpRight` glyph (`h-3.5 w-3.5`, `aria-hidden`), and an `sr-only` "(opens in a new tab)" note.
+     Font Awesome `faArrowUpRightFromSquare` icon through `Icon` (`h-3.5 w-3.5`, `aria-hidden`), and an `sr-only`
+     "(opens in a new tab)" note.
   3. **Contact column**: a heading ("Contact Us"), a `mailto:` link to `CONTACT_EMAIL` (styled as nav links), and below
      it a "Social Connect" subheading with a social icon row.
 
@@ -66,7 +67,8 @@ back to two columns and then to one, so the five column row is a large-screen ru
   * Nested under a "Social Connect" heading (`<h3 class="text-sm font-semibold text-foreground">Social Connect</h3>`),
     which sits in a `<div class="mt-6">` below the email text link.
   * A `<nav aria-label="Social media">` of circular icon buttons, driven by `SOCIAL_LINKS` from constants (excluding the
-    `mail` entry, which is shown as a text link above). Today that renders GitHub and LinkedIn.
+    `mail` entry, which is shown as a text link above). Today that renders GitHub and LinkedIn. Each icon is a Font
+    Awesome brand icon rendered through `Icon`, sized `h-4 w-4`.
   * Each icon button: `h-9 w-9 rounded-full` with `border-border`, `bg-background/40`, and `text-muted-foreground` at
     rest; on hover: `border-brand/50` and `text-brand`.
   * Supported icon names: `github`, `linkedin`, `twitter`, `instagram`, `youtube`, `facebook`. To add a network, add an
@@ -85,7 +87,7 @@ See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 
 | Element | Token / Class |
 | :---: | :---: |
-| Root background | `bg-card` with gradient `from-brand/5 to-brand-2/5` (a faint on-brand wash) |
+| Root background | `bg-card` with `bg-linear-to-b from-brand/5 to-brand-2/5` (a faint on-brand wash) |
 | Top border | `border-border` |
 | Bottom bar border | `border-border` |
 | Column headings | `text-foreground` (emphasized) |

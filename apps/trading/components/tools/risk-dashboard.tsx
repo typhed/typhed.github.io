@@ -50,7 +50,7 @@ export function RiskDashboard({
   if (!stats) {
     return (
       <ToolCard title="Risk summary">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Not enough bars on this timeframe to compute risk statistics.
         </p>
       </ToolCard>
@@ -91,7 +91,7 @@ export function RiskDashboard({
           note="Gaussian"
         />
       </div>
-      <p className="text-muted-foreground mt-4 text-xs">
+      <p className="mt-4 text-xs text-muted-foreground">
         VaR is the loss not expected to be exceeded at the stated confidence over one bar. These are
         estimates from your data - not a guarantee.
       </p>

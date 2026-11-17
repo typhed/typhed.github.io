@@ -22,7 +22,7 @@ const TIME_FORMATS: Array<{ value: TimeFormat; label: string }> = [
 ]
 
 const selectClass =
-  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+  "w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
 
 /**
  * Confirm-the-mapping step. Auto-detected columns are pre-filled but nothing is
@@ -48,9 +48,9 @@ export function ColumnMapper({
   }
 
   return (
-    <div className="border-border bg-card mx-auto max-w-2xl rounded-lg border p-6">
+    <div className="mx-auto max-w-2xl rounded-lg border border-border bg-card p-6">
       <h2 className="font-display text-lg font-semibold">Map your columns</h2>
-      <p className="text-muted-foreground mt-1 text-sm">
+      <p className="mt-1 text-sm text-muted-foreground">
         Confirm which column holds each value. Timestamps without a timezone are read as UTC.
       </p>
 

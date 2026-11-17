@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Download } from "lucide-react"
+import { faDownload } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import {
   runBacktest,
@@ -87,7 +88,7 @@ export function EmaLabDetail({
   }
 
   return (
-    <div className="border-border bg-background/60 mt-6 space-y-4 rounded-lg border p-4">
+    <div className="mt-6 space-y-4 rounded-lg border border-border bg-background/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="font-display text-sm font-semibold">
           EMA {params.emaPeriod}
@@ -118,7 +119,7 @@ export function EmaLabDetail({
             disabled={result.trades.length === 0}
             title="Export the trade R-multiples as JSON - the Monte Carlo trade-sequence mode consumes this file."
           >
-            <Download className="h-4 w-4" />
+            <Icon icon={faDownload} className="h-4 w-4" />
             Export trade list
           </Button>
         </div>
@@ -221,7 +222,7 @@ function PricePanel({ candles, result }: { candles: readonly Candle[]; result: B
     <div>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border-border bg-background h-60 w-full rounded-md border"
+        className="h-60 w-full rounded-md border border-border bg-background"
         preserveAspectRatio="none"
         role="img"
         aria-label="Price with the selected EMA overlay and entry/exit markers"
@@ -268,7 +269,7 @@ function PricePanel({ candles, result }: { candles: readonly Candle[]; result: B
           />
         ))}
       </svg>
-      <p className="text-muted-foreground mt-1 text-xs">
+      <p className="mt-1 text-xs text-muted-foreground">
         Close (grey), EMA (brand), entries ▲ / exits ▼ at effective fill prices.
       </p>
     </div>
@@ -330,12 +331,12 @@ function EquityPanel({ equity }: { equity: readonly number[] }) {
 
   return (
     <div>
-      <p className="text-muted-foreground mb-1 text-xs font-medium">
+      <p className="mb-1 text-xs font-medium text-muted-foreground">
         Equity and underwater (max DD {maxDdLabel})
       </p>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="border-border bg-background h-36 w-full rounded-md border"
+        className="h-36 w-full rounded-md border border-border bg-background"
         preserveAspectRatio="none"
         role="img"
         aria-label="Equity curve with underwater drawdown panel"

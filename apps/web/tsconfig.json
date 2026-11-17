@@ -1,7 +1,6 @@
 {
   "extends": "@typhed/tsconfig/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }

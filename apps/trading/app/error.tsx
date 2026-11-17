@@ -24,7 +24,7 @@ export default function ErrorBoundary({
   return (
     <div className="container flex min-h-[50vh] flex-col items-center justify-center gap-4 py-16 text-center">
       <h1 className="font-display text-2xl font-semibold">Something went wrong</h1>
-      <p className="text-muted-foreground max-w-md text-sm">
+      <p className="max-w-md text-sm text-muted-foreground">
         The page hit an unexpected error while rendering. Your data lives in this browser and is not
         lost - try again, and if it keeps failing, reset the affected tool&apos;s data.
       </p>

@@ -19,24 +19,24 @@ export function WipLanding() {
         inside one min-h-dvh section, and scaling the ceiling wraps it to three
         lines on a short laptop window, pushing the countdown out of view.
       */}
-      <h1 className="animate-fade-up font-display text-[clamp(calc(2.25rem*var(--font-scale,1)),calc(8vmin*var(--font-scale,1)),4.5rem)] font-semibold leading-[1.05] tracking-tight">
+      <h1 className="animate-fade-up font-display text-[clamp(calc(2.25rem*var(--font-scale,1)),calc(8vmin*var(--font-scale,1)),4.5rem)] leading-[1.05] font-semibold tracking-tight">
         <span className="sr-only">{SITE.name} - </span>
-        <span className="text-foreground block">Engineering</span>
-        <span className="from-brand via-brand to-brand-2 block bg-gradient-to-r bg-clip-text text-transparent">
+        <span className="block text-foreground">Engineering</span>
+        <span className="block bg-linear-to-r from-brand via-brand to-brand-2 bg-clip-text text-transparent">
           Tomorrow
         </span>
       </h1>
 
-      <p className="animate-fade-up text-muted-foreground mt-[clamp(0.75rem,2.5vh,1.75rem)] max-w-xl text-balance text-base sm:text-lg">
+      <p className="mt-[clamp(0.75rem,2.5vh,1.75rem)] max-w-xl animate-fade-up text-base text-balance text-muted-foreground sm:text-lg">
         Something Extraordinary is in the Making!
       </p>
 
-      <CountdownTimer className="animate-fade-up mt-[clamp(1rem,4vh,3rem)]" />
+      <CountdownTimer className="mt-[clamp(1rem,4vh,3rem)] animate-fade-up" />
 
-      <LaunchProgress className="animate-fade-up mt-[clamp(0.75rem,3vh,2.5rem)] w-full max-w-md" />
+      <LaunchProgress className="mt-[clamp(0.75rem,3vh,2.5rem)] w-full max-w-md animate-fade-up" />
 
-      <p className="animate-fade-up text-muted-foreground mt-[clamp(0.5rem,2.5vh,2rem)] text-sm">
-        Target Launch Date <span className="text-foreground font-medium">{LAUNCH_LABEL}</span>
+      <p className="mt-[clamp(0.5rem,2.5vh,2rem)] animate-fade-up text-sm text-muted-foreground">
+        Target Launch Date <span className="font-medium text-foreground">{LAUNCH_LABEL}</span>
       </p>
     </section>
   )

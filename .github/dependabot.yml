@@ -1,6 +1,6 @@
-# Version updates for the whole monorepo. pnpm resolves every shared
-# dependency through the catalog in pnpm-workspace.yaml, so one pull request
-# moves every app and package together.
+# Version updates for the whole monorepo. Every dependency, with its one
+# version, is declared in the root package.json, so one pull request moves
+# every app and package together.
 version: 2
 updates:
   - package-ecosystem: "npm"
@@ -9,6 +9,14 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "⬆️"
+    # Two holds, explained in docs/architecture.md: typescript-eslint (behind
+    # eslint-config-next) supports TypeScript up to 6.0, and rehype-katex
+    # renders with KaTeX 0.16, whose stylesheet must match the renderer.
+    ignore:
+      - dependency-name: "typescript"
+        versions: [">=6.1.0"]
+      - dependency-name: "katex"
+        versions: [">=0.17.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

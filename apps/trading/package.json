@@ -2,15 +2,16 @@
   "name": "trading",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "typhed-brand-sync && next dev --port 3001",
     "build": "typhed-brand-sync && next build",
     "preview": "wrangler dev --port 8788",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "clean": "rimraf .next out .turbo .wrangler node_modules"
+    "clean": "rimraf .next out .turbo .wrangler"
   },
   "dependencies": {
     "@typhed/auth": "workspace:*",
@@ -18,30 +19,11 @@
     "@typhed/brand": "workspace:*",
     "@typhed/chart-engine": "workspace:*",
     "@typhed/risk-toolkit": "workspace:*",
-    "@typhed/ui": "workspace:*",
-    "lightweight-charts": "^5.2.0",
-    "lucide-react": "catalog:",
-    "next": "catalog:",
-    "next-themes": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:"
+    "@typhed/ui": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "@typhed/next-config": "workspace:*",
     "@typhed/tailwind-config": "workspace:*",
-    "@typhed/tsconfig": "workspace:*",
-    "autoprefixer": "catalog:",
-    "eslint": "catalog:",
-    "eslint-config-next": "catalog:",
-    "postcss": "catalog:",
-    "rimraf": "catalog:",
-    "tailwindcss": "catalog:",
-    "tailwindcss-animate": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
-    "wrangler": "catalog:"
+    "@typhed/tsconfig": "workspace:*"
   }
 }

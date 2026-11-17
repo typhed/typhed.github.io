@@ -36,7 +36,7 @@ export const mdxComponents: MDXComponents = {
   h1: ({ className, ...props }) => (
     <h1
       className={cn(
-        "font-display text-foreground mt-10 scroll-mt-24 text-3xl font-bold tracking-tight",
+        "mt-10 scroll-mt-24 font-display text-3xl font-bold tracking-tight text-foreground",
         className,
       )}
       {...props}
@@ -45,7 +45,7 @@ export const mdxComponents: MDXComponents = {
   h2: ({ className, ...props }) => (
     <h2
       className={cn(
-        "border-border/60 font-display text-foreground mt-12 scroll-mt-24 border-b pb-2 text-2xl font-semibold tracking-tight",
+        "mt-12 scroll-mt-24 border-b border-border/60 pb-2 font-display text-2xl font-semibold tracking-tight text-foreground",
         className,
       )}
       {...props}
@@ -54,7 +54,7 @@ export const mdxComponents: MDXComponents = {
   h3: ({ className, ...props }) => (
     <h3
       className={cn(
-        "font-display text-foreground mt-8 scroll-mt-24 text-xl font-semibold tracking-tight",
+        "mt-8 scroll-mt-24 font-display text-xl font-semibold tracking-tight text-foreground",
         className,
       )}
       {...props}
@@ -63,43 +63,43 @@ export const mdxComponents: MDXComponents = {
   h4: ({ className, ...props }) => (
     <h4
       className={cn(
-        "font-display text-foreground mt-6 scroll-mt-24 text-lg font-semibold",
+        "mt-6 scroll-mt-24 font-display text-lg font-semibold text-foreground",
         className,
       )}
       {...props}
     />
   ),
   p: ({ className, ...props }) => (
-    <p className={cn("text-foreground/90 my-5 leading-7", className)} {...props} />
+    <p className={cn("my-5 leading-7 text-foreground/90", className)} {...props} />
   ),
   ul: ({ className, ...props }) => (
-    <ul className={cn("text-foreground/90 my-5 ml-6 list-disc space-y-2", className)} {...props} />
+    <ul className={cn("my-5 ml-6 list-disc space-y-2 text-foreground/90", className)} {...props} />
   ),
   ol: ({ className, ...props }) => (
     <ol
-      className={cn("text-foreground/90 my-5 ml-6 list-decimal space-y-2", className)}
+      className={cn("my-5 ml-6 list-decimal space-y-2 text-foreground/90", className)}
       {...props}
     />
   ),
   li: ({ className, ...props }) => <li className={cn("leading-7", className)} {...props} />,
   blockquote: ({ className, ...props }) => (
     <blockquote
-      className={cn("border-brand/60 text-muted-foreground my-6 border-l-2 pl-4 italic", className)}
+      className={cn("my-6 border-l-2 border-brand/60 pl-4 text-muted-foreground italic", className)}
       {...props}
     />
   ),
   hr: ({ className, ...props }) => (
-    <hr className={cn("border-border/60 my-10", className)} {...props} />
+    <hr className={cn("my-10 border-border/60", className)} {...props} />
   ),
   table: ({ className, ...props }) => (
-    <div className="border-border my-6 overflow-x-auto rounded-lg border">
+    <div className="my-6 overflow-x-auto rounded-lg border border-border">
       <table className={cn("w-full border-collapse text-sm", className)} {...props} />
     </div>
   ),
   th: ({ className, ...props }) => (
     <th
       className={cn(
-        "border-border bg-muted/50 text-foreground border-b px-4 py-2 text-left font-semibold",
+        "border-b border-border bg-muted/50 px-4 py-2 text-left font-semibold text-foreground",
         className,
       )}
       {...props}
@@ -107,7 +107,7 @@ export const mdxComponents: MDXComponents = {
   ),
   td: ({ className, ...props }) => (
     <td
-      className={cn("border-border/60 text-foreground/90 border-b px-4 py-2", className)}
+      className={cn("border-b border-border/60 px-4 py-2 text-foreground/90", className)}
       {...props}
     />
   ),
@@ -115,7 +115,7 @@ export const mdxComponents: MDXComponents = {
     // Static export uses unoptimized images; a plain <img> is correct here.
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      className={cn("border-border my-6 rounded-lg border", className)}
+      className={cn("my-6 rounded-lg border border-border", className)}
       alt={alt ?? ""}
       {...props}
     />

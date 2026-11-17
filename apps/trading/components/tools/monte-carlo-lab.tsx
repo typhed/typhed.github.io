@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { RotateCcw, Square } from "lucide-react"
+import { faRotateLeft, faStop } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import {
   logReturns,
@@ -102,7 +103,7 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
   if (returns.length < 2) {
     return (
       <ToolCard title="Monte Carlo Lab">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Not enough bars to fit the simulation - upload a longer series.
         </p>
       </ToolCard>
@@ -180,25 +181,25 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
           onClick={() => setSeed((s) => Math.round(s) + 1)}
           title="Re-run with the next seed - stable headline numbers across seeds mean the path count is high enough."
         >
-          <RotateCcw className="h-4 w-4" />
+          <Icon icon={faRotateLeft} className="h-4 w-4" />
           Repeat, next seed
         </Button>
         {status === "running" && (
           <div className="flex items-center gap-2">
             <div
-              className="bg-secondary h-1.5 w-40 overflow-hidden rounded-full"
+              className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
               role="progressbar"
               aria-valuenow={Math.round(progress * 100)}
               aria-valuemin={0}
               aria-valuemax={100}
             >
               <div
-                className="bg-brand h-full transition-[width]"
+                className="h-full bg-brand transition-[width]"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
             <Button variant="ghost" size="sm" onClick={cancel}>
-              <Square className="h-4 w-4" />
+              <Icon icon={faStop} className="h-4 w-4" />
               Cancel
             </Button>
           </div>
@@ -206,14 +207,14 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
       </div>
 
       {error && (
-        <p role="alert" className="text-destructive mt-4 text-sm">
+        <p role="alert" className="mt-4 text-sm text-destructive">
           {error}
         </p>
       )}
 
       {summary && <LabResults summary={summary} targetGainPct={targetGainPct} />}
 
-      <p className="text-muted-foreground mt-6 text-xs">
+      <p className="mt-6 text-xs text-muted-foreground">
         Simulation, not prediction: these are the odds your own history implies under each
         model&apos;s assumptions, nothing more. IID and block bootstraps resample the uploaded
         returns (block preserves short-range dependence; the block length defaults to the
@@ -251,7 +252,7 @@ function LabResults({
         <FanChart summary={summary} anchorLabel="anchored at the last close" />
       </div>
 
-      <p className="text-muted-foreground mt-2 text-xs">
+      <p className="mt-2 text-xs text-muted-foreground">
         {summary.paths.toLocaleString("en-IN")} paths, seed {summary.seed} - {modeFacts.join(", ")}
       </p>
 

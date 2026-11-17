@@ -47,7 +47,7 @@ function Legend({
   return (
     <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
       {items.map((item) => (
-        <span key={item.label} className="text-muted-foreground inline-flex items-center gap-1.5">
+        <span key={item.label} className="inline-flex items-center gap-1.5 text-muted-foreground">
           <span
             className="inline-block h-0 w-4 shrink-0 rounded-full"
             style={{
@@ -148,7 +148,7 @@ function CorpusChart({ months, annualReturnPct }: { months: MonthRow[]; annualRe
           height={HEIGHT}
           role="img"
           aria-label={`Savings corpus from ${months[0]!.label} to ${months[lastIdx]!.label}: cash saved ${fmtInr(months[lastIdx]!.cashCumulative, 0)}, invested corpus ${fmtInr(months[lastIdx]!.investedCumulative, 0)} at ${annualReturnPct}% a year.`}
-          className="focus-visible:ring-ring touch-none rounded-md outline-none focus-visible:ring-2"
+          className="touch-none rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           {...handlers}
         >
           <defs>
@@ -173,7 +173,7 @@ function CorpusChart({ months, annualReturnPct }: { months: MonthRow[]; annualRe
                 y={y(tick)}
                 dy="0.32em"
                 textAnchor="end"
-                className="text-muted-foreground fill-current text-[11px] tabular-nums"
+                className="fill-current text-[11px] text-muted-foreground tabular-nums"
               >
                 {fmtInrShort(tick)}
               </text>
@@ -186,7 +186,7 @@ function CorpusChart({ months, annualReturnPct }: { months: MonthRow[]; annualRe
               x={x(i)}
               y={HEIGHT - 8}
               textAnchor="middle"
-              className="text-muted-foreground fill-current text-[11px]"
+              className="fill-current text-[11px] text-muted-foreground"
             >
               {months[i]!.year}
             </text>
@@ -259,18 +259,18 @@ function CorpusChart({ months, annualReturnPct }: { months: MonthRow[]; annualRe
 
       {hover !== null && hovered && width > 0 && (
         <div
-          className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
+          className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs shadow-md"
           style={{ left: Math.min(Math.max(x(hover), 70), width - 70), top: 8 }}
         >
-          <div className="text-popover-foreground font-semibold">{hovered.label}</div>
-          <div className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums">
+          <div className="font-semibold text-popover-foreground">{hovered.label}</div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-popover-foreground tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: CORPUS_COLORS.invested }}
             />
             Corpus {fmtInr(hovered.investedCumulative, 0)}
           </div>
-          <div className="text-muted-foreground flex items-center gap-1.5 tabular-nums">
+          <div className="flex items-center gap-1.5 text-muted-foreground tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: CORPUS_COLORS.cash }}
@@ -333,7 +333,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
           height={HEIGHT}
           role="img"
           aria-label={`Recurring allocation shares over time. At ${months[lastIdx]!.label}: needs ${fmtPercent(months[lastIdx]!.needsRate, 0)}, wants ${fmtPercent(months[lastIdx]!.wantsRate, 0)}, savings ${fmtPercent(months[lastIdx]!.savingsRate, 0)}.`}
-          className="focus-visible:ring-ring touch-none rounded-md outline-none focus-visible:ring-2"
+          className="touch-none rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           {...handlers}
         >
           {gridlines.map((g) => (
@@ -343,7 +343,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
               y={y(g)}
               dy="0.32em"
               textAnchor="end"
-              className="text-muted-foreground fill-current text-[11px] tabular-nums"
+              className="fill-current text-[11px] text-muted-foreground tabular-nums"
             >
               {Math.round(g * 100)}%
             </text>
@@ -373,7 +373,7 @@ function DriftChart({ months }: { months: MonthRow[] }) {
               x={x(i)}
               y={HEIGHT - 8}
               textAnchor="middle"
-              className="text-muted-foreground fill-current text-[11px]"
+              className="fill-current text-[11px] text-muted-foreground"
             >
               {months[i]!.year}
             </text>
@@ -394,14 +394,14 @@ function DriftChart({ months }: { months: MonthRow[] }) {
 
       {hover !== null && hovered && width > 0 && (
         <div
-          className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
+          className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs shadow-md"
           style={{ left: Math.min(Math.max(x(hover), 78), width - 78), top: 8 }}
         >
-          <div className="text-popover-foreground font-semibold">{hovered.label}</div>
+          <div className="font-semibold text-popover-foreground">{hovered.label}</div>
           {SERIES_ORDER.map((key) => (
             <div
               key={key}
-              className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums"
+              className="mt-0.5 flex items-center gap-1.5 text-popover-foreground tabular-nums"
             >
               <span
                 className="h-2 w-2 rounded-full"
@@ -462,7 +462,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
           role="img"
           tabIndex={0}
           aria-label={`Savings added each financial year from ${years[0]?.label} to ${years[n - 1]?.label}.`}
-          className="focus-visible:ring-ring rounded-md outline-none focus-visible:ring-2"
+          className="rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           onKeyDown={(e) => {
             if (stepHover(e.key, n - 1, setHover)) e.preventDefault()
           }}
@@ -484,7 +484,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
                 y={y(tick)}
                 dy="0.32em"
                 textAnchor="end"
-                className="text-muted-foreground fill-current text-[11px] tabular-nums"
+                className="fill-current text-[11px] text-muted-foreground tabular-nums"
               >
                 {fmtInrShort(tick)}
               </text>
@@ -529,7 +529,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
                   x={cx(i)}
                   y={HEIGHT - 8}
                   textAnchor="middle"
-                  className="text-muted-foreground fill-current text-[11px]"
+                  className="fill-current text-[11px] text-muted-foreground"
                 >
                   {a.shortLabel}
                 </text>
@@ -541,14 +541,14 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
 
       {hover !== null && years[hover] && width > 0 && (
         <div
-          className="border-border bg-popover pointer-events-none absolute -translate-x-1/2 rounded-md border px-2.5 py-1.5 text-xs shadow-md"
+          className="pointer-events-none absolute -translate-x-1/2 rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs shadow-md"
           style={{
             left: Math.min(Math.max(cx(hover), 80), width - 80),
             top: 8,
           }}
         >
-          <div className="text-popover-foreground font-semibold">{years[hover]!.label}</div>
-          <div className="text-popover-foreground mt-0.5 flex items-center gap-1.5 tabular-nums">
+          <div className="font-semibold text-popover-foreground">{years[hover]!.label}</div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-popover-foreground tabular-nums">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: SERIES.savings.color }}
@@ -556,7 +556,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
             Salary {fmtInr(years[hover]!.salarySavings, 0)}
           </div>
           {years[hover]!.bonusSavings > 0 && (
-            <div className="text-popover-foreground flex items-center gap-1.5 tabular-nums">
+            <div className="flex items-center gap-1.5 text-popover-foreground tabular-nums">
               <span
                 className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: CORPUS_COLORS.invested }}
@@ -564,7 +564,7 @@ function AnnualChart({ years }: { years: FinancialYearRow[] }) {
               Bonus {fmtInr(years[hover]!.bonusSavings, 0)}
             </div>
           )}
-          <div className="border-border text-muted-foreground mt-0.5 border-t pt-0.5 tabular-nums">
+          <div className="mt-0.5 border-t border-border pt-0.5 text-muted-foreground tabular-nums">
             Total {fmtInr(years[hover]!.totalSavings, 0)}
           </div>
         </div>

@@ -2,11 +2,12 @@
 
 # TyPhed - Engineering Tomorrow
 
-[![Next.js](https://img.shields.io/badge/Next.js-%2015-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-%205-3178C6?style=plastic&logo=typescript)](https://www.typescriptlang.org)
+[![Next.js](https://img.shields.io/badge/Next.js-%2016-000000?style=plastic&logo=nextdotjs)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%206-3178C6?style=plastic&logo=typescript)](https://www.typescriptlang.org)
+[![Node.js](https://img.shields.io/badge/Node.js-%2026%20LTS-5FA04E?style=plastic&logo=nodedotjs)](https://nodejs.org)
 [![pnpm](https://img.shields.io/badge/pnpm-%20workspace-F69220?style=plastic&logo=pnpm)](https://pnpm.io)
 [![Turborepo](https://img.shields.io/badge/Turborepo-%202-EF4444?style=plastic&logo=turborepo)](https://turborepo.com)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-%203.4-06B6D4?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-%204-06B6D4?style=plastic&logo=tailwindcss)](https://tailwindcss.com)
 [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-%20components-000000?style=plastic&logo=shadcnui)](https://ui.shadcn.com)
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-%20Workers-F38020?style=plastic&logo=cloudflareworkers)](https://workers.cloudflare.com)
 [![Python](https://img.shields.io/badge/Python-%203.13-3776AB?style=plastic&logo=python)](https://www.python.org/)
@@ -17,11 +18,10 @@
 
 <div align = "justify">
 
-**TyPhed - Engineering Tomorrow** is a technology-driven brand built around privacy and data security, and this
-monorepo is its entire web estate. Three properties ship from one codebase, one design system, and one sign-in: the
-brand hub at **typhed.com** and two purpose-built product subdomains, **blog.typhed.com** and **trading.typhed.com**.
-A visitor meets the same header, footer, colours, and account wherever they land, and each product still moves at its
-own pace.
+**TyPhed - Engineering Tomorrow** is a technology-driven brand built around privacy and data security, and this monorepo
+is its entire web estate. Three properties ship from one codebase, one design system, and one sign-in: the brand hub at
+**typhed.com** and two purpose-built product subdomains, **blog.typhed.com** and **trading.typhed.com**. A visitor meets
+the same header, footer, colours, and account wherever they land, and each product still moves at its own pace.
 
 ## 🧠 What Is Inside
 
@@ -29,23 +29,27 @@ own pace.
     work-in-progress landing page and permanent short links under `typhed.com/permalink/`.
   * **The trading product, `trading.typhed.com`** - bring your own market data, then chart it, size positions, test
     strategies, and run Monte Carlo simulations, with every byte kept in the browser.
-  * **The blog, `blog.typhed.com`** - product notes, engineering write-ups, and example documentation, with public
-    posts and members-only freemium posts.
+  * **The blog, `blog.typhed.com`** - product notes, engineering write-ups, and example documentation, with public posts
+    and members-only freemium posts.
   * **One shared layer** - one brand contract, one design system, one page shell, and one sign-in that every property
     reads, so a brand change ships everywhere in a single commit.
 
-What each property is for is set out in the [product requirements document](docs/PRD.md); how the monorepo is built
-is in the [architecture reference](docs/architecture.md); every design decision is dated in [docs/adr](docs/adr/README.md).
+What each property is for is set out in the [product requirements document](docs/PRD.md); how the monorepo is built is
+in the [architecture reference](docs/architecture.md); every design decision is dated in [docs/adr](docs/adr/README.md).
 
 ## 🚀 Getting Started
 
-You need Node 20.9 or newer, pnpm (through Corepack), and Python 3.13 for the web app's redirect pages.
+You need pnpm and Python 3.13, which builds the web app's redirect pages. Any recent pnpm switches itself to the version
+the repository pins, then downloads the pinned Node.js 26 LTS and runs every script with it.
 
 ```shell
-$ corepack enable
+$ npm install --global pnpm
 $ pnpm install
 $ pip install -r permalink/requirements.txt
 ```
+
+Every dependency, with its one version, is declared in the root [package.json](package.json), and one `node_modules` at
+the root serves all three sites. Add or upgrade a dependency there, never in an app.
 
 Copy `.env.example` to `.env.local` at the repository root and set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` to the Clerk
 **development** key. One file configures all three apps. Leave the key empty to run with sign-in turned off.
@@ -64,8 +68,8 @@ Copy `.env.example` to `.env.local` at the repository root and set `NEXT_PUBLIC_
 
 </div>
 
-Run one site with `pnpm --filter trading dev`. To see a site exactly as Cloudflare serves it, build first and then
-start its preview: `pnpm build`, then `pnpm --filter web preview`.
+Run one site with `pnpm --filter trading dev`. To see a site exactly as Cloudflare serves it, build first and then start
+its preview: `pnpm build`, then `pnpm --filter web preview`.
 
 ## 📦 Project Structure
 
@@ -76,10 +80,10 @@ apps/
   blogging/             blog.typhed.com
 packages/
   brand/                @typhed/brand - brand JSON, properties.json, tokens, artwork, typhed-brand-sync
-  ui/                   @typhed/ui - page shell, header, footer, sidebar, theme, Button, metadata helpers
+  ui/                   @typhed/ui - page shell, header, footer, sidebar, theme, Button, Icon, metadata helpers
   auth/                 @typhed/auth - sign-in provider, header control, gates, entitlements
   config-next/          @typhed/next-config - createNextConfig()
-  config-tailwind/      @typhed/tailwind-config - Tailwind preset and shared content globs
+  config-tailwind/      @typhed/tailwind-config - Tailwind base stylesheet, preset, content globs, PostCSS
   config-typescript/    @typhed/tsconfig - TypeScript bases
   chart-engine/         trading: parsing, timeframes, indicators
   risk-toolkit/         trading: statistics, sizing, Monte Carlo
@@ -145,19 +149,19 @@ Every push to `master` deploys the sites it affects to Cloudflare Workers, one W
 | `pnpm typecheck` | `tsc --noEmit` in every app and package. |
 | `pnpm test` | The Vitest suites of the trading app and its packages. |
 | `pnpm format` / `pnpm format:check` | Prettier write / check. |
-| `pnpm clean` | Removes build output and `node_modules`. |
+| `pnpm clean` | Removes each app's and package's build output. |
 
 </div>
 
 ## ⚠️ Project Release Names Disclaimer
 
-Our release codenames are inspired by spells from the Harry Potter series created by J.K. Rowling. "Harry Potter" and all
-related names, characters, spells, places, and indicia are trademarks of, and copyrighted by, Warner Bros. Entertainment Inc.,
-J.K. Rowling, and/or their respective rights holders. **TyPhed - Engineering Tomorrow** is an independent project and is not
-affiliated with, endorsed by, sponsored by, or in any way officially connected to Warner Bros. Entertainment Inc., J.K. Rowling,
-or any of their subsidiaries or affiliates. These names are used solely as internal release identifiers, in tribute, with no
-claim of ownership and no intent to imply any official association. All rights in the original works and marks remain the
-property of their respective owners.
+Our release codenames are inspired by spells from the Harry Potter series created by J.K. Rowling. "Harry Potter" and
+all related names, characters, spells, places, and indicia are trademarks of, and copyrighted by, Warner Bros.
+Entertainment Inc., J.K. Rowling, and/or their respective rights holders. **TyPhed - Engineering Tomorrow** is an
+independent project and is not affiliated with, endorsed by, sponsored by, or in any way officially connected to Warner
+Bros. Entertainment Inc., J.K. Rowling, or any of their subsidiaries or affiliates. These names are used solely as
+internal release identifiers, in tribute, with no claim of ownership and no intent to imply any official association.
+All rights in the original works and marks remain the property of their respective owners.
 
 ## ⚖️ Ownership And License
 

@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { RotateCcw, Square, Upload, X } from "lucide-react"
+import { faRotateLeft, faStop, faUpload, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import { tradeLogReturns, type SimulateInput } from "@typhed/risk-toolkit"
 
 import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format"
@@ -48,12 +49,15 @@ export function TradeSequenceMonteCarlo({
   const [imported, setImported] = React.useState<{
     label: string
     rMultiples: number[]
-  } | null>(null)
+  } | null>(handoff ?? null)
 
-  // A new hand-off from the EMA lab becomes the active list.
-  React.useEffect(() => {
+  // A new hand-off from the EMA lab becomes the active list on the render that
+  // receives it.
+  const [lastHandoff, setLastHandoff] = React.useState(handoff)
+  if (handoff !== lastHandoff) {
+    setLastHandoff(handoff)
     if (handoff) setImported(handoff)
-  }, [handoff])
+  }
   const [importError, setImportError] = React.useState<string | null>(null)
   const [tradesPerPath, setTradesPerPath] = React.useState(100)
   const [tier, setTier] = React.useState<PathTier>("10k")
@@ -121,7 +125,7 @@ export function TradeSequenceMonteCarlo({
     >
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="outline" size="sm" onClick={() => importRef.current?.click()}>
-          <Upload className="h-4 w-4" />
+          <Icon icon={faUpload} className="h-4 w-4" />
           Import trade list
         </Button>
         <input
@@ -136,15 +140,15 @@ export function TradeSequenceMonteCarlo({
           }}
         />
         {imported && (
-          <span className="bg-brand/15 text-brand flex items-center gap-1 rounded-md px-2 py-1 text-xs">
+          <span className="flex items-center gap-1 rounded-md bg-brand/15 px-2 py-1 text-xs text-brand">
             {imported.label}
             <button
               type="button"
               aria-label="Clear imported trade list"
               onClick={() => setImported(null)}
-              className="hover:bg-brand/10 rounded p-0.5"
+              className="rounded p-0.5 hover:bg-brand/10"
             >
-              <X className="h-3 w-3" />
+              <Icon icon={faXmark} className="h-3 w-3" />
             </button>
           </span>
         )}
@@ -156,7 +160,7 @@ export function TradeSequenceMonteCarlo({
       </div>
 
       {importError && (
-        <p role="alert" className="text-destructive mt-2 text-sm">
+        <p role="alert" className="mt-2 text-sm text-destructive">
           {importError}
         </p>
       )}
@@ -169,7 +173,7 @@ export function TradeSequenceMonteCarlo({
             onChange={(e) => setRText(e.target.value)}
             rows={2}
             placeholder="2.1 -1 -1 0.4 3.2 -0.5 -1 1.1 -1 0.9 ..."
-            className="border-input bg-background focus:ring-ring w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2"
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-hidden focus:ring-2 focus:ring-ring"
           />
         </label>
       )}
@@ -216,25 +220,25 @@ export function TradeSequenceMonteCarlo({
           onClick={() => setSeed((s) => Math.round(s) + 1)}
           title="Re-run with the next seed - stable headline numbers across seeds mean the path count is high enough."
         >
-          <RotateCcw className="h-4 w-4" />
+          <Icon icon={faRotateLeft} className="h-4 w-4" />
           Repeat, next seed
         </Button>
         {status === "running" && (
           <div className="flex items-center gap-2">
             <div
-              className="bg-secondary h-1.5 w-40 overflow-hidden rounded-full"
+              className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
               role="progressbar"
               aria-valuenow={Math.round(progress * 100)}
               aria-valuemin={0}
               aria-valuemax={100}
             >
               <div
-                className="bg-brand h-full transition-[width]"
+                className="h-full bg-brand transition-[width]"
                 style={{ width: `${Math.round(progress * 100)}%` }}
               />
             </div>
             <Button variant="ghost" size="sm" onClick={cancel}>
-              <Square className="h-4 w-4" />
+              <Icon icon={faStop} className="h-4 w-4" />
               Cancel
             </Button>
           </div>
@@ -242,14 +246,14 @@ export function TradeSequenceMonteCarlo({
       </div>
 
       {!input && (
-        <p className="text-muted-foreground mt-4 text-sm">
+        <p className="mt-4 text-sm text-muted-foreground">
           Provide at least 10 R-multiples - import the EMA Swing Lab&apos;s export or paste a list
           above.
         </p>
       )}
 
       {error && (
-        <p role="alert" className="text-destructive mt-4 text-sm">
+        <p role="alert" className="mt-4 text-sm text-destructive">
           {error}
         </p>
       )}
@@ -309,7 +313,7 @@ export function TradeSequenceMonteCarlo({
         </>
       )}
 
-      <p className="text-muted-foreground mt-6 text-xs">
+      <p className="mt-6 text-xs text-muted-foreground">
         Method: trades are resampled independently (IID) from your list at a fixed{" "}
         {fmtNumber(riskPct, 1)}% risk per trade, so any serial dependence between real trades is
         deliberately ignored - that is what makes this a robustness check rather than a replay.

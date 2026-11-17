@@ -1,0 +1,24 @@
+/*
+ * The start of every TyPhed app stylesheet: Tailwind CSS, then Font Awesome's
+ * icon styles in Tailwind's base layer, so a utility such as `h-4 w-4` always
+ * sizes an icon. Each app imports this file first and then names its own
+ * tailwind.config.ts with `@config`.
+ */
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-svg-core/styles.css" layer(base);
+
+@layer base {
+  /* Tailwind 4 gives buttons the browser's default cursor; anything clickable
+     keeps the pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Next's built-in 404 page adds an unlayered `body { color; background }`
+   rule, which beats every rule in a cascade layer. This one is unlayered too
+   and more specific, so every page keeps the theme colours. */
+html body {
+  @apply bg-background text-foreground;
+}

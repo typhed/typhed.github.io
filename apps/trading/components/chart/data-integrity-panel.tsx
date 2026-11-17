@@ -1,7 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { AlertTriangle, CheckCircle2, ChevronDown, XCircle } from "lucide-react"
+import {
+  faChevronDown,
+  faCircleCheck,
+  faCircleXmark,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
 import type { DatasetResult } from "@typhed/chart-engine"
 
 import { cn } from "@typhed/ui/lib/utils"
@@ -29,38 +35,43 @@ export function DataIntegrityPanel({
 
   const status = !dataset.ok
     ? {
-        icon: <XCircle className="h-4 w-4" />,
+        icon: <Icon icon={faCircleXmark} className="h-4 w-4" />,
         tone: "text-destructive",
         label: `${errors.length} integrity error${errors.length === 1 ? "" : "s"}`,
       }
     : warnings.length > 0 || missingIntervals > 0 || droppedRows > 0
       ? {
-          icon: <AlertTriangle className="h-4 w-4" />,
+          icon: <Icon icon={faTriangleExclamation} className="h-4 w-4" />,
           tone: "text-warning",
           label: "Loaded with notes",
         }
-      : { icon: <CheckCircle2 className="h-4 w-4" />, tone: "text-success", label: "Clean" }
+      : {
+          icon: <Icon icon={faCircleCheck} className="h-4 w-4" />,
+          tone: "text-success",
+          label: "Clean",
+        }
 
   return (
-    <div className="border-border bg-card rounded-lg border">
+    <div className="rounded-lg border border-border bg-card">
       <button
         type="button"
         aria-expanded={open}
         aria-controls={detailsId}
         onClick={() => setOpen((v) => !v)}
-        className="focus-visible:ring-ring flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2"
+        className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
       >
         <span className="flex items-center gap-2 text-sm font-medium">
           <span className={status.tone}>{status.icon}</span>
           Data integrity - {status.label}
         </span>
-        <ChevronDown
-          className={cn("text-muted-foreground h-4 w-4 transition-transform", open && "rotate-180")}
+        <Icon
+          icon={faChevronDown}
+          className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")}
         />
       </button>
 
       {open && (
-        <div id={detailsId} className="border-border space-y-4 border-t px-4 py-4 text-sm">
+        <div id={detailsId} className="space-y-4 border-t border-border px-4 py-4 text-sm">
           <dl className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
             <Stat label="Rows parsed" value={String(dataset.stats.inputRows + droppedRows)} />
             <Stat label="Rows charted" value={String(dataset.stats.outputRows)} />
@@ -103,7 +114,7 @@ export function DataIntegrityPanel({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-muted-foreground text-xs">{label}</dt>
+      <dt className="text-xs text-muted-foreground">{label}</dt>
       <dd className="font-medium">{value}</dd>
     </div>
   )
@@ -122,8 +133,8 @@ function IssueList({
 }) {
   return (
     <div>
-      <p className={cn("mb-1 text-xs font-semibold uppercase tracking-wide", tone)}>{title}</p>
-      <ul className="text-muted-foreground space-y-0.5 text-xs">
+      <p className={cn("mb-1 text-xs font-semibold tracking-wide uppercase", tone)}>{title}</p>
+      <ul className="space-y-0.5 text-xs text-muted-foreground">
         {messages.map((message, index) => (
           <li key={index}>{message}</li>
         ))}
