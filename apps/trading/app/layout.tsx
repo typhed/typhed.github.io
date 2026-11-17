@@ -7,6 +7,7 @@ import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 
 import { ChatFab } from "@/components/chat-fab"
 import { PrivacyGuard } from "@/components/privacy-guard"
+import { SiteNotice } from "@/components/site-notice"
 
 import "./theme.css"
 import "./globals.css"
@@ -57,6 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               background={false}
             >
               {children}
+              <SiteNotice />
             </SiteShell>
             <ChatFab />
           </AuthProvider>
