@@ -1,13 +1,13 @@
 "use client"
 
 import * as React from "react"
-import { useAuth } from "@clerk/react"
+import { CLERK_ENABLED, useAuth } from "@typhed/auth"
 
 import { AccessPanel } from "@/components/access-panel"
 import { RelatedPosts } from "@/components/related-posts"
 import { TableOfContents } from "@/components/table-of-contents"
 import { type AccessLink, hasAccessLinks } from "@/lib/access-links"
-import { type AccessCategory, CLERK_ENABLED } from "@/lib/constants"
+import { type AccessCategory } from "@/lib/constants"
 import type { PostMeta } from "@/lib/posts"
 import type { TocItem } from "@/lib/rehype-collect-headings"
 import { cn } from "@typhed/ui/lib/utils"

@@ -97,9 +97,9 @@ importers:
 
   apps/blogging:
     dependencies:
-      '@clerk/react':
-        specifier: 'catalog:'
-        version: 6.18.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@typhed/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@typhed/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -191,6 +191,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.17)
+      '@typhed/next-config':
+        specifier: workspace:*
+        version: link:../../packages/config-next
       '@typhed/tailwind-config':
         specifier: workspace:*
         version: link:../../packages/config-tailwind
@@ -224,12 +227,9 @@ importers:
 
   apps/trading:
     dependencies:
-      '@clerk/react':
-        specifier: 'catalog:'
-        version: 6.18.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@radix-ui/react-slot':
-        specifier: 'catalog:'
-        version: 1.3.0(@types/react@19.2.17)(react@19.2.7)
+      '@typhed/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@typhed/backtest':
         specifier: workspace:*
         version: link:../../packages/backtest
@@ -245,12 +245,6 @@ importers:
       '@typhed/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      class-variance-authority:
-        specifier: 'catalog:'
-        version: 0.7.1
-      clsx:
-        specifier: 'catalog:'
-        version: 2.1.1
       lightweight-charts:
         specifier: ^5.2.0
         version: 5.3.0
@@ -269,9 +263,6 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.7(react@19.2.7)
-      tailwind-merge:
-        specifier: 'catalog:'
-        version: 2.6.1
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -282,6 +273,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.17)
+      '@typhed/next-config':
+        specifier: workspace:*
+        version: link:../../packages/config-next
       '@typhed/tailwind-config':
         specifier: workspace:*
         version: link:../../packages/config-tailwind
@@ -321,9 +315,9 @@ importers:
 
   apps/web:
     dependencies:
-      '@clerk/react':
-        specifier: 'catalog:'
-        version: 6.18.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@typhed/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@typhed/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -349,6 +343,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.17)
+      '@typhed/next-config':
+        specifier: workspace:*
+        version: link:../../packages/config-next
       '@typhed/tailwind-config':
         specifier: workspace:*
         version: link:../../packages/config-tailwind

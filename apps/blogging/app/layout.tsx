@@ -1,24 +1,19 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Space_Grotesk } from "next/font/google"
-
-// The brand palette, generated from shared/documents/brand/tokens/colors.json
-// by sync-shared.mjs before every dev run and build. It must come first: it
-// declares the custom properties that globals.css and every token utility read.
-import "./theme.css"
-import "./globals.css"
-import "katex/dist/katex.min.css"
-
-import { AbstractBackground } from "@typhed/ui/components/abstract-background"
-import { SiteFooter } from "@typhed/ui/components/site-footer"
-import { SiteHeader } from "@typhed/ui/components/site-header"
+import { getProperty } from "@typhed/brand"
+import { AuthControls, AuthProvider } from "@typhed/auth"
+import { BRAND_VIEWPORT, buildMetadata } from "@typhed/ui/lib/metadata"
+import { SiteShell } from "@typhed/ui/components/site-shell"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 
 import { GoogleAdSense } from "@/components/analytics/google-adsense"
 import { GoogleAnalytics } from "@/components/analytics/google-analytics"
 import { MicrosoftClarity } from "@/components/analytics/microsoft-clarity"
-import { AuthButtons } from "@/components/auth-buttons"
-import { ClerkAuthProvider } from "@/components/clerk-provider"
 import { SITE } from "@/lib/constants"
+
+import "./theme.css"
+import "./globals.css"
+import "katex/dist/katex.min.css"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,83 +29,14 @@ const spaceGrotesk = Space_Grotesk({
 
 const GOOGLE_SITE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.name} - ${SITE.tagline}`,
-    template: `%s - ${SITE.name}`,
-  },
-  description: SITE.description,
-  applicationName: SITE.name,
-  keywords: [
-    "TyPhed",
-    "TyPhed Blog",
-    "Debmalya Pramanik",
-    "Debmalya Pramanik HUF",
-    "Engineering Tomorrow",
-    "engineering blog",
-  ],
+export const metadata: Metadata = buildMetadata(getProperty("blogging"), {
   authors: [{ name: SITE.author, url: SITE.mainSiteUrl }],
-  creator: SITE.legalEntity,
-  publisher: SITE.legalEntity,
-  alternates: {
-    canonical: "/",
-  },
-  icons: {
-    icon: [
-      { url: "/brand/favicon/favicon.svg", type: "image/svg+xml" },
-      { url: "/brand/favicon/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/brand/favicon/favicon-16x16.png", type: "image/png", sizes: "16x16" },
-    ],
-    shortcut: ["/brand/favicon/favicon.ico"],
-    apple: [{ url: "/brand/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
-    other: [
-      {
-        rel: "mask-icon",
-        url: "/brand/favicon/safari-pinned-tab.svg",
-        color: "#6366f1",
-      },
-    ],
-  },
-  other: {
-    "msapplication-TileColor": "#0b1020",
-    "msapplication-config": "/brand/favicon/browserconfig.xml",
-  },
-  openGraph: {
-    type: "website",
-    url: SITE.url,
-    siteName: SITE.name,
-    title: `${SITE.name} - ${SITE.tagline}`,
-    description: SITE.description,
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE.name} - ${SITE.tagline}`,
-    description: SITE.description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  category: "technology",
+  creator: SITE.brand,
+  publisher: SITE.brand,
   verification: GOOGLE_SITE_VERIFICATION ? { google: GOOGLE_SITE_VERIFICATION } : undefined,
-}
+})
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1020" },
-  ],
-}
+export const viewport: Viewport = BRAND_VIEWPORT
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -119,8 +45,7 @@ const jsonLd = {
       "@type": "Organization",
       "@id": `${SITE.mainSiteUrl}/#organization`,
       name: SITE.brand,
-      legalName: SITE.legalEntity,
-      alternateName: [SITE.legalEntity, "Debmalya Pramanik"],
+      alternateName: ["Debmalya Pramanik"],
       url: SITE.mainSiteUrl,
       logo: `${SITE.mainSiteUrl}/brand/mark/typhed-mark-1024.png`,
       slogan: SITE.tagline,
@@ -139,44 +64,26 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
-    >
+    <html lang="en" suppressHydrationWarning className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        <ClerkAuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AbstractBackground />
-            <div className="relative z-10 flex min-h-dvh flex-col">
-              {/* The sign-in control rides in on the header's documented auth
-                  slots, which is how @typhed/ui stays free of any auth
-                  dependency. The text-size and theme controls are the header's
-                  own; it mounts them itself. */}
-              <SiteHeader
-                authSlot={<AuthButtons />}
-                mobileAuthSlot={<AuthButtons />}
-              />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
-          </ThemeProvider>
-        </ClerkAuthProvider>
-
+        {/* AuthProvider sits inside ThemeProvider so the Clerk modal accent
+            follows the active theme. */}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <SiteShell
+              propertyId="blogging"
+              authSlot={<AuthControls />}
+              mobileAuthSlot={<AuthControls className="w-full" />}
+            >
+              {children}
+            </SiteShell>
+          </AuthProvider>
+        </ThemeProvider>
         {/* Analytics + monetization. Each no-ops until its NEXT_PUBLIC_* id is set. */}
         <GoogleAnalytics />
         <GoogleAdSense />
         <MicrosoftClarity />
-
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </body>
     </html>
   )

@@ -1,9 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { SignInButton, useAuth } from "@clerk/react"
-
-import { ACCESS_CATEGORIES, CLERK_ENABLED } from "@/lib/constants"
+import { SignInButton, SignedInGate } from "@typhed/auth"
+import { ACCESS_CATEGORIES } from "@/lib/constants"
 
 function SignInCard() {
   return (
@@ -32,28 +31,23 @@ function SignInCard() {
   )
 }
 
-function FreemiumGateInner({ children }: { children: React.ReactNode }) {
-  const { isLoaded, isSignedIn } = useAuth()
-
-  // Hold the space quietly until Clerk resolves the session, so the body does
-  // not flash before the gate decides.
-  if (!isLoaded) {
-    return <div className="my-8 h-40 animate-pulse rounded-xl border border-border bg-card/30" />
-  }
-
-  return isSignedIn ? <>{children}</> : <SignInCard />
-}
-
 /**
  * Gate for a freemium post body: signed-in readers see the content, everyone
- * else gets a sign-in card. With Clerk not configured, the body renders
- * ungated so an unauthenticated build still shows every post.
+ * else gets a sign-in card. It is the shared SignedInGate with the blog's own
+ * card; with Clerk not configured, the body renders ungated so an
+ * unauthenticated build still shows every post.
  *
  * This is a soft gate. The body is compiled at build time and travels in the
  * page payload, so it is hidden, not secret - which is the right trade for
  * freemium. Genuine paid content would need a server or edge check instead.
  */
 export function FreemiumGate({ children }: { children: React.ReactNode }) {
-  if (!CLERK_ENABLED) return <>{children}</>
-  return <FreemiumGateInner>{children}</FreemiumGateInner>
+  return (
+    <SignedInGate
+      fallback={<SignInCard />}
+      loading={<div className="my-8 h-40 animate-pulse rounded-xl border border-border bg-card/30" />}
+    >
+      {children}
+    </SignedInGate>
+  )
 }

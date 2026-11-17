@@ -28,7 +28,6 @@ export default function OpengraphImage() {
           <div style={{ fontSize: 30, fontWeight: 600, opacity: 0.85 }}>Blog</div>
         </div>
         <div style={{ marginTop: 24, fontSize: 42, fontWeight: 600 }}>{SITE.tagline}</div>
-        <div style={{ marginTop: 16, fontSize: 24, opacity: 0.7 }}>{SITE.legalEntity}</div>
       </div>
     ),
     { ...size },
