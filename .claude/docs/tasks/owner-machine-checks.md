@@ -7,8 +7,8 @@
 <div align = "justify">
 
 Checks that the restricted development machine could not run, kept for the owner's full machine. The owner's machine ran
-the toolchain and gate checks on 2026-11-17. The wrangler update follows on 2026-11-18, and the first runs on GitHub
-wait for the push in the [go-live checklist](cloudflare-cutover.md).
+the toolchain and gate checks on 2026-11-17, and the dependency updates are done. The first runs on GitHub wait for the
+push in the [go-live checklist](cloudflare-cutover.md).
 
 ## 1. Toolchain
 
@@ -48,9 +48,12 @@ pnpm installs a release only once it is a day old, so each update below waits fo
   - [x] `pnpm update typescript-eslint "@typescript-eslint/*"` moved typescript-eslint, which `eslint-config-next`
     brings in, from 8.72.2 to 8.73.0 on 2026-11-17. Its parser now uses minimatch 11, which clears the moderate
     GHSA-g3hv-75wg-m249 against minimatch 10.2.6. The root `package.json` is unchanged, and every gate passes again.
-  - [ ] From 11:15 UTC (16:45 IST) on 2026-11-18, when wrangler 4.164.0 is a day old, `pnpm update wrangler` moves it
-    from 4.163.0 and writes the new range into the root `package.json`. Then rerun every gate and the preview check
-    from step 2.
+  - [x] wrangler moved from 4.163.0 to 4.164.0 on 2026-11-18 (IST), before its release was a day old, as a one-time
+    owner exception: the sites are a work in progress and handle nothing sensitive yet. It ran as
+    `pnpm_config_minimum_release_age=0 pnpm update wrangler`, so no setting changed and every later update keeps the
+    one-day guard. Until 11:15 UTC (16:45 IST) on 2026-11-18, when the release is a day old, pnpm rejects the lockfile
+    in any install with `ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION`. The installed `node_modules` already holds the new
+    release, and every gate passes on it.
   - [ ] `pnpm audit` also reports the high-severity GHSA-fc5q-39xc-vjpf, a ReDoS in picomatch up to 4.0.7, which the
     lint tooling pulls in through `eslint-config-next`. Nothing that ships uses it, and no fixed release exists yet
     (checked 2026-11-17). Update once one is out. `pnpm outdated` should still list only the TypeScript and KaTeX holds,

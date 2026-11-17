@@ -1,5 +1,5 @@
 {
-  "_comment": "An href that starts with / is a page the brand layer hosts, written as the path it has on typhed.com. brand/index.ts expands it against site.json's url before any component reads it, so the header and the footer reach the same page from a product subdomain. A destination outside the brand layer is written as a full URL and carries \"external\": true.",
+  "_comment": "Every link names its destination in exactly one way, so each URL is written down once, in the file that owns it. \"href\" is a page the brand layer hosts, written as its path on typhed.com (index.ts expands it against site.json's url, so the header and the footer reach the same page from a product subdomain), a full URL with \"external\": true, a mailto:, or \"#\" until the page exists. \"property\" names a property in properties.json and takes its URL, opening in a new tab unless it is the brand site. \"social\" names an entry of the social list by its icon and takes that account's URL. The social mail entry takes its address from contactEmail, the copyright template fills {name} and {tagline} from site.json, and the header's first link, to the brand hub, is built from site.json too, so it is not listed under nav. An entry whose reference names nothing stops the build.",
   "nav": [
     { "label": "Our Products", "href": "#" },
     { "label": "About Us", "href": "/about/" }
@@ -8,21 +8,15 @@
   "footer": {
     "products": {
       "heading": "PRODUCTS",
-      "links": [
-        { "label": "TyPhed Trading", "href": "https://trading.typhed.com/", "external": true },
-        { "label": "Products Pricing", "href": "#" }
-      ]
+      "links": [{ "label": "Trading Platform", "property": "trading" }]
     },
     "resources": {
       "heading": "RESOURCES",
       "links": [
-        { "label": "TyPhed BLOG", "href": "https://blog.typhed.com/", "external": true },
+        { "label": "TyPhed BLOG", "property": "blogging" },
         { "label": "Case Studies", "href": "#" },
-        {
-          "label": "Career Page",
-          "href": "https://www.linkedin.com/company/typhed/",
-          "external": true
-        }
+        { "label": "Career Page", "social": "linkedin" },
+        { "label": "Products Pricing", "href": "#" }
       ]
     },
     "disclaimer": {
@@ -46,16 +40,11 @@
       "icon": "linkedin",
       "external": true
     },
-    {
-      "label": "Contact",
-      "href": "mailto:karta@typhed.com",
-      "icon": "mail",
-      "external": false
-    }
+    { "label": "Contact", "icon": "mail", "external": false }
   ],
   "contactEmail": "karta@typhed.com",
   "privacy": { "label": "Privacy Policy", "href": "#" },
   "copyright": {
-    "line1Template": "Copyright © {year} TyPhed - Engineering Tomorrow"
+    "line1Template": "Copyright © {year} {name} - {tagline}"
   }
 }

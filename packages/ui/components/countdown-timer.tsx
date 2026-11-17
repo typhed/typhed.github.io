@@ -51,6 +51,7 @@ export function CountdownTimer({ className }: { className?: string }) {
 
   React.useEffect(() => {
     const target = LAUNCH_DATE.getTime()
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the countdown reads the visitor's clock, which only the browser has, so it starts after hydration
     setMounted(true)
     setTime(getRemaining(target))
 

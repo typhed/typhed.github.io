@@ -408,9 +408,9 @@ usage:
     top_border: "border-border/40"
     logo_link_focus: "focus-visible:ring-2 focus-visible:ring-ring"
     nav_link_resting: "text-muted-foreground"
-    nav_link_hover: "hover:text-foreground"
+    nav_link_hover: "hover:bg-brand/10 hover:text-foreground  (a translucent brand tint behind brightened text; keyboard focus shows the same)"
     mobile_menu_panel: "bg-background/95 with backdrop-blur-md, border-border/40"
-    mobile_link_hover: "hover:bg-accent hover:text-foreground"
+    mobile_link_hover: "hover:bg-brand/10 hover:text-foreground  (the desktop nav hover; touch screens show none)"
 
   scroll_to_top:
     file: "packages/ui/components/scroll-to-top.tsx"
@@ -431,11 +431,21 @@ usage:
     column_headings: "text-foreground  (every link group, contact, social connect - the brand column has no heading)"
     nav_link_resting: "text-muted-foreground"
     nav_link_hover: "hover:text-brand"
-    external_link_arrow: "currentColor  (no token of its own; it inherits the link colour and hovers with the label)"
     brand_lockup: "BrandLockup - per-theme baked artwork (mark + wordmark + 'Engineering Tomorrow' tagline); see brand-lockup.tsx"
     secondary_text: "text-muted-foreground  (copyright)"
     social_icon_button_resting: "border-border, bg-background/40, text-muted-foreground"
     social_icon_button_hover: "border-brand/50, text-brand"
+
+  product_sidebar:
+    file: "packages/ui/components/product-sidebar.tsx"
+    description: "The product menu column (trading today): the property name, group captions, and links on a guide line."
+    surface: "bg-background/60 with backdrop-blur, border-border/60"
+    title: "text-foreground"
+    group_caption: "text-muted-foreground  (4.51:1 on the light background, 7.52:1 on the dark one)"
+    link_resting: "text-foreground/75"
+    link_hover: "hover:bg-accent/60, hover:text-foreground, hover:border-muted-foreground/50"
+    guide_line: "border-border  (the left rule under a labelled group)"
+    current_page: "border-brand bar, bg-brand/10 tint, text-foreground  (brand text at text-sm is 4.23:1 on the light background, under AA, so the text stays foreground)"
 
   text_selection:
     file: "apps/web/app/globals.css (::selection)"

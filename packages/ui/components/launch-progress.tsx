@@ -32,6 +32,7 @@ export function LaunchProgress({ className }: { className?: string }) {
       setDaysLeft(Math.max(0, Math.ceil((end - now) / DAY_MS)))
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the progress reads the visitor's clock, which only the browser has, so it starts after hydration
     setMounted(true)
     tick()
     const id = window.setInterval(tick, 60_000)

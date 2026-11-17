@@ -12,6 +12,7 @@
     "./lib/*": "./lib/*.ts"
   },
   "scripts": {
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf .turbo"
   },

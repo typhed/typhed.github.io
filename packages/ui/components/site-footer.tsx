@@ -8,7 +8,7 @@ import {
   faXTwitter,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons"
-import { faArrowUpRightFromSquare, faEnvelope } from "@fortawesome/free-solid-svg-icons"
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons"
 import { Icon } from "./icon"
 
 import {
@@ -57,15 +57,10 @@ function FooterLinkGroup({ column }: { column: FooterColumn }) {
             key={link.label}
             href={link.href}
             {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-brand"
+            className="w-fit text-sm text-muted-foreground transition-colors hover:text-brand"
           >
             {link.label}
-            {link.external ? (
-              <>
-                <Icon icon={faArrowUpRightFromSquare} className="h-3.5 w-3.5" aria-hidden="true" />
-                <span className="sr-only">(opens in a new tab)</span>
-              </>
-            ) : null}
+            {link.external ? <span className="sr-only"> (opens in a new tab)</span> : null}
           </a>
         ))}
       </nav>
@@ -81,8 +76,9 @@ function FooterLinkGroup({ column }: { column: FooterColumn }) {
  * privacy link. TyPhed is an autonomous brand, so the bar names no owning
  * entity: `COPYRIGHT.line1` is the whole of it.
  *
- * A link marked `external` in constants leaves the site: it opens in a new
- * tab and carries a trailing arrow so the visitor sees that before clicking.
+ * A link marked `external` in constants opens in a new tab with a safe `rel`.
+ * It carries no icon, since every entry here is plainly a link; screen readers
+ * still hear "(opens in a new tab)".
  *
  * It is a Server Component. Columns, copy, and the social row come from
  * `@typhed/brand`; colours come only from theme tokens (a faint brand

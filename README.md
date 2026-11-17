@@ -148,7 +148,7 @@ Every push to `master` deploys the sites it affects to Cloudflare Workers, one W
 | `pnpm --filter <app> preview` | Serves a built site through `wrangler dev`, as Cloudflare does. |
 | `pnpm lint` | ESLint across the workspace. |
 | `pnpm typecheck` | `tsc --noEmit` in every app and package. |
-| `pnpm test` | The Vitest suites of the trading app and its packages. |
+| `pnpm test` | The Vitest suites of the trading app, its packages, and the brand contract. |
 | `pnpm format` / `pnpm format:check` | Prettier write / check. |
 | `pnpm clean` | Removes each app's and package's build output. |
 

@@ -5,6 +5,7 @@
   "description": "Server-side entitlement gate for protected computations - deployed separately from the static site.",
   "type": "module",
   "scripts": {
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

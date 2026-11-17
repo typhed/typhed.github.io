@@ -57,6 +57,7 @@ export function FontSizeToggle() {
       // Private browsing or a partitioned storage context. Stay at the default.
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the saved size lives in localStorage, which only the browser has, so it loads after hydration
     setStep(stored)
     setMounted(true)
   }, [])

@@ -60,7 +60,7 @@ export function MobileNav({ authSlot }: { authSlot?: React.ReactNode } = {}) {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-brand/10 hover:text-foreground focus-visible:bg-brand/10 focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
               >
                 {link.label}
               </a>

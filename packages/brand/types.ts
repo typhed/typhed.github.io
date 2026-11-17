@@ -8,19 +8,39 @@
  */
 
 /**
- * A navigable link. `external` opens in a new tab with safe rel attributes,
- * and the footer marks such a link with a trailing arrow glyph. Placeholder
- * destinations use `href: "#"` until the real route or section exists, so
- * markup and intent stay in one place.
+ * A navigable link, as a component receives it. `external` opens it in a new
+ * tab with safe rel attributes. Placeholder destinations use `href: "#"` until
+ * the real route or section exists, so markup and intent stay in one place.
  *
- * In the JSON, an `href` beginning with `/` is a page the brand layer hosts,
- * written as the path it has on `typhed.com`. What a component receives is
- * the absolute URL, because `index.ts` runs every link through
- * `resolveBrandHref` so the destination is the same from every property.
+ * Every `href` here is final: `index.ts` resolves each `LinkEntry` of the
+ * JSON, so a brand page arrives as its absolute URL and the destination is the
+ * same from every property.
  */
 export type NavLink = {
   label: string
   href: string
+  external?: boolean
+}
+
+/**
+ * A link as navigation.json writes it. It names its destination in exactly
+ * one way, so every URL is written down once, in the file that owns it:
+ *
+ *   href      a page the brand layer hosts, written as its path on typhed.com
+ *             ("/about/"), a full URL, a mailto:, or "#" until the page exists
+ *   property  the id of a property in properties.json; the link takes that
+ *             property's URL and opens in a new tab unless it is the brand site
+ *   social    the icon key of an entry in the social list; the link takes that
+ *             account's URL and its external flag
+ *
+ * `index.ts` stops the build when an entry names no destination, more than
+ * one, or a property or account that does not exist.
+ */
+export type LinkEntry = {
+  label: string
+  href?: string
+  property?: string
+  social?: string
   external?: boolean
 }
 
@@ -45,6 +65,13 @@ export type SocialLink = {
   icon: "github" | "mail" | "linkedin" | "twitter" | "instagram" | "youtube" | "facebook"
   external: boolean
 }
+
+/**
+ * A social or contact entry as navigation.json writes it. The `mail` entry
+ * carries no `href`: `index.ts` builds its mailto: from `contactEmail`, so the
+ * address is written once.
+ */
+export type SocialEntry = Omit<SocialLink, "href"> & { href?: string }
 
 /** Brand identity strings that fan out into metadata, JSON-LD, and copy. */
 export type Site = {

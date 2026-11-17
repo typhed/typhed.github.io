@@ -120,7 +120,7 @@ Three versions are held below the newest release on purpose:
 | `build` | Depends on `^build`; caches `out/**` and `.next/**`; every `NEXT_PUBLIC_*` value is part of the hash. `web#build` also hashes `permalink/`. |
 | `dev` | Never cached, persistent. |
 | `lint`, `typecheck` | Depend on `^build`. |
-| `test` | Runs Vitest in `apps/trading` and the trading packages. |
+| `test` | Runs Vitest in `apps/trading`, the trading packages, and `@typhed/brand`. |
 | `clean` | Never cached. |
 
 </div>
@@ -197,7 +197,13 @@ only one, and Tailwind utilities size every icon. No icon or logo is drawn by ha
 
 Brand strings, navigation, the footer, contact details, the launch schedule, and the properties all live in
 [packages/brand](../packages/brand) as JSON, with [index.ts](../packages/brand/index.ts) as the typed view. Edit the
-JSON, never the TypeScript.
+JSON, never the TypeScript. Each value is written down once. A link in `navigation.json` names its destination in one
+of three ways: a brand path, URL, or `#` placeholder in `href`; a property by id (`"property": "trading"`), which takes
+the URL from `properties.json` and opens in a new tab unless it is the brand site; or a social account by icon
+(`"social": "linkedin"`). `index.ts` resolves every reference and throws at module load, which stops the build, when
+one names nothing. It also builds the mail link from `contactEmail`, the copyright line and the header's first link,
+to the brand hub, from `site.json`'s name and tagline, and prepends the privacy link to the DISCLAIMER column. The
+`@typhed/brand` tests guard all of this, including that no property or social URL is written a second time.
 
 <div align = "center">
 
@@ -216,7 +222,7 @@ JSON, never the TypeScript.
 each page's title, description, icons, Open Graph, Twitter, and robots metadata from it, and `allowedRedirectOrigins` in
 the auth provider lists every property URL. `resolveBrandHref` expands brand-layer paths such as `/about/` and
 `/permalink/conduct.html` against the brand URL, so header and footer links reach the brand hub from every subdomain.
-Footer entries marked `external: true` open in a new tab with a safe `rel` and an arrow.
+Footer entries marked `external: true` open in a new tab with a safe `rel` and a screen-reader note, and no icon.
 
 ## Page Shell, Sidebar, And Scroll Model
 
@@ -224,7 +230,8 @@ Each app's layout wraps its pages in `ThemeProvider`, then `AuthProvider`, then
 [SiteShell](../packages/ui/components/site-shell.tsx). `SiteShell` renders the shared `SiteHeader`, the page, and the
 shared `SiteFooter`; the header and footer are identical on every property. When the property's entry has sidebar
 groups, `SiteShell` also renders [ProductSidebar](../packages/ui/components/product-sidebar.tsx): a left-hand menu,
-expanded by default, whose collapse choice is remembered per property in `localStorage`. Today only trading has one.
+expanded by default, that animates as it collapses and remembers the choice per property in `localStorage`. Today only
+trading has one.
 `SiteShell` options turn on the animated background (web, blogging) and the `ScrollToTop` button (web). App extras sit
 beside the shell: trading's `PrivacyGuard` and chat button, and the blog's analytics.
 
@@ -290,9 +297,9 @@ Rule.
 | Command | Checks |
 | :---: | --- |
 | `pnpm format:check` | Prettier, with `prettier-plugin-tailwindcss` sorting class names |
-| `pnpm lint` | ESLint 10, `eslint .` in each app, with the root [eslint.config.mjs](../eslint.config.mjs) spreading `eslint-config-next/core-web-vitals` |
+| `pnpm lint` | ESLint 10, `eslint .` in each app and each package with source code, with the root [eslint.config.mjs](../eslint.config.mjs) spreading `eslint-config-next/core-web-vitals` |
 | `pnpm typecheck` | `tsc --noEmit` in every app and package |
-| `pnpm test` | Vitest suites of `apps/trading`, `chart-engine`, `risk-toolkit`, and `backtest` |
+| `pnpm test` | Vitest suites of `apps/trading`, `chart-engine`, `risk-toolkit`, `backtest`, and `brand` |
 | `pnpm build` | The three static exports, which fail loudly on server-only code |
 
 </div>

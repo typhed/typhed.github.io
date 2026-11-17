@@ -57,14 +57,14 @@ scale:
   step: "0.25rem (4px)"
   in_use:
     "0.5": "0.125rem / 2px   - hover lift (-translate-y-0.5) on the ScrollToTop chevron"
-    "1": "0.25rem / 4px    - gap-1 (mobile menu link stack, footer link to its external arrow), px-1 (theme toggle track inset)"
+    "1": "0.25rem / 4px    - gap-1 (desktop nav and mobile menu link stacks), px-1 (theme toggle track inset)"
     "1.5": "0.375rem / 6px   - gap-1.5 (countdown tiles on mobile), space-y-1.5 (CardHeader)"
     "2": "0.5rem / 8px     - mt-2, mb-2, py-2 - the default micro gap between a label and what it labels"
     "2.5": "0.625rem / 10px  - h-2.5 (launch progress track height)"
     "3": "0.75rem / 12px   - gap-3 (footer link stacks, social row, BrandMark), px-3, mt-3"
-    "3.5": "0.875rem / 14px  - h-3.5 w-3.5 (the footer external link arrow, sized to its 14px label)"
+    "3.5": "0.875rem / 14px  - h-3.5 w-3.5 (the theme toggle sun and moon icons)"
     "4": "1rem / 16px      - gap-4 (header row), py-4 (mobile panel), px-4, mt-4"
-    "6": "1.5rem / 24px    - gap-6 (desktop nav), p-6 (Card), py-6 (footer bottom bar), mt-6, bottom-6"
+    "6": "1.5rem / 24px    - p-6 (Card), py-6 (footer bottom bar), mt-6, bottom-6"
     "8": "2rem / 32px      - px-8 (Button size lg)"
     "9": "2.25rem / 36px   - sm:mb-9 (colon separator lift, aligns it to the tile baseline)"
     "10": "2.5rem / 40px    - gap-10 (footer grid)"
@@ -142,7 +142,7 @@ horizontal:
     file: "packages/ui/components/site-header.tsx"
     outer: ".container flex h-16 items-center justify-between gap-4"
     right_cluster: "gap-2 -> sm:gap-4 (nav + auth slot + theme toggle + hamburger)"
-    desktop_nav: "gap-6 between nav links, hidden below md"
+    desktop_nav: "gap-1 between nav links, each a rounded px-3 py-2 pill that takes the hover tint; hidden below md"
     note: "gap-4 is the minimum breathing room between the logo and the right cluster when the row compresses."
 
   footer_grid:
@@ -297,10 +297,12 @@ sizes:
     button: "h-9 w-9 (36px) rounded-full"
     icon: "h-4 w-4 (16px)"
 
-  external_link_arrow:
-    file: "packages/ui/components/site-footer.tsx"
-    icon: "h-3.5 w-3.5 (14px) faArrowUpRightFromSquare, gap-1 (4px) after the label"
-    why: "14px matches the text-sm label, so the glyph reads as part of the words rather than as a separate control."
+  product_sidebar:
+    file: "packages/ui/components/product-sidebar.tsx"
+    column: "md:w-60 (15rem) open, md:w-12 (3rem) collapsed; the menu keeps md:w-60 while the column narrows, so its text never rewraps"
+    title_row: "h-12 (48px), the title at left-5 (20px), the toggle h-8 w-8 (32px)"
+    groups: "space-y-5 (20px) between groups, space-y-0.5 (2px) between links, so proximity alone shows what belongs together"
+    labelled_group: "caption px-3 mb-1.5; links indented ml-3 (12px) on a 1px guide line, each py-1.5 pl-3 pr-3 with a 2px left border for the current-page bar"
 
   measure_caps:
     hero_paragraph: "max-w-xl (36rem / 576px) - wip-landing.tsx, about/page.tsx"

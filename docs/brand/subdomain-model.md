@@ -58,7 +58,8 @@ Clerk **secret** key belongs nowhere in this repository and never takes a `NEXT_
 ## Adding A New Subdomain
 
   1. Add an entry to [properties.json](../../packages/brand/properties.json) with the property's URL, name, description,
-     keywords, and, if it has its own menu, its sidebar groups.
+     keywords, and, if it has its own menu, its sidebar groups. A footer link reaches it by id
+     (`{ "label": "...", "property": "<name>" }` in `navigation.json`), so its URL is written only here.
   2. Create `apps/<name>` like the other apps: a layout that renders `SiteShell` and the auth providers, a
      `next.config.mjs` that exports `createNextConfig()`, a `tailwind.config.ts` that uses the shared preset and content
      globs, a `globals.css` that imports `@typhed/tailwind-config/base.css` and names that config with `@config`, a

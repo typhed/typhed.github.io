@@ -18,7 +18,9 @@ import { Button } from "./ui/button"
  * It is a Server Component. Only the interactive parts are client
  * components: `FontSizeToggle`, `ThemeToggle` and `MobileNav` (the
  * small-screen menu). Both the desktop nav and the mobile menu read
- * `NAV_LINKS` from `@typhed/brand`, so the two never drift.
+ * `NAV_LINKS` from `@typhed/brand`, so the two never drift. A nav link lifts
+ * on hover and on keyboard focus: a translucent brand tint behind it, and its
+ * text brightening from muted to full foreground, in either theme.
  *
  * It also inlines one small script, which is why the header rather than the
  * control carries it: being a Server Component this close to the top of the
@@ -60,13 +62,13 @@ export function SiteHeader({
         </a>
 
         <div className="flex items-center gap-2 sm:gap-4">
-          <nav aria-label="Primary" className="hidden items-center gap-6 md:flex">
+          <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:bg-brand/10 hover:text-foreground focus-visible:bg-brand/10 focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-hidden"
               >
                 {link.label}
               </a>

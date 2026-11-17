@@ -16,5 +16,9 @@ it. Remove an entry when it is resolved.
     `packages/brand/properties.json` do.
   * **Trading and blog logos.** Neither site has its own artwork yet; the owner designs it and adds it under
     `packages/brand/assets`. Until then both sites show the TyPhed mark and favicon set, and no logo is drawn in code.
+  * **Sidebar entry icons.** The icon-rail sidebar the owner chose as the model shows one icon per entry, with a
+    tooltip, when collapsed. The sidebar entries in `packages/brand/properties.json` carry no icon, so the collapsed
+    rail shows only its toggle. The owner picks a Font Awesome icon per entry, stored as a key the way `SOCIAL_LINKS`
+    stores its icons.
 
 </div>

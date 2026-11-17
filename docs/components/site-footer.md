@@ -13,8 +13,8 @@ the privacy policy link. TyPhed is an autonomous brand, so the bar names no owni
 whole of it.
 
 The footer is where the brand layer hands a visitor off to a product. Links that leave `typhed.com` (a product subdomain,
-the blog, the LinkedIn career page) are marked `external` in constants, open in a new tab, and carry a trailing arrow
-glyph so the visitor sees the jump coming.
+the blog, the LinkedIn career page) are marked `external` in constants and open in a new tab. They carry no icon:
+every entry in the footer is plainly a link, and screen readers still hear that a new tab opens.
 
 It is a Server Component. The columns, copy, and social links come from
 [@typhed/brand](../../packages/brand/index.ts), and the colors are pure theme tokens (a faint brand wash over the
@@ -33,9 +33,13 @@ import { SiteFooter } from "@typhed/ui/components/site-footer"
 
 ## Props
 
+<div align = "center">
+
 | Prop | Type | Default | Description |
 | :---: | :---: | :---: | --- |
 | `className` | `string` | `undefined` | Classes merged onto the `<footer>` root. |
+
+</div>
 
 ## Anatomy
 
@@ -52,9 +56,8 @@ The root is a `<footer>` with a top border and a faint brand-washed surface. It 
      `FOOTER_COLUMN_GROUPS`. Each entry is an array of link groups, so a column renders either one group or two stacked
      (`flex flex-col gap-8`) - which is how five equal columns carry six blocks of content. Every group is a heading
      (`<h2>`) over a `<nav>` list of links. Links are quiet at rest (`text-muted-foreground`) and brighten on hover
-     (`hover:text-brand`). An external link gets `target="_blank"`, `rel="noopener noreferrer"`, a trailing
-     Font Awesome `faArrowUpRightFromSquare` icon through `Icon` (`h-3.5 w-3.5`, `aria-hidden`), and an `sr-only`
-     "(opens in a new tab)" note.
+     (`hover:text-brand`). An external link gets `target="_blank"`, `rel="noopener noreferrer"`, and an `sr-only`
+     "(opens in a new tab)" note, and no icon.
   3. **Contact column**: a heading ("Contact Us"), a `mailto:` link to `CONTACT_EMAIL` (styled as nav links), and below
      it a "Social Connect" subheading with a social icon row.
 
@@ -85,6 +88,8 @@ back to two columns and then to one, so the five column row is a large-screen ru
 
 See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 
+<div align = "center">
+
 | Element | Token / Class |
 | :---: | :---: |
 | Root background | `bg-card` with `bg-linear-to-b from-brand/5 to-brand-2/5` (a faint on-brand wash) |
@@ -93,7 +98,6 @@ See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 | Column headings | `text-foreground` (emphasized) |
 | Link text (resting) | `text-muted-foreground` |
 | Link text (hover) | `hover:text-brand` |
-| External link arrow | none of its own; the glyph is `currentColor` and tracks the link text |
 | Brand lockup | Baked per-theme artwork (mark, wordmark, tagline); see [BrandLockup](brand-lockup.md) |
 | Copyright text | `text-muted-foreground` |
 | Social icon button border (resting) | `border-border` |
@@ -101,6 +105,8 @@ See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 | Social icon button icon (resting) | `text-muted-foreground` |
 | Social icon button border (hover) | `border-brand/50` |
 | Social icon button icon (hover) | `hover:text-brand` |
+
+</div>
 
 The gradient layers a subtle brand tint over the card surface without obscuring readability, and tracks both themes
 automatically through tokens. No hardcoded hex is used.
@@ -114,7 +120,9 @@ automatically through tokens. No hardcoded hex is used.
 
 ```json
 // Edit the footer columns in the brand contract, not the component.
-// "external": true is what opens a new tab and adds the trailing arrow.
+// A link names its destination once: "href", "property" (a site in
+// properties.json, which opens in a new tab), or "social" (an account in the
+// social list). "external": true on an href link opens it in a new tab.
 // An href starting with "/" is a page the brand layer hosts; @typhed/brand
 // expands it to a full https://typhed.com/... URL before this component runs.
 // packages/brand/navigation.json
@@ -122,8 +130,13 @@ automatically through tokens. No hardcoded hex is used.
   "footer": {
     "products": {
       "heading": "PRODUCTS",
+      "links": [{ "label": "Trading Platform", "property": "trading" }]
+    },
+    "resources": {
+      "heading": "RESOURCES",
       "links": [
-        { "label": "TyPhed Trading", "href": "https://trading.typhed.com/", "external": true },
+        { "label": "TyPhed BLOG", "property": "blogging" },
+        { "label": "Career Page", "social": "linkedin" },
         { "label": "Products Pricing", "href": "#" }
       ]
     },
@@ -154,6 +167,10 @@ the canonical site URL first. That is what keeps the column working when this sa
 `blog.typhed.com` or `trading.typhed.com`, where a root-relative path would resolve against the wrong host. A full URL,
 a `mailto:`, and the `#` placeholder pass through untouched.
 
+A product or the blog is never written as a URL here. `"property": "trading"` takes the URL from `properties.json`, and
+`"social": "linkedin"` takes the LinkedIn entry's URL, so moving a subdomain or an account means editing one file. A
+reference that names nothing stops the build, and the `@typhed/brand` tests check that no such URL is copied back in.
+
 The change reaches every TyPhed property on its next build. Nothing in this repository, and nothing in any
 consuming app, needs editing to add or repoint a footer link.
 
@@ -164,8 +181,8 @@ consuming app, needs editing to add or repoint a footer link.
   * The social icon row has `aria-label="Social media"` to label the group.
   * Each social icon button carries `aria-label` and `title` matching its network name, so screen readers announce the
     link.
-  * The external link arrow is decorative (`aria-hidden="true"`). What it signals visually is given to screen readers as
-    `sr-only` text, "(opens in a new tab)", so a new tab is never a surprise.
+  * An external link carries `sr-only` text, "(opens in a new tab)", so a new tab never surprises a screen-reader user.
+    Nothing marks it visually: every footer entry is plainly a link.
   * The brand lockup inside the footer is not wrapped in a link; it is a visual marker of context (already at the
     bottom). Its two images are decorative, with a single `sr-only` label; see [BrandLockup](brand-lockup.md).
   * All links are real text, readable by screen readers and searchable by engines.
@@ -177,7 +194,7 @@ consuming app, needs editing to add or repoint a footer link.
 The three middle columns come from `FOOTER_COLUMN_GROUPS` (PRODUCTS, RESOURCES, and DISCLAIMER over COMMUNITY), the
 contact email from `CONTACT_EMAIL`, and the social icons from `SOCIAL_LINKS` in constants. Add links by editing the
 arrays behind `FOOTER_COLUMN_GROUPS`, and set `external: true` on anything that leaves `typhed.com` so it opens in a new
-tab and shows the arrow. Do not edit the footer component to add a link. Adding a *column* is a layout change and does
+tab. Do not edit the footer component to add a link. Adding a *column* is a layout change and does
 need one: five columns is what the container width carries, so a sixth block of content stacks inside an existing column
 rather than claiming a track of its own. To add a social network, append an entry to `SOCIAL_LINKS` with a
 supported icon name; the footer renders it automatically. The `mail` entry in `SOCIAL_LINKS` is always excluded from the
@@ -187,10 +204,13 @@ automatically through JavaScript (`new Date().getFullYear()`), so no annual main
 
 ## Do's And Don'ts
 
+<div align = "center">
+
 | Do | Don't |
 | --- | --- |
 | Add links via the arrays behind `FOOTER_COLUMN_GROUPS` in constants. | Hardcode column links into the footer. |
-| Mark off-site destinations with `external: true`. | Send a footer link off-site without it, losing the new tab and the arrow. |
+| Mark off-site destinations with `external: true`. | Send a footer link off-site without it, losing the new tab and its screen-reader note. |
+| Let the link text alone say it is a link. | Add an icon to mark external links. |
 | Keep the brand column to the lockup alone. | Reintroduce a link stack under the lockup. |
 | Add social networks via `SOCIAL_LINKS` in constants. | Hardcode social links or icon buttons. |
 | Drive the email from `CONTACT_EMAIL`. | Paste an email address into the component. |
@@ -201,5 +221,7 @@ automatically through JavaScript (`new Date().getFullYear()`), so no annual main
 | Let a column stack two groups when content outgrows five tracks. | Add a sixth grid column and squeeze every one of them. |
 | Repoint the privacy policy once, in `privacy`. | List Privacy Policy again under `disclaimer` and let the two drift. |
 | Use the subtle brand gradient over `bg-card`. | Add a dark, opaque background. |
+
+</div>
 
 </div>

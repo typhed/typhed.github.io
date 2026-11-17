@@ -9,8 +9,8 @@
 The owner's steps to move typhed.com, trading.typhed.com, and blog.typhed.com from GitHub Pages to their Cloudflare
 Workers. The sites are a work in progress with no real users, so a short outage is acceptable and the whole move fits in
 one sitting. The order below still avoids an outage, at no extra cost: all four hostnames are already proxied through
-Cloudflare, so the Workers take over the moment their routes attach, before any DNS record changes. Branch
-`cutover/routes` sits one commit ahead of `master` and carries those routes.
+Cloudflare, so the Workers take over the moment their routes attach, before any DNS record changes. Since 2026-11-18
+`master` carries those routes (branch `cutover/routes` is merged), so the next push of `master` is the switch.
 
 ## Where Things Stand
 
@@ -25,9 +25,13 @@ Cloudflare, so the Workers take over the moment their routes attach, before any 
 
 ## 1. Prepare, With Nothing Visible Changing
 
-  - [ ] **Clerk.** Delete the test users from the production instance for a clean start. Under Domains, check that
-    `clerk.typhed.com` and `accounts.typhed.com` show as verified, and copy the production publishable key
-    (`pk_live_...`). Step 2 tests sign-in on typhed.com, so a local check with a development key is optional.
+  - [x] **Clerk users.** Neither instance, production or development, has any users (2026-11-17). All five DNS records
+    of the production instance resolve to Clerk: `clerk`, `accounts`, `clkmail`, `clk._domainkey`, and
+    `clk2._domainkey`.
+  - [ ] **Clerk setup.** Finish the production instance's remaining setup task in the dashboard. With social sign-in
+    on, production needs your own OAuth credentials for each provider, while development borrows Clerk's shared ones.
+    Copy the production publishable key (`pk_live_...`). Step 2 tests sign-in on typhed.com, so a local check with the
+    development key (`pk_test_...` in the root `.env.local`) is optional.
   - [ ] **API token.** Cloudflare: My Profile -> API Tokens -> Create Token -> template **Edit Cloudflare Workers** ->
     Account Resources: the HUF account; Zone Resources: `typhed.com` -> Create, and copy the token once.
   - [ ] **Secrets.** `typhed/typhed.github.io` -> Settings -> Secrets and variables -> Actions -> New repository secret:
@@ -43,11 +47,13 @@ Cloudflare, so the Workers take over the moment their routes attach, before any 
 
 ## 2. Go Live With One Push
 
-  - [ ] Fast-forward `master` to the routes commit and push it:
-    `git switch master && git merge --ff-only cutover/routes && git push origin master`. If `master` has moved on since
-    the branch was made, run `git switch cutover/routes && git rebase master` first. CI runs the gates, and **Deploy to
+  - [ ] **Push.** `git push origin master`, once step 1 is done and no earlier than 11:15 UTC (16:45 IST) on
+    2026-11-18. `master` already carries the routes, so this push is the switch: CI runs the gates, and **Deploy to
     Cloudflare Workers** builds the three apps on Linux and publishes them with their routes. Each hostname switches to
-    its Worker as its deploy finishes. If the run fails before a deploy, GitHub Pages keeps serving that site.
+    its Worker as its deploy finishes. If the run fails before a deploy, GitHub Pages keeps serving that site. A push
+    before 11:15 UTC stops at the install step, because pnpm rejects the lockfile while wrangler 4.164.0 is under a day
+    old (see [owner-machine-checks.md](owner-machine-checks.md)): nothing deploys, and re-running the workflows after
+    that time passes.
   - [ ] **Verify.** `curl -sI https://typhed.com/`, and the same for `trading.typhed.com` and `blog.typhed.com`, shows
     `server: cloudflare` and no `x-github-request-id` header. `curl -sI https://www.typhed.com/` answers 301 to
     `https://typhed.com/`, and `curl -sI https://typhed.com/permalink/conduct.html` answers 302 to the Code of Conduct.

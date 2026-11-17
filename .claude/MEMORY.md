@@ -36,7 +36,7 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 ## Open Items
 
   * Owner questions: `.claude/docs/gaps.md`.
-  * Going live on Cloudflare Workers: `.claude/docs/tasks/cloudflare-cutover.md`.
-  * The owner's machine checks (toolchain and gates passed 2026-11-17), the wrangler update due 2026-11-18, the
-    picomatch advisory with no fix yet, the first GitHub runs still to watch, and the machine's environment notes:
-    `.claude/docs/tasks/owner-machine-checks.md`.
+  * Going live on Cloudflare Workers: `.claude/docs/tasks/cloudflare-cutover.md`. `master` carries the routes, so
+    pushing it is the switch; never push it before the checklist's step 1 is done.
+  * The owner's machine checks (toolchain and gates passed 2026-11-17), the picomatch advisory with no fix yet, the
+    first GitHub runs still to watch, and the machine's environment notes: `.claude/docs/tasks/owner-machine-checks.md`.
