@@ -470,3 +470,7 @@ pnpm-debug.log*
 Desktop.ini
 .claude/settings.local.json
 CLAUDE.local.md
+
+# The Python template above ignores lib/ as a packaging folder. Here lib/
+# holds TypeScript source (apps/*/lib, packages/ui/lib), so keep it.
+!lib/
