@@ -35,15 +35,19 @@ Tracks the merge of five repositories into this monorepo and its move to Cloudfl
   - [x] Phase 3: `properties.json` registry, success/warning tokens, `ProductSidebar`, `SiteShell`, metadata helpers,
     `@typhed/auth`, `@typhed/next-config`, shared Tailwind content globs.
   - [x] Phase 4: web, trading, and blogging adopt the shared layer; `pnpm typecheck` 10/10 and `pnpm build` 3/3 pass.
+  - [x] Phase 6: `wrangler.jsonc` per app, `scripts/deploy-targets.mjs`, `deploy.yml` (Workers), `ci.yml`, monorepo
+    `dependabot.yml`, `CNAME` and `.nojekyll` removed, one root `.env.example`. `wrangler dev` on trading verified
+    `/`, the trailing-slash redirect, two routes, and the 404 page.
+  - [x] Docs: `docs/PRD.md`, `docs/architecture.md`, and `docs/brand/subdomain-model.md` rewritten; architecture
+    decisions recorded as dated ADRs in `docs/adr/`; the owner's cutover checklist written.
 
 ## Pending
 
   - [ ] Phase 5: permalink `--redirects` block and key validation; keeper hook and analytics test path (`python`
     agent); wire the generator into the `web` build.
-  - [ ] Phase 6: `wrangler.jsonc` per app, `scripts/deploy-targets.mjs`, new `deploy.yml` and `ci.yml`, monorepo
-    `dependabot.yml`, remove `CNAME` and `.nojekyll`, prepare branch `cutover/routes`.
-  - [ ] Phase 7: rewrite README, `docs/PRD.md`, `docs/architecture.md`, `docs/brand/subdomain-model.md`, app
-    READMEs, component docs; delete `setup.md`; `/init` then `/extend-init`; decision records.
+  - [ ] Phase 6 tail: branch `cutover/routes` with the three routes.
+  - [ ] Phase 7: root README, app READMEs, component docs, design YAML paths; delete `setup.md`; keeper agent scope;
+    `/init` then `/extend-init`.
   - [ ] Prettier pass over the merged code with its SHA in `.git-blame-ignore-revs`.
 
 ## To Verify On The Full System
