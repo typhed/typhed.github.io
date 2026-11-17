@@ -5,24 +5,22 @@
   "description": "TyPhed - Engineering Tomorrow. The brand homepage and the product sites of the TyPhed brand.",
   "packageManager": "pnpm@11.9.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.9.0"
   },
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "clean": "turbo run clean",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "shared:update": "git submodule update --remote --merge && pnpm install",
-    "shared:status": "git submodule foreach --quiet \"echo [] && git status --short --branch\"",
-    "postinstall": "git submodule update --init --recursive"
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,css}\""
   },
   "devDependencies": {
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "turbo": "^2.3.3",
-    "typescript": "^5.7.3"
+    "turbo": "^2.10.5",
+    "typescript": "catalog:"
   }
 }

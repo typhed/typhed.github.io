@@ -1,0 +1,4 @@
+# Cloudflare static-assets headers. The exported OG image has no file extension,
+# so its content type is declared here.
+/opengraph-image
+  Content-Type: image/png

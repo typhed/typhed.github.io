@@ -1,0 +1,26 @@
+{
+  "name": "@typhed/brand",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "TyPhed brand contract: site copy, navigation, launch schedule and design tokens as stack-neutral JSON.",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "bin": {
+    "typhed-brand-sync": "./scripts/sync.mjs"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./*": "./*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf .turbo node_modules"
+  },
+  "devDependencies": {
+    "@typhed/tsconfig": "workspace:*",
+    "rimraf": "catalog:",
+    "typescript": "catalog:"
+  }
+}

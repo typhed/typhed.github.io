@@ -1,0 +1,5 @@
+# Formatting-only commits, skipped by git blame and by GitHub's blame view.
+# Use locally with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Apply the monorepo Prettier style
+aeede4ca44596e17b9cc568b0e567706bb6ca622

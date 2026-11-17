@@ -1,18 +1,52 @@
+# pnpm 11 reads its workspace settings from this file.
 packages:
   - "apps/*"
-  # The shared repositories are mounted as git submodules and their packages
-  # join this workspace directly, so @typhed/ui and @typhed/brand resolve the
-  # same way a local package would. An empty shared/ directory means the
-  # submodules were never initialised: run
-  #   git submodule update --init --recursive
-  - "shared/components/packages/*"
-  - "shared/documents/brand"
+  - "packages/*"
 
-# Native / postinstall build scripts are opt-in. The static export does not use
-# sharp (images are unoptimized) and the lint import resolver works without its
-# native binary, so both are declined. @clerk/shared's postinstall only prints a
-# telemetry notice (it writes no code we depend on), so it is declined too.
+# One version of every dependency that more than one package uses. A package
+# lists the dependency as "catalog:" instead of repeating a version range.
+catalog:
+  "@clerk/react": ^6.12.4
+  "@radix-ui/react-slot": ^1.1.1
+  "@types/node": ^22.10.5
+  "@types/react": ^19.0.7
+  "@types/react-dom": ^19.0.3
+  autoprefixer: ^10.4.20
+  class-variance-authority: ^0.7.1
+  clsx: ^2.1.1
+  eslint: ^8.57.1
+  eslint-config-next: ^15.5.20
+  lucide-react: ^0.469.0
+  next: ^15.5.20
+  next-themes: ^0.4.6
+  postcss: ^8.5.1
+  react: ^19.2.7
+  react-dom: ^19.2.7
+  rimraf: ^6.0.1
+  tailwind-merge: ^2.6.0
+  tailwindcss: ^3.4.17
+  tailwindcss-animate: ^1.0.7
+  typescript: ^5.7.3
+  vitest: ^3.2.6
+  wrangler: ^4.20.0
+
+# Force patched transitive versions past known advisories:
+#   vite  >=6.4.3  - server.fs.deny bypass + launch-editor NTLM disclosure
+#   esbuild ^0.25  - dev-server request forwarding (0.24.3 was never published)
+#   postcss >=8.5.10 - unescaped </style> XSS (next pins an older build-time copy)
+overrides:
+  vite: ">=6.4.3 <7"
+  esbuild: "^0.25.0"
+  postcss: ">=8.5.10"
+
+# Native and postinstall build scripts are opt-in. The static exports never
+# optimise images, so sharp is declined. unrs-resolver ships prebuilt binaries
+# and its build script is only a fallback compiler. @clerk/shared's postinstall
+# only prints a telemetry notice. esbuild links the platform binary that
+# vitest and wrangler need, so it is allowed.
 allowBuilds:
   "@clerk/shared": false
+  esbuild: true
   sharp: false
   unrs-resolver: false
+  workerd: true

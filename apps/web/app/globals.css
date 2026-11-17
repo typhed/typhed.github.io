@@ -5,7 +5,7 @@
 /* The theme palettes are NOT declared here. Both Aurora Glass (light, :root)
    and Midnight Indigo (dark, .dark) are emitted into the base layer by the
    shared Tailwind preset, which reads their HSL triplets from
-   shared/documents/brand/tokens/colors.json. Editing a colour there recolours
+   packages/brand/tokens/colors.json. Editing a colour there recolours
    every TyPhed property on its next build.
 
    What stays in this file is the app-level CSS that is not part of the brand

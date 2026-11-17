@@ -454,13 +454,23 @@ $RECYCLE.BIN/
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# Generated before every dev run and build by the typhed-brand-sync bin of
+# @typhed/brand. Edit the artwork and the colour tokens in packages/brand,
+# never these copies.
+apps/*/public/brand/
+apps/*/app/theme.css
 
-# Both are generated from the shared.documents submodule before every dev run
-# and build (see the sync:shared script in apps/web). Edit the artwork and the
-# colour tokens in shared/documents, never these copies.
-apps/web/public/brand/
-apps/web/app/theme.css
+# Local Wrangler state written by `wrangler dev` and `wrangler deploy`.
+.wrangler/
 
-# The two shared repository archives handed over for bootstrapping. Delete
-# them once shared.documents and shared.components are pushed.
-*.zip
+# Editor, package-manager, and Claude Code local files.
+.idea/
+.pnpm-store/
+pnpm-debug.log*
+Desktop.ini
+.claude/settings.local.json
+CLAUDE.local.md
+
+# The Python template above ignores lib/ as a packaging folder. Here lib/
+# holds TypeScript source (apps/*/lib, packages/ui/lib), so keep it.
+!lib/
