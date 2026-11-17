@@ -1,15 +1,10 @@
 import type { Metadata, Viewport } from "next"
 import { Inter, Space_Grotesk } from "next/font/google"
-
-import { AbstractBackground } from "@typhed/ui/components/abstract-background"
-import { ScrollToTop } from "@typhed/ui/components/scroll-to-top"
-import { SiteFooter } from "@typhed/ui/components/site-footer"
-import { SiteHeader } from "@typhed/ui/components/site-header"
+import { SITE, getProperty } from "@typhed/brand"
+import { AuthControls, AuthProvider } from "@typhed/auth"
+import { BRAND_VIEWPORT, buildMetadata } from "@typhed/ui/lib/metadata"
+import { SiteShell } from "@typhed/ui/components/site-shell"
 import { ThemeProvider } from "@typhed/ui/components/theme-provider"
-import { SITE } from "@typhed/brand"
-
-import { AuthControls } from "../components/auth-controls"
-import { ClerkClientProvider } from "../components/clerk-provider"
 
 import "./theme.css"
 import "./globals.css"
@@ -26,82 +21,13 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 })
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE.url),
-  title: {
-    default: `${SITE.name} - ${SITE.tagline}`,
-    template: `%s - ${SITE.name}`,
-  },
-  description: SITE.description,
-  applicationName: SITE.name,
-  keywords: [
-    "TyPhed",
-    "Engineering Tomorrow",
-    "TyPhed technology",
-    "TyPhed launch",
-  ],
+export const metadata: Metadata = buildMetadata(getProperty("web"), {
   authors: [{ name: SITE.name, url: SITE.url }],
   creator: SITE.name,
   publisher: SITE.name,
-  alternates: {
-    canonical: "/",
-  },
-  icons: {
-    icon: [
-      { url: "/brand/favicon/favicon.svg", type: "image/svg+xml" },
-      { url: "/brand/favicon/favicon-32x32.png", type: "image/png", sizes: "32x32" },
-      { url: "/brand/favicon/favicon-16x16.png", type: "image/png", sizes: "16x16" },
-    ],
-    shortcut: ["/brand/favicon/favicon.ico"],
-    apple: [
-      { url: "/brand/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-    other: [
-      {
-        rel: "mask-icon",
-        url: "/brand/favicon/safari-pinned-tab.svg",
-        color: "#6366f1",
-      },
-    ],
-  },
-  other: {
-    "msapplication-TileColor": "#0b1020",
-    "msapplication-config": "/brand/favicon/browserconfig.xml",
-  },
-  openGraph: {
-    type: "website",
-    url: SITE.url,
-    siteName: SITE.name,
-    title: `${SITE.name} - ${SITE.tagline}`,
-    description: SITE.description,
-    locale: "en_US",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${SITE.name} - ${SITE.tagline}`,
-    description: SITE.description,
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  category: "technology",
-}
+})
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b1020" },
-  ],
-}
+export const viewport: Viewport = BRAND_VIEWPORT
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -126,47 +52,26 @@ const jsonLd = {
   ],
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}
-    >
+    <html lang="en" suppressHydrationWarning className={`h-full ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
-        {/*
-          The homepage is a static export with no server runtime, so Clerk runs
-          entirely client-side: ClerkClientProvider (a "use client" wrapper) and
-          the control components in AuthControls read the session from Clerk's
-          Frontend API using the publishable key. There is deliberately no
-          middleware and no `auth()` call — those require a server and would
-          break the static export.
-        */}
-        <ClerkClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AbstractBackground />
-            <div className="relative z-10 flex min-h-dvh flex-col">
-              <SiteHeader
-                authSlot={<AuthControls />}
-                mobileAuthSlot={<AuthControls className="w-full" />}
-              />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
-            <ScrollToTop />
-          </ThemeProvider>
-        </ClerkClientProvider>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        {/* The site is a static export, so Clerk runs entirely in the browser.
+            AuthProvider sits inside ThemeProvider so the Clerk modal accent
+            follows the active theme. */}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <SiteShell
+              propertyId="web"
+              authSlot={<AuthControls />}
+              mobileAuthSlot={<AuthControls className="w-full" />}
+              scrollToTop
+            >
+              {children}
+            </SiteShell>
+          </AuthProvider>
+        </ThemeProvider>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </body>
     </html>
   )

@@ -11,7 +11,7 @@
     "clean": "rimraf .next out .turbo .wrangler node_modules"
   },
   "dependencies": {
-    "@clerk/react": "catalog:",
+    "@typhed/auth": "workspace:*",
     "@typhed/brand": "workspace:*",
     "@typhed/ui": "workspace:*",
     "next": "catalog:",
@@ -22,6 +22,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@typhed/next-config": "workspace:*",
     "@typhed/tailwind-config": "workspace:*",
     "@typhed/tsconfig": "workspace:*",
     "autoprefixer": "catalog:",

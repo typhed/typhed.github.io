@@ -1,13 +1,10 @@
 import type { Config } from "tailwindcss"
 import sharedConfig from "@typhed/tailwind-config"
+import sharedContent from "@typhed/tailwind-config/content.js"
 
 const config: Config = {
-  content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "../../shared/components/packages/ui/components/**/*.{ts,tsx}",
-  ],
   presets: [sharedConfig],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", ...sharedContent],
 }
 
 export default config
