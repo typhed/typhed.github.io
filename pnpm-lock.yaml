@@ -383,6 +383,46 @@ importers:
         specifier: 'catalog:'
         version: 4.162.0(@types/node@22.20.0)
 
+  packages/auth:
+    dependencies:
+      '@clerk/react':
+        specifier: 'catalog:'
+        version: 6.18.8(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@typhed/brand':
+        specifier: workspace:*
+        version: link:../brand
+      '@typhed/ui':
+        specifier: workspace:*
+        version: link:../ui
+      next-themes:
+        specifier: 'catalog:'
+        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 22.20.0
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.2.3(@types/react@19.2.17)
+      '@typhed/tsconfig':
+        specifier: workspace:*
+        version: link:../config-typescript
+      react:
+        specifier: 'catalog:'
+        version: 19.2.7
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.2.7(react@19.2.7)
+      rimraf:
+        specifier: 'catalog:'
+        version: 6.1.3
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/backtest:
     dependencies:
       '@typhed/chart-engine':
@@ -447,6 +487,12 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 3.2.7(@types/debug@4.1.13)(@types/node@22.20.0)(jiti@1.21.7)(yaml@2.9.1)
+
+  packages/config-next:
+    dependencies:
+      '@next/env':
+        specifier: ^15.5.20
+        version: 15.5.29
 
   packages/config-tailwind:
     dependencies:
@@ -533,6 +579,9 @@ importers:
       '@typhed/tsconfig':
         specifier: workspace:*
         version: link:../config-typescript
+      next:
+        specifier: 'catalog:'
+        version: 15.5.29(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       react:
         specifier: 'catalog:'
         version: 19.2.7

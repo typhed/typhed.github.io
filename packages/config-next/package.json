@@ -1,0 +1,14 @@
+{
+  "name": "@typhed/next-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "createNextConfig(): the static-export Next.js configuration every TyPhed app builds with.",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "dependencies": {
+    "@next/env": "^15.5.20"
+  }
+}
