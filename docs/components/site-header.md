@@ -131,7 +131,7 @@ export default function RootLayout({ children }) {
 // Add a nav link by editing the brand contract, not the component.
 // An href starting with "/" is a page the brand layer hosts; @typhed/brand
 // expands it to a full https://typhed.com/... URL before this component runs.
-// shared.documents/brand/navigation.json
+// packages/brand/navigation.json
 {
   "nav": [
     { "label": "Our Products", "href": "#" },

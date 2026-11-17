@@ -1,49 +1,46 @@
 <div align = "center">
 
-# TyPhed Brand And Design Reference
+# TyPhed Documentation
 
 </div>
 
 <div align = "justify">
 
-The reference set every TyPhed property shares. Read the relevant page before changing anything it covers, rather than
-inferring the rule from one site's code.
+The architecture, product, design, and decision references for the TyPhed monorepo. Each topic has exactly one page;
+when a page and the code disagree, the code wins and the page gets fixed.
 
-## 🧭 Brand
+## 🧭 Product And Architecture
+
+<div align = "center">
 
 | Page | Covers |
 | :---: | --- |
-| [brand/subdomain-model.md](brand/subdomain-model.md) | The domain and subdomain architecture: DNS, one repository per property, custom domains, and single sign-on across them |
+| [PRD.md](PRD.md) | What each property (typhed.com, blog, trading) is for and what belongs on it |
+| [architecture.md](architecture.md) | The workspace, packages, theming, page shell, auth, redirects, deployment, and constraints |
+| [adr/](adr/README.md) | Every architecture decision, dated, with its context and consequences |
+| [brand/subdomain-model.md](brand/subdomain-model.md) | Domains, Workers, DNS, the shared sign-in, and adding a subdomain |
+| [data/typhed-project-data.dbml](data/typhed-project-data.dbml) | The data model of the separate account backend |
 
-The product requirements documents are not here. Each property keeps its own at `docs/PRD.md` in its own repository,
-because what belongs on the brand layer and what belongs in a product are different questions with different answers. A
-new property starts from [templates/nextjs-subdomain/PRD.md](../templates/nextjs-subdomain/PRD.md).
+</div>
 
 ## 🎨 Design System
 
+<div align = "center">
+
 | Page | Covers | Source Of Truth |
 | :---: | --- | :---: |
-| [design/colors.yml](design/colors.yml) | Every theme token, its computed hex, where it is used, and the rules for changing it | [brand/tokens/colors.json](../brand/tokens/colors.json) |
-| [design/spacing.yml](design/spacing.yml) | The step scale, container and gutters, breakpoints, vertical rhythm, component sizes, radius | [brand/tokens/spacing.json](../brand/tokens/spacing.json) |
-| [design/typography.yml](design/typography.yml) | Fonts and how they load, the size scale, weights, tracking, heading semantics | [brand/tokens/typography.json](../brand/tokens/typography.json) |
+| [design/colors.yml](design/colors.yml) | Every theme token, its computed hex, where it is used, and the change rules | [colors.json](../packages/brand/tokens/colors.json) |
+| [design/spacing.yml](design/spacing.yml) | Step scale, container, breakpoints, vertical rhythm, component sizes, radius | [spacing.json](../packages/brand/tokens/spacing.json) |
+| [design/typography.yml](design/typography.yml) | Fonts and how they load, the size scale, weights, tracking, heading semantics | [typography.json](../packages/brand/tokens/typography.json) |
 
-The distinction in that last column matters. The YAML files **document** the system: they carry the computed hex values,
-the usage notes, and the gotchas. The JSON files **are** the system: they are what the Tailwind preset reads at build
-time. Change a value in the JSON, then update the YAML in the same commit so the two never disagree.
+</div>
 
-## 🧩 Component Reference
+The JSON files are the system and the YAML files document it. Change a value in the JSON, then update the YAML in the
+same commit.
 
-Component pages live with the code they describe, in
-[typhed/shared.components](components). Keeping them in one
-repository is what lets a documentation fix ride along with the change that caused it.
+## 🧩 Components
 
-## 🤖 Notes For Agents
-
-  * These pages describe the brand across every property. A rule that applies to one site belongs in that site's own
-    documentation, not here. That is why the PRDs live in the repositories they govern.
-  * The design YAML files record file paths as they appear **from a consuming repository**, for example
-    `packages/ui/components/site-footer.tsx`. That is where the developer actually works.
-  * A colour, spacing, or type change is never only a documentation change. Update the JSON token, the YAML reference,
-    and any baked asset listed in the `static_assets` block of [design/colors.yml](design/colors.yml).
+[components/README.md](components/README.md) indexes one page per shared component in `packages/ui`, with the editing
+rules every change follows.
 
 </div>

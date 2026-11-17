@@ -5,7 +5,7 @@
 @layer base {
   /* Brand palette note: the theme tokens (--background, --brand, --border, ... )
      and --radius are NOT declared here. They are generated into app/theme.css
-     from shared/documents/brand/tokens/colors.json and imported by the root
+     from packages/brand/tokens/colors.json and imported by the root
      layout ahead of this file. Change a colour there, never here.
 
      The reader text-size properties (--font-scale-setting, --font-scale) are

@@ -115,7 +115,7 @@ automatically through tokens. No hardcoded hex is used.
 // "external": true is what opens a new tab and adds the trailing arrow.
 // An href starting with "/" is a page the brand layer hosts; @typhed/brand
 // expands it to a full https://typhed.com/... URL before this component runs.
-// shared.documents/brand/navigation.json
+// packages/brand/navigation.json
 {
   "footer": {
     "products": {

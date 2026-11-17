@@ -26,8 +26,9 @@ every clone.
   * Architecture decisions live only in `docs/adr/`, one dated record per decision.
   * Nothing is invented: no new logos, icons, artwork, or copy. Missing values are recorded in `.claude/docs/gaps.md`
     and raised with the owner.
-  * Claude context lives in the repository: `.claude/MEMORY.md`, the routed documents in `.claude/docs/`, plans and
-    progress in `.claude/docs/tasks/`, and past plans in `.claude/docs/archive/`. Nothing goes under `~/.claude/`.
+  * Architecture, product, and design live only in `docs/`. Claude harness material lives in the repository and never
+    copies a `docs/` page: `CLAUDE.md` routes into `docs/`, `.claude/MEMORY.md` holds the project memory, and
+    `.claude/docs/` holds open questions, tasks, and past plans. Nothing goes under `~/.claude/`.
 
 ## Consequences
 

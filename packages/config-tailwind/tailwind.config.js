@@ -54,7 +54,7 @@ function scaled(size, lineHeight) {
  *
  * The colour utilities below map to CSS custom properties but do NOT define
  * them. The palette is generated into a stylesheet by
- * `shared/documents/scripts/sync-shared.mjs`, which each app imports, because a
+ * `typhed-brand-sync` (packages/brand/scripts/sync.mjs), which each app imports, because a
  * bundler tracks CSS files and rebuilds when they change but does not track
  * JSON required by this config. An app that skips that step gets no colours at
  * all, which is the loud failure the arrangement is designed for.

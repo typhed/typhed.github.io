@@ -72,7 +72,7 @@ in dark, indigo leads in light. When a component page lists "Colors And Tokens",
     size. Spacing never references it, so larger type is not page zoom. An arbitrary `text-[...]` value opts out by
     default and needs an explicit `calc` to follow the control.
 
-## 🤖 Notes For LLM Agents
+## ✅ Editing Rules
 
 Read this before changing any component.
 

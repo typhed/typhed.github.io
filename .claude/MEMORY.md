@@ -7,6 +7,9 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 
   * Keep all Claude context in this repository: memory here, plans and progress in `.claude/docs/tasks/`, old plans in
     `.claude/docs/archive/`. Never write any of it under `~/.claude/`.
+  * `docs/` is the single source for architecture, product, and design; `.claude/docs/` holds harness material only
+    (gaps, tasks, archive) and points into `docs/`, never copying a page.
+  * The sites are WIP: keep docs lean and factual; do not write down everything discussed.
   * Architecture decisions go to `docs/adr/` as dated records (`YYYY-MM-DD-<slug>.md`: Status, Context, Decision,
     Consequences), listed in `docs/adr/README.md`.
   * Never squash, rebase, amend, or rewrite history; imported commits keep their SHA, message, author, and date.

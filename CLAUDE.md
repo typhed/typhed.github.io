@@ -1,110 +1,73 @@
-# CLAUDE.md
+# TyPhed Monorepo
 
-@shared/documents/claude/brand.md
-@shared/documents/claude/conventions.md
-@shared/documents/claude/shared-workflow.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. The brand context,
-the shared conventions, and the submodule workflow come from the three imports above, which every TyPhed repository
-loads. Everything below is true of this repository only.
-
-<!-- If those imports resolve to nothing, the submodules are not checked out.
-     Run: git submodule update --init --recursive -->
-
-## What This Repo Is
-
-A pnpm + Turborepo monorepo that builds two independent artifacts and publishes them to one GitHub Pages site at
-`typhed.com`:
-
-  * `apps/web` - a Next.js 15 (App Router, React 19) site exported to static HTML.
-  * `permalink/` - a Python + Jinja2 generator that renders zero-cost redirect pages served under `/permalink/`.
-
-The two are stitched together at deploy time: the redirect pages are generated into the web app's export output, so the
-site and its redirects ship in a single Pages deployment.
-
-Two further directories are **git submodules**, not part of this repository:
-
-  * `shared/documents/` - [typhed/shared.documents](https://github.com/typhed/shared.documents): the `@typhed/brand`
-    contract, design tokens, brand assets, and the brand documentation.
-  * `shared/components/` - [typhed/shared.components](https://github.com/typhed/shared.components): `@typhed/ui`, the
-    Tailwind preset, the tsconfig bases, and the component reference docs.
-
-Both join this pnpm workspace, so `@typhed/ui` and `@typhed/brand` import as ordinary packages. Editing anything under
-`shared/` changes every TyPhed property, and needs its own commit inside the submodule. The imported shared workflow
-covers the rules and the commands.
-
-## Scope
-
-This repository is the **brand and acquisition layer** described in the imported brand context, and
-[docs/PRD.md](docs/PRD.md) is the source of truth for what belongs on it. Read it before adding a page,
-a route, or a feature.
-
-## Reference Docs (Read Before Editing)
-
-  * [docs/architecture.md](docs/architecture.md) - how *this* repository is built and why: the static export model, the
-    task graph, the shared submodule layer, theming, auth, the redirect generator, the deploy pipeline, and the
-    constraints that hold them together.
-  * [docs/PRD.md](docs/PRD.md) - what this site is for and what belongs on it. It governs `typhed.com` only; every
-    other TyPhed property keeps its own PRD in its own repository, and the shared
-    [subdomain-model.md](shared/documents/docs/brand/subdomain-model.md) covers how they are laid out.
-  * [shared/components/docs/components/README.md](shared/components/docs/components/README.md) - the component library
-    reference (props, variants, accessibility, do's and don'ts). One page per durable component.
-  * [shared/documents/docs/design/](shared/documents/docs/design/) - the colour, spacing, and typography references. The
-    values themselves live in [shared/documents/brand/tokens/](shared/documents/brand/tokens/).
+This monorepo builds the TyPhed web estate: the brand hub `apps/web` (typhed.com) and two product subdomains,
+`apps/trading` (trading.typhed.com) and `apps/blogging` (blog.typhed.com). Each app is a Next.js 15 static export served
+by its own Cloudflare Worker, and all three render one shared brand layer from `packages/`. The rule every change keeps:
+one source of truth, so a value lives in exactly one place and everything else reads it.
 
 ## Commands
 
-Run from the repo root unless noted. Turbo fans each script out across the workspace.
+```shell
+# install once (Node 20.9+, pnpm via corepack, Python 3.13 for the web build)
+$ corepack enable && pnpm install && pip install -r permalink/requirements.txt
 
-| Command | What It Does |
-| :---: | --- |
-| `corepack enable && pnpm install` | One-time setup. Also initialises the submodules. pnpm version is pinned in `package.json` (`packageManager`). |
-| `pnpm dev` | Run the site locally with hot reload at `localhost:3000`. |
-| `pnpm build` | Produce the static export into `apps/web/out`. |
-| `pnpm lint` | ESLint across the workspace. |
-| `pnpm typecheck` | `tsc --noEmit` across the workspace. |
-| `pnpm format` / `pnpm format:check` | Prettier write / check. |
-| `pnpm clean` | Remove build output and `node_modules`. |
-| `pnpm shared:update` | Fast-forward both submodules to their branch tip, then reinstall. |
-| `pnpm shared:status` | Show uncommitted or unpushed work inside either submodule. |
-| `pnpm --filter web <script>` | Run a single package's script, for example `pnpm --filter web build`. |
-| `pip install -r permalink/requirements.txt` | Install the redirect generator dependency (Jinja2). Python 3.13. |
-| `python permalink/src/build.py` | Render redirect pages from `links.toml`. Override paths with `--config`, `--template`, `--output` (default output is `permalink/dist`). |
-| `pnpm dlx serve apps/web/out` | Preview the built static site (a plain file server; the export has no Node runtime). |
+# run every app (web 3000, trading 3001, blogging 3002), or one
+$ pnpm dev
+$ pnpm --filter trading dev
 
-There is no automated test suite. The quality gates are `pnpm lint` and `pnpm typecheck`; CI additionally runs the
-production build. Requires Node 20+ (CI builds on Node 22).
+# the gates CI runs
+$ pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+
+# one test file, or one test by name
+$ pnpm --filter @typhed/risk-toolkit exec vitest run test/stats.test.ts
+$ pnpm --filter trading exec vitest run -t "<test name>"
+
+# serve a built app exactly as Cloudflare does (web 8787, trading 8788, blogging 8789)
+$ pnpm --filter web preview
+```
 
 ## Architecture
 
-The architecture reference is [docs/architecture.md](docs/architecture.md). Read it before changing build configuration,
-the package graph, theming, authentication, or the deploy workflow, rather than inferring the design from the code. Do
-not restate it here; keep new architectural detail in that file. It covers:
+  * **Apps** (`apps/*`): static exports; the folder name is the package name and the Worker name suffix (`typhed-<app>`).
+  * **Brand** (`packages/brand`): brand JSON, `properties.json` (one entry per app), tokens, artwork, and the
+    `typhed-brand-sync` bin that writes each app's `app/theme.css` and `public/brand/` before every dev run and build.
+  * **Shell** (`packages/ui`): `SiteShell` renders the identical header and footer, plus a property's sidebar menu.
+  * **Auth** (`packages/auth`): the only package that imports Clerk; `@typhed/ui` takes auth as a slot.
+  * **Config** (`packages/config-*`): `createNextConfig()`, the Tailwind preset and shared content globs, tsconfig bases.
+  * **Deploy**: `.github/workflows/deploy.yml` deploys every affected app that has an `apps/*/wrangler.jsonc`.
 
-  * The static export model: no runtime, `trailingSlash`, `images.unoptimized`, and which Next.js features are therefore
-    unavailable.
-  * The pnpm workspace layout across this repository and the two submodules, and the Turborepo task graph.
-  * How the shared packages are consumed from source, and how a shared change reaches this site.
-  * Theming, the page shell, the scroll model, and the Server / Client component boundary.
-  * Client-side Clerk authentication and where the publishable key comes from in local development and in CI.
-  * The permalink redirect generator and the release-triggered deployment pipeline.
-  * The load bearing constraints a change must not break.
+## Rules
 
-## Conventions
+  1. Never invent copy, logos, or icons. Take values from `packages/brand` or existing strings, and record anything
+     missing in `.claude/docs/gaps.md`.
+  2. Never hardcode a brand string, link, or colour; edit the JSON in `packages/brand` (colours in `tokens/`).
+  3. A change in `packages/` reaches every site: add the new shape, migrate the apps, then remove the old one.
+  4. Keep `@typhed/ui` auth-free and property-neutral; property-only behaviour stays in its app or behind a prop.
+  5. Adding analytics, tracking, or any third-party tag that observes visitors is a brand decision: ask first.
+  6. Never rewrite history (no squash, rebase, or amend); land work with a merge commit or a fast-forward.
+  7. Docs describe what exists, in present tense, once. Architecture, product, and design live in `docs/`; decisions
+     are dated records in `docs/adr/`. `.claude/docs/` holds harness material only and points into `docs/`.
+  8. Markdown follows `markdown-format` and `humanize-text`; commits follow `git-commiter`.
+  9. Do not tune code or config to one machine; record environment problems for the owner instead.
+  10. Update the docs a change affects as the last step of the change.
 
-Shared conventions (colour tokens, the spacing and type system, markdown and commit skills) are in the imported
-`conventions.md`. These are specific to this repository:
+## Read Only What The Task Needs
 
-  * **The current landing page is temporary.** `apps/web` renders a work-in-progress holding page. Its WIP-only
-    components (`WipLanding`, `CountdownTimer`, `LaunchProgress`) are deliberately excluded from the component docs and
-    are slated for replacement by the brand hub described in the PRD. Do not document them or treat them as the permanent
-    product architecture.
-  * **The header height and `scroll-padding-top` are a sync pair.** `scroll-padding-top: 4rem` in
-    [globals.css](apps/web/app/globals.css) offsets the sticky `h-16` header. Change one and you must change the other.
-  * **`globals.css` no longer holds the palette.** Both themes are generated into `apps/web/app/theme.css` from
-    [colors.json](shared/documents/brand/tokens/colors.json), and `layout.tsx` imports that file first. What remains in
-    `globals.css` is the scroll model, scrollbar hiding, and the selection colour. Do not reintroduce `:root` or `.dark`
-    token blocks in either file.
-  * **Two paths are generated, not authored.** `apps/web/app/theme.css` and `apps/web/public/brand/` are written by the
-    `sync:shared` script before every dev run and build, and both are gitignored. Edit the colour tokens and the artwork
-    in [shared/documents](shared/documents) instead; anything written to the generated paths is overwritten.
+Read the row that matches the task, never a whole directory.
+
+| Task Touches | Read |
+| :---: | --- |
+| Product scope, a new page or feature | `docs/PRD.md` |
+| Build, workspace, packages, theming, shell, auth, redirects, deploy | `docs/architecture.md` |
+| Why something is built the way it is | `docs/adr/README.md`, then the dated record |
+| A shared component in `packages/ui` | `docs/components/README.md`, then the component's page |
+| Colours, spacing, type | `docs/design/colors.yml`, `spacing.yml`, `typography.yml` |
+| Domains, DNS, Workers, adding a subdomain | `docs/brand/subdomain-model.md` |
+| An app's local setup and layout | `apps/<app>/README.md` |
+| Open questions for the owner | `.claude/docs/gaps.md` |
+| Work in progress and the cutover checklist | `.claude/docs/tasks/` |
+| Past plans (only when asked) | `.claude/docs/archive/` |
+
+## Memory
+
+@.claude/MEMORY.md
