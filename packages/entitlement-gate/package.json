@@ -1,5 +1,5 @@
 {
-  "name": "@typhed/serverless-gate",
+  "name": "@typhed/entitlement-gate",
   "version": "0.0.0",
   "private": true,
   "description": "Server-side entitlement gate for protected computations - deployed separately from the static site.",
@@ -12,6 +12,6 @@
   },
   "devDependencies": {
     "@typhed/tsconfig": "workspace:*",
-    "typescript": "^5.7.3"
+    "typescript": "catalog:"
   }
 }

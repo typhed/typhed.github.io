@@ -11,9 +11,9 @@
   ],
   "dependencies": {
     "@typhed/brand": "workspace:*",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "catalog:"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "catalog:"
   }
 }
