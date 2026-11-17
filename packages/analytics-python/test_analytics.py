@@ -3,9 +3,10 @@
 """
 Reference Test For The In-Browser Analytics Module
 
-Validates ``apps/web/public/py/analytics.py`` (the exact file Pyodide runs in
-the browser) against scipy and closed-form results, using the Anaconda
-interpreter. This is the accuracy oracle for the Phase 5 Python lane.
+Validates ``apps/trading/public/py/analytics.py`` (the exact file
+Pyodide runs in the browser) against scipy and closed-form results,
+using the Anaconda interpreter. This is the accuracy oracle for the
+Phase 5 Python lane.
 
 :NOTE: Run with the Anaconda interpreter that has numpy and scipy, e.g.
     ``C:/Users/<user>/anaconda3/python.exe packages/analytics-python/test_analytics.py``.
@@ -18,7 +19,8 @@ import numpy as np
 from scipy import stats
 
 ANALYTICS_PATH : pathlib.Path = (
-    pathlib.Path(__file__).resolve().parents[2] / "apps" / "web" / "public" / "py" / "analytics.py"
+    pathlib.Path(__file__).resolve().parents[2]
+    / "apps" / "trading" / "public" / "py" / "analytics.py"
 )
 
 
