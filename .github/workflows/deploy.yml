@@ -1,41 +1,30 @@
-name: Deploy Main Site to GitHub Pages
+name: Deploy to Cloudflare Workers
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [master]
   workflow_dispatch:
+    inputs:
+      apps:
+        description: "Apps to deploy: all, or a comma-separated list such as web,trading"
+        required: true
+        default: all
 
-# Allow the workflow to publish to GitHub Pages.
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-# Only one Pages deployment at a time; do not cancel an in-flight deploy.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build Static Export
+  targets:
+    name: Pick Apps
     runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.pick.outputs.apps }}
     steps:
+      # Full history, so Turborepo can compare against the previous master tip.
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
-
-      # actions/checkout restores each submodule at the commit this repository
-      # has recorded, which goes stale as soon as a shared repository moves. The
-      # --remote update fast-forwards both to their branch tip, so every release
-      # build compiles the newest shared code with no pointer bump anywhere. The
-      # explicit fetch is required because checkout clones submodules shallow.
-      - name: Follow the shared branches
-        run: |
-          git submodule foreach git fetch --tags origin
-          git submodule update --remote --merge
-          git submodule status
+          fetch-depth: 0
 
       # Version is read from the "packageManager" field in package.json.
       - name: Setup Package Manager (pnpm)
@@ -47,26 +36,45 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      # Not --frozen-lockfile: floating the submodules above can introduce a
-      # dependency this lockfile has never seen, and a frozen install fails on
-      # exactly that. Reproducibility is traded for propagation deliberately;
-      # see MIGRATION.md in shared.documents for the reasoning and the way back.
       - name: Install Dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
-      - name: Build apps/web for Release
-        # Public Clerk publishable key, injected from a repository Variable
-        # (not a Secret, since it ships to the browser). See setup.md ->
-        # "Add Login and Sign Up With Clerk".
+      # Every apps/<name> with a wrangler.jsonc is deployable; a push deploys
+      # the ones affected since the previous tip, a manual run the ones named.
+      - name: List Apps To Deploy
+        id: pick
         env:
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-        run: pnpm --filter web build
+          DEPLOY_APPS: ${{ github.event_name == 'workflow_dispatch' && inputs.apps || 'affected' }}
+          TURBO_SCM_BASE: ${{ github.event.before }}
+        run: echo "apps=$(node scripts/deploy-targets.mjs)" >> "$GITHUB_OUTPUT"
 
-      - name: Configure GH Pages
-        uses: actions/configure-pages@v5
+  deploy:
+    name: Deploy ${{ matrix.app }}
+    needs: targets
+    if: needs.targets.outputs.apps != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJSON(needs.targets.outputs.apps) }}
+    # One deployment per app at a time; never cancel one in flight.
+    concurrency:
+      group: deploy-${{ matrix.app }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Generate the permalink redirect pages into the static export so the
-      # site and its /permalink/ redirects publish together in one deploy.
+      - name: Setup Package Manager (pnpm)
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # The web app's build renders the permalink redirect pages.
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -75,28 +83,35 @@ jobs:
           cache-dependency-path: permalink/requirements.txt
 
       - name: Install Redirect Generator Dependencies
-        run: python -m pip install --upgrade pip -r permalink/requirements.txt
+        run: python -m pip install -r permalink/requirements.txt
 
-      - name: Generate Permalink Redirects
-        run: >-
-          python permalink/src/build.py
-          --config permalink/config/links.toml
-          --template permalink/src/templates/redirect.jinja
-          --output apps/web/out/permalink
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: apps/web/out
+      # Every NEXT_PUBLIC_* repository Variable reaches every build, so a new
+      # public value needs a Variable, not a workflow edit. They ship to the
+      # browser, so they are Variables, not Secrets.
+      - name: Export Public Build Variables
+        env:
+          REPOSITORY_VARIABLES: ${{ toJSON(vars) }}
+        run: |
+          echo "$REPOSITORY_VARIABLES" \
+            | jq -r 'to_entries[] | select(.key | startswith("NEXT_PUBLIC_")) | "\(.key)=\(.value)"' \
+            >> "$GITHUB_ENV"
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy Artifacts
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Require The Clerk Publishable Key
+        run: |
+          if [ -z "${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}" ]; then
+            echo "::error::Repository Variable NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not set."
+            exit 1
+          fi
+
+      - name: Build ${{ matrix.app }}
+        run: pnpm turbo run build --filter=${{ matrix.app }}
+
+      - name: Deploy ${{ matrix.app }} To Cloudflare
+        working-directory: apps/${{ matrix.app }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm exec wrangler deploy

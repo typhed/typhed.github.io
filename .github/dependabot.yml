@@ -1,22 +1,16 @@
-# CI already floats both submodules to their branch tip, so a shared change
-# reaches the built site without any pull request. This exists for the other
-# half of the problem: keeping the RECORDED submodule pointer current, so a
-# fresh local clone is not months behind what CI actually builds.
-#
-# It needs no secret and no token.
-
+# Version updates for the whole monorepo. pnpm resolves every shared
+# dependency through the catalog in pnpm-workspace.yaml, so one pull request
+# moves every app and package together.
 version: 2
 updates:
-  - package-ecosystem: "gitsubmodule"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     commit-message:
       prefix: "⬆️"
-    labels:
-      - "shared-layer"
 
-  - package-ecosystem: "npm"
+  - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
