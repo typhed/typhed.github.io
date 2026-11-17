@@ -7,7 +7,7 @@
 <div align = "justify">
 
 `BrandLockup` renders the full TyPhed lockup: the mark, the "TyPhed" wordmark, and the "Engineering Tomorrow" tagline, as
-the official artwork published in [assets/brand/lockup](https://github.com/typhed/shared.documents/tree/master/assets/brand/lockup) and synced into each app's
+the official artwork published in [assets/brand/lockup](../../packages/brand/assets/lockup) and synced into each app's
 `public/brand`. Two theme-specific
 files exist because the tagline gradient and the wordmark are tuned per theme, so the component renders both and toggles
 between them with the `.dark` class rather than swapping in JavaScript. The correct lockup is therefore visible from first
@@ -19,8 +19,8 @@ It is a Server Component. For the compact header identity (mark plus wordmark, n
 ## Source And Import
 
   * **Source**: [packages/ui/components/brand-lockup.tsx](../../packages/ui/components/brand-lockup.tsx)
-  * **Assets**: [typhed-lockup-light.svg](https://github.com/typhed/shared.documents/blob/master/assets/brand/lockup/typhed-lockup-light.svg) and
-    [typhed-lockup-dark.svg](https://github.com/typhed/shared.documents/blob/master/assets/brand/lockup/typhed-lockup-dark.svg)
+  * **Assets**: [typhed-lockup-light.svg](../../packages/brand/assets/lockup/typhed-lockup-light.svg) and
+    [typhed-lockup-dark.svg](../../packages/brand/assets/lockup/typhed-lockup-dark.svg)
 
 ```tsx
 import { BrandLockup } from "@typhed/ui/components/brand-lockup"
@@ -53,7 +53,7 @@ gives the lockup a stable accessible name regardless of the active theme.
 | Light / dark switch | `block dark:hidden` and `hidden dark:block` (driven by the `.dark` class) |
 
 The lockup files carry their own hardcoded colours because a static asset cannot read CSS variables; see the
-`static_assets` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml). Two files exist so each theme gets its tuned tagline gradient
+`static_assets` block in [colors.yml](../design/colors.yml). Two files exist so each theme gets its tuned tagline gradient
 and wordmark. Keep both in the brand colour family on any rebrand.
 
 ## Examples

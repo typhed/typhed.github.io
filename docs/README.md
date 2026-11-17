@@ -34,7 +34,7 @@ time. Change a value in the JSON, then update the YAML in the same commit so the
 ## 🧩 Component Reference
 
 Component pages live with the code they describe, in
-[typhed/shared.components](https://github.com/typhed/shared.components/tree/master/docs/components). Keeping them in one
+[typhed/shared.components](components). Keeping them in one
 repository is what lets a documentation fix ride along with the change that caused it.
 
 ## 🤖 Notes For Agents
@@ -42,7 +42,7 @@ repository is what lets a documentation fix ride along with the change that caus
   * These pages describe the brand across every property. A rule that applies to one site belongs in that site's own
     documentation, not here. That is why the PRDs live in the repositories they govern.
   * The design YAML files record file paths as they appear **from a consuming repository**, for example
-    `shared/components/packages/ui/components/site-footer.tsx`. That is where the developer actually works.
+    `packages/ui/components/site-footer.tsx`. That is where the developer actually works.
   * A colour, spacing, or type change is never only a documentation change. Update the JSON token, the YAML reference,
     and any baked asset listed in the `static_assets` block of [design/colors.yml](design/colors.yml).
 

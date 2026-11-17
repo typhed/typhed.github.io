@@ -16,14 +16,14 @@ The header never resizes itself. [FontSizeToggle](font-size-toggle.md) only reac
 `main`, so the toolbar keeps the stock type at every step, as do the footer and the copyright bar.
 
 It is a Server Component. Both the desktop and mobile nav read `NAV_LINKS` and `LOGIN_CTA` from
-[@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts), so the two never drift. The
+[@typhed/brand](../../packages/brand/index.ts), so the two never drift. The
 `FontSizeToggle`, `ThemeToggle`, and `MobileNav` children are Client Components that handle their own state and
 interactivity.
 
 ## Source And Import
 
   * **Source**: [packages/ui/components/site-header.tsx](../../packages/ui/components/site-header.tsx)
-  * **Data**: `NAV_LINKS`, `LOGIN_CTA`, and `SITE` from [@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts)
+  * **Data**: `NAV_LINKS`, `LOGIN_CTA`, and `SITE` from [@typhed/brand](../../packages/brand/index.ts)
   * **Depends on**: [BrandMark](brand-mark.md), [FontSizeToggle](font-size-toggle.md), [ThemeToggle](theme-toggle.md),
     [Button](button.md), [MobileNav](#mobile-nav)
 
@@ -62,7 +62,7 @@ size and then reflow. The tag is `display: none` and never affects layout.
      hosts arrives from `@typhed/brand` as a full URL, so the nav still reaches `typhed.com` when this header renders on
      a product subdomain.
   3. **Login / Sign Up** (hidden on mobile, shown md and above): a `Button variant="default" size="sm"` as an anchor. The
-     label and href come from `LOGIN_CTA` in [@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts), so both desktop and
+     label and href come from `LOGIN_CTA` in [@typhed/brand](../../packages/brand/index.ts), so both desktop and
      mobile use the same CTA text and destination. Currently links to `#` (placeholder until the auth flow exists).
   4. **Font Size Toggle**: a [FontSizeToggle](font-size-toggle.md) pair of buttons, a small "A" and a larger one,
      stepping the page content through seven text sizes, 2.5px apart. It sets `--font-scale-setting`, which only reaches
@@ -87,7 +87,7 @@ The `MobileNav` child component is a Client Component that handles the hamburger
 
 ## Colors And Tokens
 
-See the `usage.header_backdrop` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml).
+See the `usage.header_backdrop` block in [colors.yml](../design/colors.yml).
 
 | Element | Token / Class |
 | :---: | :---: |

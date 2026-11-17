@@ -22,7 +22,7 @@
 #
 #   1) The variables are attached to <html> via the className, so they are in
 #      scope for the whole tree including portals.
-#   2) shared/components/packages/config-tailwind/tailwind.config.js maps them under
+#   2) packages/config-tailwind/tailwind.config.js maps them under
 #      theme.extend.fontFamily, each with a real system fallback stack.
 #   3) <body> carries `font-sans`, so Inter is the default and `font-display`
 #      is an explicit opt-in per element.
@@ -47,7 +47,7 @@
 meta:
   project: "TyPhed - Engineering Tomorrow"
   owner: "TyPhed (autonomous brand; no parent entity)"
-  source_of_truth: "apps/web/app/layout.tsx (loading) + shared/components/packages/config-tailwind/tailwind.config.js (mapping)"
+  source_of_truth: "apps/web/app/layout.tsx (loading) + packages/config-tailwind/tailwind.config.js (mapping)"
   body_font: "Inter"
   display_font: "Space Grotesk"
   root_font_size: "16px"
@@ -92,7 +92,7 @@ families:
       - "brand-mark.tsx       - the 'TyPhed' wordmark in the header"
       - "countdown-timer.tsx  - the countdown digits, the ':' separators, and the 'We are live.' state"
     not_used_by: >
-      CardTitle (shared/components/packages/ui/components/ui/card.tsx) is text-2xl font-semibold
+      CardTitle (packages/ui/components/ui/card.tsx) is text-2xl font-semibold
       and inherits font-sans. It looks like a display heading and is not one.
       Noted here so nobody assumes the primitive carries the brand face.
 
@@ -160,7 +160,7 @@ fluid_headings:
     viewport. A fixed text-6xl overflows a short laptop window and pushes the
     countdown out of view, so both h1s scale with the viewport instead.
   home:
-    file: "shared/components/packages/ui/components/wip-landing.tsx"
+    file: "packages/ui/components/wip-landing.tsx"
     class: "text-[clamp(2.25rem,8vmin,4.5rem)]"
     range: "36px -> 72px"
   about:
@@ -218,7 +218,7 @@ treatments:
       - "countdown unit labels        - uppercase utility, countdown-timer.tsx"
       - "the 'Launch progress' label  - uppercase utility, launch-progress.tsx"
     data_driven:
-      - "footer column headings ('PRODUCTS', 'RESOURCES') are stored uppercase in shared/documents/brand/navigation.json"
+      - "footer column headings ('PRODUCTS', 'RESOURCES') are stored uppercase in packages/brand/navigation.json"
     gotcha: >
       The footer headings carry NO uppercase utility. Searching the components
       for `uppercase` will not find them. To change their casing, edit
@@ -304,7 +304,7 @@ og_card:
     build-time raster. If you restyle the site's type, update this file by hand
     or the share card will look like a different brand.
   brand_artwork: >
-    The mark, lockup, and favicon SVGs under shared/documents/assets/brand/ carry their
+    The mark, lockup, and favicon SVGs under packages/brand/assets/ carry their
     own baked lettering. A change to the display font means re-exporting that
     artwork, not editing CSS.
 
@@ -319,12 +319,12 @@ change_guide:
   to_add_a_font:
     - "1. Import it from next/font/google in apps/web/app/layout.tsx with subsets and display: 'swap'."
     - "2. Give it a `variable` (--font-<name>) and add that variable to the <html> className."
-    - "3. Map it under theme.extend.fontFamily in shared/components/packages/config-tailwind/tailwind.config.js, ending with a system fallback stack."
+    - "3. Map it under theme.extend.fontFamily in packages/config-tailwind/tailwind.config.js, ending with a system fallback stack."
     - "4. Only then use font-<name> in components."
     - "Do not add the import to packages/ui - the app owns font loading, the package owns usage."
   to_change_the_display_font:
     - "Update the next/font import and the preset mapping together."
-    - "Re-export the brand artwork under shared/documents/assets/brand/ (mark, lockup, favicons) - the lettering is baked in."
+    - "Re-export the brand artwork under packages/brand/assets/ (mark, lockup, favicons) - the lettering is baked in."
     - "Update apps/web/app/opengraph-image.tsx by hand."
     - "Re-check both h1 clamps: a wider face at clamp ceiling can wrap to three lines and break the one-viewport section."
   to_add_a_page_headline:

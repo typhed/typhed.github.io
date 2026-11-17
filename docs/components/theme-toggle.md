@@ -51,7 +51,7 @@ It is a native `<button type="button" role="switch" aria-checked={isDark}>` that
 
 ## Colors And Tokens
 
-See the `usage.theme_toggle` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml).
+See the `usage.theme_toggle` block in [colors.yml](../design/colors.yml).
 
 | Element | Token / Class |
 | :---: | :---: |

@@ -16,13 +16,13 @@
 #
 #  1) RUNTIME THEME TOKENS  (everything rendered by React + Tailwind)
 #     - Defined as HSL triplets in the brand contract:
-#         shared/documents/brand/tokens/colors.json  ->  themes.light / themes.dark
-#     - Emitted as CSS custom properties on :root (light) and .dark (dark)
-#       by the shared Tailwind preset, so no app declares the palette itself
+#         packages/brand/tokens/colors.json  ->  themes.light / themes.dark
+#     - Written as CSS custom properties on :root (light) and .dark (dark)
+#       into each app's app/theme.css by typhed-brand-sync, so no app declares the palette itself
 #     - The HSL triplet is the SOURCE OF TRUTH. Values are stored WITHOUT the
 #       hsl() wrapper, e.g.  --brand: 188 86% 53%
 #     - Mapped to Tailwind color utilities in:
-#         shared/components/packages/config-tailwind/tailwind.config.js
+#         packages/config-tailwind/tailwind.config.js
 #       via  "hsl(var(--token))"  so classes like bg-brand / text-foreground
 #       resolve to the active theme automatically.
 #     - Apps consume the preset:
@@ -37,7 +37,7 @@
 #         apps/web/app/opengraph-image.tsx  (1200x630 social card)
 #         apps/web/app/manifest.ts          (PWA background_color / theme_color)
 #         apps/web/app/layout.tsx           (viewport.themeColor + tile meta)
-#         shared/documents/assets/brand/            (mark, lockup, favicon artwork)
+#         packages/brand/assets/            (mark, lockup, favicon artwork)
 #     - IMPORTANT: these do NOT equal the HSL token hexes exactly. They use the
 #       clean Tailwind palette hexes (#22D3EE, #6366F1) and a dedicated brand
 #       navy (#0B1020) that is distinct from the dark --background (#080C1C).
@@ -60,7 +60,7 @@
 meta:
   project: "TyPhed - Engineering Tomorrow"
   owner: "TyPhed (autonomous brand; no parent entity)"
-  source_of_truth: "shared/documents/brand/tokens/colors.json"
+  source_of_truth: "packages/brand/tokens/colors.json"
   token_format: "HSL triplet without hsl() wrapper, e.g. '188 86% 53%'"
   hex_case: "UPPERCASE"
   default_theme: "dark"
@@ -363,11 +363,11 @@ usage:
         per-theme /brand/lockup files. Their gradients are baked into the assets
         (see static_assets); only the BrandMark wordmark uses tokens.
       files:
-        - "shared/components/packages/ui/components/brand-mark.tsx"
-        - "shared/components/packages/ui/components/brand-lockup.tsx"
+        - "packages/ui/components/brand-mark.tsx"
+        - "packages/ui/components/brand-lockup.tsx"
 
   abstract_background:
-    file: "shared/components/packages/ui/components/abstract-background.tsx"
+    file: "packages/ui/components/abstract-background.tsx"
     layers:
       top_glow: "radial-gradient ellipse at 50% -10% of hsl(var(--brand)/0.18) -> transparent"
       masked_grid: "two linear-gradients of hsl(var(--border)) 1px lines, 64px cells, opacity 0.35, radial mask"
@@ -378,7 +378,7 @@ usage:
     note: "All layers are token-driven, so the backdrop recolors with the theme."
 
   glass_tiles:
-    file: "shared/components/packages/ui/components/countdown-timer.tsx"
+    file: "packages/ui/components/countdown-timer.tsx"
     fill: "bg-card/40 + backdrop-blur-xl"
     border: "border-border/60"
     shadow: "shadow-lg shadow-brand/5  (brand-tinted soft shadow at 5% alpha)"
@@ -387,13 +387,13 @@ usage:
     colon_separator: "text-brand/50 (the ':' between unit tiles)"
 
   launch_progress:
-    file: "shared/components/packages/ui/components/launch-progress.tsx"
+    file: "packages/ui/components/launch-progress.tsx"
     track: "bg-secondary/60 with border-border/50"
     fill: "from-brand via-brand to-brand-2"
     fill_glow: "shadow-[0_0_12px_hsl(var(--brand)/0.55)]  (brand bloom at 55% alpha)"
 
   theme_toggle:
-    file: "shared/components/packages/ui/components/theme-toggle.tsx"
+    file: "packages/ui/components/theme-toggle.tsx"
     description: "A sliding switch with a dual-glyph track and animated knob."
     track: "border-border, bg-secondary"
     track_icons: "text-muted-foreground  (both Sun and Moon glyphs at rest)"
@@ -402,7 +402,7 @@ usage:
     hover: "hover:border-brand/50"
 
   header_backdrop:
-    file: "shared/components/packages/ui/components/site-header.tsx"
+    file: "packages/ui/components/site-header.tsx"
     background: "bg-background/70 with backdrop-blur-md  (translucent blend so content reads behind)"
     top_border: "border-border/40"
     logo_link_focus: "focus-visible:ring-2 focus-visible:ring-ring"
@@ -412,7 +412,7 @@ usage:
     mobile_link_hover: "hover:bg-accent hover:text-foreground"
 
   scroll_to_top:
-    file: "shared/components/packages/ui/components/scroll-to-top.tsx"
+    file: "packages/ui/components/scroll-to-top.tsx"
     description: "A back-to-top button fixed at the bottom-center viewport."
     button_border_resting: "border-border"
     button_background: "bg-background/70 with backdrop-blur-md  (translucent frosted glass)"
@@ -422,7 +422,7 @@ usage:
     focus_ring: "ring-ring"
 
   footer_surface:
-    file: "shared/components/packages/ui/components/site-footer.tsx"
+    file: "packages/ui/components/site-footer.tsx"
     description: "Footer grid, five equal columns on lg: brand column (BrandLockup alone), the PRODUCTS, RESOURCES and DISCLAIMER-over-COMMUNITY link columns, and the contact column."
     background: "bg-card with gradient-to-b from-brand/5 to-brand-2/5  (faint on-brand wash)"
     top_border: "border-border"
@@ -463,19 +463,19 @@ role_map:
 # =============================================================================
 change_guide:
   to_recolor_the_theme:
-    - "Edit the HSL triplet in shared/documents/brand/tokens/colors.json (themes.light / themes.dark)."
+    - "Edit the HSL triplet in packages/brand/tokens/colors.json (themes.light / themes.dark)."
     - "Do NOT paste hex into colors.json - the tokens are HSL and Tailwind wraps them in hsl()."
-    - "One edit reaches every property: the shared preset emits the variables at build time."
+    - "One edit reaches every property: typhed-brand-sync writes the variables into every app's theme.css at build time."
     - "Never hardcode a Tailwind color (e.g. text-cyan-400) in a component - use the token class (text-brand)."
   to_add_a_new_token:
     - "1. Add the token to BOTH themes.light.vars and themes.dark.vars in brand/tokens/colors.json."
-    - "2. Map it under theme.extend.colors in shared/components/packages/config-tailwind/tailwind.config.js as 'hsl(var(--token))'."
+    - "2. Map it under theme.extend.colors in packages/config-tailwind/tailwind.config.js as 'hsl(var(--token))'."
     - "3. Then use bg-token / text-token etc. in components."
   when_changing_brand_colors_also_update_static_assets:
     - "apps/web/app/opengraph-image.tsx (all hardcoded hexes listed above)"
     - "apps/web/app/manifest.ts         (#0B1020 background/theme color)"
     - "apps/web/app/layout.tsx          (viewport.themeColor light #F8FAFC / dark #0B1020, tile color)"
-    - "shared/documents/assets/brand/           (mark, lockup, favicon artwork - master brand files)"
+    - "packages/brand/assets/           (mark, lockup, favicon artwork - master brand files)"
     - "Reason: raster/SVG/meta colors can't read CSS vars; they drift silently."
   alpha_convention:
     - "Opacity is applied with the /NN suffix (e.g. bg-brand/20, border-border/60)."

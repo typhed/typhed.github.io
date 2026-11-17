@@ -17,14 +17,14 @@ the blog, the LinkedIn career page) are marked `external` in constants, open in 
 glyph so the visitor sees the jump coming.
 
 It is a Server Component. The columns, copy, and social links come from
-[@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts), and the colors are pure theme tokens (a faint brand wash over the
+[@typhed/brand](../../packages/brand/index.ts), and the colors are pure theme tokens (a faint brand wash over the
 card surface) so the footer recolors with both light and dark themes automatically.
 
 ## Source And Import
 
   * **Source**: [packages/ui/components/site-footer.tsx](../../packages/ui/components/site-footer.tsx)
   * **Data**: `CONTACT_EMAIL`, `COPYRIGHT`, `FOOTER_COLUMN_GROUPS`, `PRIVACY_LINK`, and `SOCIAL_LINKS` from
-    [@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts)
+    [@typhed/brand](../../packages/brand/index.ts)
   * **Depends on**: [BrandLockup](brand-lockup.md)
 
 ```tsx
@@ -81,7 +81,7 @@ back to two columns and then to one, so the five column row is a large-screen ru
 
 ## Colors And Tokens
 
-See the `usage.footer_surface` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml).
+See the `usage.footer_surface` block in [colors.yml](../design/colors.yml).
 
 | Element | Token / Class |
 | :---: | :---: |

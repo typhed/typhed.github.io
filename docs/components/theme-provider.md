@@ -40,9 +40,9 @@ Any other `next-themes` prop (`storageKey`, `themes`, `forcedTheme`, and so on) 
 ## How It Connects To The Tokens
 
 `attribute="class"` is the link between this provider and the color system. The dark palette in
-[brand/tokens/colors.json](https://github.com/typhed/shared.documents/blob/master/brand/tokens/colors.json) is emitted under the `.dark` selector by the shared
-Tailwind preset, so the provider toggling that class is what
-swaps Midnight Indigo for Aurora Glass. See [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml) for the token tables.
+[brand/tokens/colors.json](../../packages/brand/tokens/colors.json) is written under the `.dark` selector into each app's `app/theme.css` by
+`typhed-brand-sync`, so the provider toggling that class is what
+swaps Midnight Indigo for Aurora Glass. See [colors.yml](../design/colors.yml) for the token tables.
 
 ## Examples
 

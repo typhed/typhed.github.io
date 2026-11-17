@@ -42,7 +42,7 @@ behind page content, and ignores the pointer. Four layers stack inside it.
 
 ## Colors And Tokens
 
-Every layer is token-driven, so the backdrop recolors automatically with the theme. See [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml)
+Every layer is token-driven, so the backdrop recolors automatically with the theme. See [colors.yml](../design/colors.yml)
 for the `usage.abstract_background` block.
 
 | Layer | Token | Alpha |

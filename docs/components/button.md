@@ -8,7 +8,7 @@
 
 `Button` is the shared shadcn-style button primitive. It uses `class-variance-authority` to expose a set of style variants
 and sizes, supports rendering as a child element through Radix `Slot`, and merges any extra classes a caller passes.
-[ThemeToggle](theme-toggle.md) is its one consumer today, but it is the base for any button the brand needs.
+`AuthControls` in `@typhed/auth` and the trading tools render it, and it is the base for any button the brand needs.
 
 It is a Server Component built with `React.forwardRef`, so it forwards a ref to the underlying element.
 
@@ -27,7 +27,7 @@ import { Button, buttonVariants } from "@typhed/ui/components/ui/button"
 
 | Prop | Type | Default | Description |
 | :---: | :---: | :---: | --- |
-| `variant` | `"default" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` | Visual style. See the variant table. |
+| `variant` | `"default" \| "brand" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` | Visual style. See the variant table. |
 | `size` | `"default" \| "sm" \| "lg" \| "icon"` | `"default"` | Sizing preset. See the size table. |
 | `asChild` | `boolean` | `false` | Render the styles onto the child element via Radix `Slot` instead of a `<button>`. |
 | `className` | `string` | `undefined` | Extra classes, merged last so they win over the variant defaults. |
@@ -41,6 +41,7 @@ variant tracks the active theme.
 | Variant | Classes | Use For |
 | :---: | --- | --- |
 | `default` | `bg-primary text-primary-foreground hover:bg-primary/90` | The primary action. |
+| `brand` | `bg-brand text-brand-foreground hover:bg-brand/90` | A call to action in the brand accent. |
 | `destructive` | `bg-destructive text-destructive-foreground hover:bg-destructive/90` | A dangerous or irreversible action. |
 | `outline` | `border border-border bg-background hover:bg-accent hover:text-accent-foreground` | A secondary action that needs an edge. |
 | `secondary` | `bg-secondary text-secondary-foreground hover:bg-secondary/80` | A lower-emphasis action. |
@@ -70,7 +71,7 @@ The base classes also give every button a focus ring (`focus-visible:ring-2 focu
 | `--border` | `outline` border |
 | `--ring` | focus ring on every variant |
 
-See [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml) for the values behind each token.
+See [colors.yml](../design/colors.yml) for the values behind each token.
 
 ## Examples
 
@@ -80,7 +81,7 @@ See [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/des
 ```
 
 ```tsx
-// Icon-only button, the shape ThemeToggle builds on.
+// Icon-only button.
 <Button variant="default" size="icon" aria-label="Toggle color theme">
   <Sun />
 </Button>

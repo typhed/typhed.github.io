@@ -145,7 +145,7 @@ press.
 
 ## Colors And Tokens
 
-See the `usage.theme_toggle` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml);
+See the `usage.theme_toggle` block in [colors.yml](../design/colors.yml);
 this control deliberately reuses the same tokens.
 
 | Element | Token / Class |

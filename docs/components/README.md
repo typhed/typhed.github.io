@@ -19,7 +19,7 @@ has its own page below that records its props, variants, anatomy, color tokens, 
 do's and don'ts that keep the UI on brand.
 
 Treat these pages as the source of truth before you touch a component. Read the relevant page and
-[docs/design/colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml) first, then change the code. Color values never live in component files
+[docs/design/colors.yml](../design/colors.yml) first, then change the code. Color values never live in component files
 directly; they resolve from theme tokens, so a color edit almost always belongs in `globals.css`, not here.
 
 ## 🧩 Component Index
@@ -34,6 +34,8 @@ component runs as a React Server Component or ships a client bundle (`"use clien
 | BrandLockup | [brand-lockup.tsx](../../packages/ui/components/brand-lockup.tsx) | Server | [brand-lockup.md](brand-lockup.md) |
 | SiteHeader | [site-header.tsx](../../packages/ui/components/site-header.tsx) | Server | [site-header.md](site-header.md) |
 | SiteFooter | [site-footer.tsx](../../packages/ui/components/site-footer.tsx) | Server | [site-footer.md](site-footer.md) |
+| SiteShell | [site-shell.tsx](../../packages/ui/components/site-shell.tsx) | Server | [site-shell.md](site-shell.md) |
+| ProductSidebar | [product-sidebar.tsx](../../packages/ui/components/product-sidebar.tsx) | Client | [product-sidebar.md](product-sidebar.md) |
 | ScrollToTop | [scroll-to-top.tsx](../../packages/ui/components/scroll-to-top.tsx) | Client | [scroll-to-top.md](scroll-to-top.md) |
 | FontSizeToggle | [font-size-toggle.tsx](../../packages/ui/components/font-size-toggle.tsx) | Client | [font-size-toggle.md](font-size-toggle.md) |
 | ThemeToggle | [theme-toggle.tsx](../../packages/ui/components/theme-toggle.tsx) | Client | [theme-toggle.md](theme-toggle.md) |
@@ -46,7 +48,7 @@ primitives for the components the final product will build.
 
 ## 🎨 Design Tokens
 
-Every color flows through the theme tokens defined in [docs/design/colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml). Components reference
+Every color flows through the theme tokens defined in [docs/design/colors.yml](../design/colors.yml). Components reference
 them through Tailwind classes such as `bg-brand`, `text-foreground`, and `border-border`, never through raw hex. The two
 themes are Midnight Indigo (dark, the default) and Aurora Glass (light), and the accent hue swaps between them: cyan leads
 in dark, indigo leads in light. When a component page lists "Colors And Tokens", each entry maps to a row in that file.
@@ -61,7 +63,7 @@ in dark, indigo leads in light. When a component page lists "Colors And Tokens",
     [lib/utils.ts](../../packages/ui/lib/utils.ts). `cn` runs `clsx` then `tailwind-merge`, so a caller's class wins over
     the component default when the two conflict.
   * **Shared copy and dates**: brand strings, the launch target, and contact links come from
-    [@typhed/brand](https://github.com/typhed/shared.documents/blob/master/brand/index.ts). Components read from there rather than hardcoding text.
+    [@typhed/brand](../../packages/brand/index.ts). Components read from there rather than hardcoding text.
   * **Fonts**: `font-display` is Space Grotesk and `font-sans` is Inter, both wired in
     `app/layout.tsx`.
   * **Text size**: every `text-*` utility resolves through the `--font-scale` custom property, which
@@ -74,9 +76,9 @@ in dark, indigo leads in light. When a component page lists "Colors And Tokens",
 
 Read this before changing any component.
 
-  * Read the component's page and [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml) before editing. Do not infer behavior from the name.
+  * Read the component's page and [colors.yml](../design/colors.yml) before editing. Do not infer behavior from the name.
   * Keep colors in tokens. Never paste a hex value into a component; edit the HSL triplet in
-    [brand/tokens/colors.json](https://github.com/typhed/shared.documents/blob/master/brand/tokens/colors.json) instead, and every TyPhed property picks it up.
+    [brand/tokens/colors.json](../../packages/brand/tokens/colors.json) instead, and every TyPhed property picks it up.
   * Respect the runtime boundary. A component marked Client carries `"use client"` for a reason (state, effects, or
     browser APIs). Do not add hooks to a Server component, and do not drop `"use client"` from a Client one.
   * Guard hydration. ThemeToggle renders a stable placeholder on the server and fills in the real icon after mount. Keep

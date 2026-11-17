@@ -7,7 +7,7 @@
 <div align = "justify">
 
 `BrandMark` is the TyPhed identity: the official brand mark paired with the "TyPhed" wordmark. The mark is the gradient
-glyph published as artwork in [assets/brand/mark](https://github.com/typhed/shared.documents/tree/master/assets/brand/mark) and synced into each app's `public/brand`;
+glyph published as artwork in [assets/brand/mark](../../packages/brand/assets/mark) and synced into each app's `public/brand`;
 it is a full-colour SVG that
 reads on both themes, so a single file serves light and dark. The wordmark uses the display font set by the app theme.
 
@@ -18,7 +18,7 @@ wordmark plus tagline) use [BrandLockup](brand-lockup.md) instead.
 ## Source And Import
 
   * **Source**: [packages/ui/components/brand-mark.tsx](../../packages/ui/components/brand-mark.tsx)
-  * **Asset**: [assets/brand/mark/typhed-mark.svg](https://github.com/typhed/shared.documents/blob/master/assets/brand/mark/typhed-mark.svg)
+  * **Asset**: [assets/brand/mark/typhed-mark.svg](../../packages/brand/assets/mark/typhed-mark.svg)
 
 ```tsx
 import { BrandMark } from "@typhed/ui/components/brand-mark"
@@ -51,7 +51,7 @@ The root is an `inline-flex items-center gap-3` span.
 | Wordmark "Phed" | `text-brand` |
 
 The mark file carries its own hardcoded brand gradient because a static asset cannot read CSS variables; see the
-`static_assets` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml). Only the wordmark tracks the theme through tokens. Keep the
+`static_assets` block in [colors.yml](../design/colors.yml). Only the wordmark tracks the theme through tokens. Keep the
 mark artwork and the token palette in the same colour family on any rebrand.
 
 ## Examples

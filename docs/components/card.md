@@ -60,7 +60,7 @@ Compose the parts in this order inside a `Card`. Each is optional; use the ones 
 | `--border` | card border |
 | `--muted-foreground` | `CardDescription` text |
 
-See [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml) for the values. Other surfaces may use the `card` token directly (for example
+See [colors.yml](../design/colors.yml) for the values. Other surfaces may use the `card` token directly (for example
 `bg-card/40` for a glass look) rather than this `Card` component; they share the token, not the markup.
 
 ## Examples

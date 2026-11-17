@@ -7,7 +7,7 @@
 <div align = "justify">
 
 Reference for the **hard gate** that protects a high-value paid tool whose
-computation is the product. It is not part of the static GitHub Pages build -
+computation is the product. It is not part of the static export -
 deploy it separately and have the paid tool call it.
 
 ## Why This Exists
@@ -19,8 +19,8 @@ user can reach it. That is acceptable for tools whose value is convenience.
 When the maths itself must be protected, the computation cannot live in the
 browser. This function is the escalation: the browser sends the user's Clerk
 session token, the function verifies the token and the entitlement server-side,
-and only then runs and returns the protected result. The frontend stays static
-on GitHub Pages; only this one function runs on a server.
+and only then runs and returns the protected result. The frontend stays a static
+export; only this one function runs on a server.
 
 ## Flow
 

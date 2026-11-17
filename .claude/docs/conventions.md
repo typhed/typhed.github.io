@@ -13,12 +13,12 @@ Never hardcode a hex value in a component. Every colour resolves from a theme to
 move together.
 
   * The values are HSL triplets in
-    [brand/tokens/colors.json](https://github.com/typhed/shared.documents/blob/master/brand/tokens/colors.json).
+    [brand/tokens/colors.json](../../packages/brand/tokens/colors.json).
   * The shared Tailwind preset maps each one to a utility through `hsl(var(--token))`, and the `sync:shared` script
     generates the `:root` and `.dark` custom properties into a stylesheet each app imports. No app declares the palette
     by hand.
   * Full reference, including every computed hex and the sync rules:
-    [docs/design/colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml).
+    [docs/design/colors.yml](../../docs/design/colors.yml).
     Read it before any colour work.
 
 The one category that escapes tokens is baked assets: raster and SVG artwork, the PWA manifest, and
@@ -30,10 +30,10 @@ The one category that escapes tokens is baked assets: raster and SVG artwork, th
 Stay on the Tailwind step scale and the documented type scale rather than reaching for arbitrary
 values. The sanctioned exceptions are documented, and adding a new one needs a reason:
 
-  * [docs/design/spacing.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/spacing.yml)
+  * [docs/design/spacing.yml](../../docs/design/spacing.yml)
     covers the step scale, the container and its gutters, breakpoints, the fluid vertical rhythm of
     full-height sections, fixed component sizes, and the radius map.
-  * [docs/design/typography.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/typography.yml)
+  * [docs/design/typography.yml](../../docs/design/typography.yml)
     covers the two loaded fonts and how they reach the browser, the size scale, weights, tracking,
     heading semantics, and the baked-in type that cannot follow the theme.
 

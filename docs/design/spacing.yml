@@ -14,7 +14,7 @@
 # -----------------------------------------------------------------------------
 # HOW SPACING WORKS (architecture)
 # -----------------------------------------------------------------------------
-# There is NO custom spacing scale. shared/components/packages/config-tailwind/tailwind.config.js
+# There is NO custom spacing scale. packages/config-tailwind/tailwind.config.js
 # extends `container`, `borderRadius`, `fontFamily`, `keyframes`, and
 # `animation` only, so every p-*, m-*, gap-*, h-*, and w-* utility resolves to
 # Tailwind's stock 0.25rem (4px) step scale on a 16px root.
@@ -41,7 +41,7 @@
 meta:
   project: "TyPhed - Engineering Tomorrow"
   owner: "TyPhed (autonomous brand; no parent entity)"
-  source_of_truth: "shared/components/packages/config-tailwind/tailwind.config.js + the component classNames listed below"
+  source_of_truth: "packages/config-tailwind/tailwind.config.js + the component classNames listed below"
   scale: "Tailwind default: 1 step = 0.25rem = 4px, on a 16px root"
   custom_spacing_scale: "none - theme.extend defines no `spacing` key"
   gutter: "1.5rem (24px) for chrome via .container; 1rem -> 1.5rem for full-height sections via px-4 sm:px-6"
@@ -76,7 +76,7 @@ scale:
     deliberate. Everything else stays on the scale.
 
 # =============================================================================
-# CONTAINER  (shared/components/packages/config-tailwind/tailwind.config.js -> theme.container)
+# CONTAINER  (packages/config-tailwind/tailwind.config.js -> theme.container)
 # =============================================================================
 container:
   config:
@@ -139,14 +139,14 @@ horizontal:
     rule: "New chrome uses the container. A new full-height section uses px-4 sm:px-6 to match the existing two."
 
   header_row:
-    file: "shared/components/packages/ui/components/site-header.tsx"
+    file: "packages/ui/components/site-header.tsx"
     outer: ".container flex h-16 items-center justify-between gap-4"
     right_cluster: "gap-2 -> sm:gap-4 (nav + auth slot + theme toggle + hamburger)"
     desktop_nav: "gap-6 between nav links, hidden below md"
     note: "gap-4 is the minimum breathing room between the logo and the right cluster when the row compresses."
 
   footer_grid:
-    file: "shared/components/packages/ui/components/site-footer.tsx"
+    file: "packages/ui/components/site-footer.tsx"
     grid: "grid-cols-1 -> sm:grid-cols-2 -> lg:grid-cols-5"
     gap: "gap-10 (2.5rem) both axes"
     lg_split: >
@@ -166,7 +166,7 @@ horizontal:
     bottom_bar: "container flex flex-col gap-4 py-6, sm:flex-row sm:items-center sm:justify-between"
 
   countdown_row:
-    file: "shared/components/packages/ui/components/countdown-timer.tsx"
+    file: "packages/ui/components/countdown-timer.tsx"
     tile_gap: "gap-1.5 (6px) -> sm:gap-4 (16px)"
     label_offset: "mt-3 (0.75rem) below each tile"
     colon_separator: "hidden below sm; sm:mb-9 (2.25rem) lifts it off the label row onto the digit baseline"
@@ -185,14 +185,14 @@ vertical:
   section_model:
     classes: "relative flex min-h-dvh snap-start flex-col items-center justify-center"
     files:
-      - "shared/components/packages/ui/components/wip-landing.tsx"
+      - "packages/ui/components/wip-landing.tsx"
       - "apps/web/app/about/page.tsx"
     unit: "dvh (dynamic viewport height) - correct under mobile browser chrome that grows and shrinks"
     snap: "scroll-snap-type: y proximity on <html> (globals.css); proximity never traps a visitor on a short section"
     padding: "py-[clamp(1rem,3vh,3rem)] - the section's own top/bottom breathing room"
 
   sync_pair_header_height:
-    header: "h-16 = 4rem (shared/components/packages/ui/components/site-header.tsx)"
+    header: "h-16 = 4rem (packages/ui/components/site-header.tsx)"
     scroll_padding: "scroll-padding-top: 4rem (apps/web/app/globals.css)"
     rule: >
       These two MUST move together. scroll-padding-top offsets both snap targets
@@ -257,7 +257,7 @@ vertical:
 sizes:
 
   button:
-    file: "shared/components/packages/ui/components/ui/button.tsx"
+    file: "packages/ui/components/ui/button.tsx"
     default: "h-10 px-4 py-2   (40px tall)"
     sm: "h-9 px-3        (36px tall) - the header CTA and mobile CTA"
     lg: "h-11 px-8       (44px tall) - unused on the site today"
@@ -266,39 +266,39 @@ sizes:
     inner_gap: "gap-2 between icon and label"
 
   theme_toggle:
-    file: "shared/components/packages/ui/components/theme-toggle.tsx"
+    file: "packages/ui/components/theme-toggle.tsx"
     track: "h-8 w-14 (32 x 56px) rounded-full, px-1 inset"
     knob: "h-6 w-6 (24px), travels translate-x-0 -> translate-x-6 (24px)"
     track_glyphs: "h-3.5 w-3.5 (14px), pinned left-1.5 and right-1.5"
 
   scroll_to_top:
-    file: "shared/components/packages/ui/components/scroll-to-top.tsx"
+    file: "packages/ui/components/scroll-to-top.tsx"
     button: "h-10 w-10 (40px) rounded-full, fixed bottom-6 left-1/2 -translate-x-1/2"
     icon: "h-5 w-5 (20px), hover lifts the button -translate-y-1 and the chevron -translate-y-0.5"
     reveal_threshold: "window.scrollY > 400px"
 
   countdown_tile:
-    file: "shared/components/packages/ui/components/countdown-timer.tsx"
+    file: "packages/ui/components/countdown-timer.tsx"
     tile: "h-20 w-14 (80 x 56px) -> sm:h-28 sm:w-24 (112 x 96px)"
     top_highlight: "absolute inset-x-4 top-0 h-px - a 1px hairline inset 1rem from each edge"
     radius: "rounded-2xl (1rem) - NOT the --radius token, see radius.gotcha"
 
   launch_progress:
-    file: "shared/components/packages/ui/components/launch-progress.tsx"
+    file: "packages/ui/components/launch-progress.tsx"
     track: "h-2.5 (10px) w-full rounded-full"
     block_width: "max-w-md (28rem / 448px), set by the caller in wip-landing.tsx"
 
   brand:
-    mark: "h-9 w-9 (36px) img, gap-3 to the wordmark - shared/components/packages/ui/components/brand-mark.tsx"
+    mark: "h-9 w-9 (36px) img, gap-3 to the wordmark - packages/ui/components/brand-mark.tsx"
     lockup: "h-auto w-auto by default; the footer sets w-48 (12rem) -> sm:w-56 (14rem) -> lg:w-40 (10rem) -> xl:w-48 -> 2xl:w-56, stepping down where a fifth of the container is narrower than the artwork"
 
   social_icon_button:
-    file: "shared/components/packages/ui/components/site-footer.tsx"
+    file: "packages/ui/components/site-footer.tsx"
     button: "h-9 w-9 (36px) rounded-full"
     icon: "h-4 w-4 (16px)"
 
   external_link_arrow:
-    file: "shared/components/packages/ui/components/site-footer.tsx"
+    file: "packages/ui/components/site-footer.tsx"
     icon: "h-3.5 w-3.5 (14px) ArrowUpRight, gap-1 (4px) after the label"
     why: "14px matches the text-sm label, so the glyph reads as part of the words rather than as a separate control."
 
@@ -370,7 +370,7 @@ change_guide:
     - "Use clamp(floor, Nvh, ceiling) for vertical gaps so the section still fits a short window."
     - "Test at roughly 600px viewport height before shipping; that is where fixed spacing breaks."
   to_change_the_header_height:
-    - "Edit h-16 in shared/components/packages/ui/components/site-header.tsx."
+    - "Edit h-16 in packages/ui/components/site-header.tsx."
     - "Edit scroll-padding-top in apps/web/app/globals.css to the SAME value."
     - "Re-check the mobile panel, which hangs off the header via top-full."
   to_change_the_page_width:

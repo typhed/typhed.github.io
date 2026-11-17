@@ -36,7 +36,7 @@ The root is a `<button>` fixed at the bottom-center of the viewport:
 
 ## Colors And Tokens
 
-See the `usage.scroll_to_top` block in [colors.yml](https://github.com/typhed/shared.documents/blob/master/docs/design/colors.yml).
+See the `usage.scroll_to_top` block in [colors.yml](../design/colors.yml).
 
 | Element | Token / Class |
 | :---: | :---: |

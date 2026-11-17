@@ -27,7 +27,7 @@ page, a route, or a feature: most "does this belong here?" questions are answere
 in the code.
 
 What is shared is the shape of the ecosystem, not its requirements. The hosting and DNS model is in
-[docs/brand/subdomain-model.md](https://github.com/typhed/shared.documents/blob/master/docs/brand/subdomain-model.md),
+[docs/brand/subdomain-model.md](../../docs/brand/subdomain-model.md),
 and a new property starts its own PRD from
 [templates/nextjs-subdomain/PRD.md](https://github.com/typhed/shared.documents/blob/master/templates/nextjs-subdomain/PRD.md).
 

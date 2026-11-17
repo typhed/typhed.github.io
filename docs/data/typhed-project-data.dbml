@@ -5,7 +5,7 @@ project typhed_project_data {
 
   The account and entitlement database for the TyPhed ecosystem, owned by the
   `typhed/typhed.project.data` service. It is the only server-side datastore in
-  the ecosystem, because `typhed.com` is a static export on GitHub Pages with no
+  the ecosystem, because `typhed.com` is a static export on Cloudflare Workers with no
   runtime of its own.
 
   ## Schema Layout
@@ -303,7 +303,7 @@ table catalog.products_mw {
 
   ### Seeded Values
 
-  Seeded by migration from `shared/documents/brand/products.json` with an
+  Seeded by migration from `packages/brand/products.json` with an
   upserting insert, so re-running the seed after a contract change converges
   rather than colliding on the primary key. Currently `blog` and `trading`.
 
