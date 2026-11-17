@@ -6,83 +6,66 @@
 
 <div align = "justify">
 
-How the TyPhed ecosystem is laid out across domains, repositories, and hosts. Each property's own `docs/PRD.md` says
-what belongs on that property; this page says where each one physically lives and why.
+How the TyPhed web estate is laid out across domains, code, and hosting. [PRD.md](../PRD.md) says what belongs on each
+property; this page says where each one lives and how they fit together.
 
 ## The Shape
 
 ```text
-  https://typhed.com/            Brand, marketing, SEO, legal, informational hub
-  https://blog.typhed.com/       Blog, product notes, example documentation
-  https://trading.typhed.com/    The trading product
+  https://typhed.com/            Brand, marketing, SEO, legal, informational hub      apps/web
+  https://blog.typhed.com/       Blog, product notes, example documentation            apps/blogging
+  https://trading.typhed.com/    The trading product: tools, indicators, strategies    apps/trading
 ```
 
-The parent domain is the **brand and acquisition layer**. Each product runs on its own subdomain, in its own repository,
-with its own architecture and hosting. What they share is the brand: the header, the footer, the colour system, the type
-system, and the copy that names the company. That sharing is what
-[shared.documents](https://github.com/typhed/shared.documents) and
-[shared.components](https://github.com/typhed/shared.components) exist for.
+The parent domain is the **brand and acquisition layer**; each subdomain is a purpose-built product. All three are
+apps in one monorepo, and they share the brand rather than the product: the header, the footer, the colour and type
+systems, the copy that names the company, and the sign-in. That shared layer lives in `packages/` (`@typhed/brand`,
+`@typhed/ui`, `@typhed/auth`, and the config packages), so a brand change is one commit that every property picks up.
 
-## A Subdomain Is Not A Purchase
+## A Subdomain Is A DNS Record
 
-You already own `typhed.com`. A subdomain is a DNS record inside it, created in Cloudflare in seconds: a record named
-`trading` creates `trading.typhed.com`. There is nothing to register and nothing to buy.
+`typhed.com` is a Cloudflare zone. A subdomain is a record inside it: a record named `trading` creates
+`trading.typhed.com`. There is nothing to register and nothing to buy.
 
-## One Repository Per Property
+## One Worker Per Property
 
-GitHub Pages serves one site per repository, and each repository carries one custom domain in its `CNAME` file. So every
-property that wants its own subdomain needs its own repository:
+Each app is a static export served by its own Cloudflare Worker, which serves the exported files as static assets
+and runs no script:
 
-| Property | Repository | `public/CNAME` |
-| :---: | :---: | :---: |
-| `typhed.com` | `typhed/typhed.github.io` | `typhed.com` |
-| A product subdomain | its own repository | `<product>.typhed.com` |
+<div align = "center">
 
-Two files carry the hosting contract in any Pages repository and must survive every cleanup:
+| Property | App | Worker | Route |
+| :---: | :---: | :---: | :---: |
+| `typhed.com` | `apps/web` | `typhed-web` | `typhed.com/*` |
+| `trading.typhed.com` | `apps/trading` | `typhed-trading` | `trading.typhed.com/*` |
+| `blog.typhed.com` | `apps/blogging` | `typhed-blogging` | `blog.typhed.com/*` |
 
-  * `CNAME`, which binds the custom domain on each deploy.
-  * `.nojekyll`, empty on purpose. Without it Pages runs Jekyll, and Jekyll drops any directory whose name starts with an
-    underscore, including Next.js's `_next`. The site deploys successfully and then loads with no CSS or JavaScript.
+</div>
 
-## Where A Product Actually Belongs
-
-The brand site is a static export with no server, which is why it signs people in entirely in the browser. A real product
-usually has to check a session on the server to protect private pages and data, and a static Pages export cannot do that.
-
-So a product subdomain generally belongs on a host that runs server code, while the brand site stays on GitHub Pages.
-Both still consume the same shared brand layer; only the hosting differs. That difference in hosting, not the brand, is
-the real reason the homepage and a product stay separate projects.
+Each app's `wrangler.jsonc` names its Worker and its route. The hostnames are proxied records in the Cloudflare zone,
+and `www.typhed.com` answers a 301 to `https://typhed.com/` through a Cloudflare Redirect Rule.
 
 ## One Login Across Every Subdomain
 
-A visitor who signs in on `typhed.com` should stay signed in everywhere. Clerk does this with **satellite domains**: one
-Clerk application serves every property, `typhed.com` is the primary domain, and each product subdomain joins as a
-satellite. Sign-in always happens on the primary domain, and the visitor is recognised on every satellite afterwards.
+One Clerk production instance serves every property: its Frontend API is `clerk.typhed.com` and its Account Portal is
+`accounts.typhed.com`. Every app builds with the same publishable key, so a visitor who signs in on any `*.typhed.com`
+property is recognised on all of them. Subdomains of the primary domain share the session without any satellite-domain
+setup.
 
-The outline for a new subdomain:
-
-  1. In the Clerk Dashboard, under **Configure** then **Domains**, add the subdomain as a satellite and create the DNS
-     records it shows you in Cloudflare.
-  2. Configure that app as a satellite: it shares the same publishable key, marks itself a satellite, names its own
-     domain, and points its sign-in link back to `typhed.com`.
-
-The publishable key is public and ships in the browser bundle, so it is a build-time value rather than a secret. What
-protects it is the allowed-domains setting, not hiding it. The Clerk **secret** key belongs nowhere in any of these
-repositories, and must never be given a `NEXT_PUBLIC_` name.
+The publishable key is public and ships in the browser bundle, so it is a build-time value rather than a secret. The
+Clerk **secret** key belongs nowhere in this repository and never takes a `NEXT_PUBLIC_` name.
 
 ## Adding A New Subdomain
 
-  1. Create the repository and start from
-     [templates/nextjs-subdomain/](https://github.com/typhed/shared.documents/tree/master/templates/nextjs-subdomain),
-     which carries the `docs/PRD.md` skeleton the new property fills in for itself.
-  2. Add both shared repositories as submodules and wire the workspace, per
-     [MIGRATION.md](https://github.com/typhed/shared.documents/blob/master/MIGRATION.md).
-  3. Put the subdomain in `public/CNAME` and keep `.nojekyll`.
-  4. Create the DNS record in Cloudflare, set the custom domain in the repository's Pages settings, wait for the
-     certificate, and enforce HTTPS.
-  5. Add the Clerk satellite configuration if the property needs sign-in.
+  1. Add an entry to [properties.json](../../packages/brand/properties.json) with the property's URL, name,
+     description, keywords, and, if it has its own menu, its sidebar groups.
+  2. Create `apps/<name>` with a layout that renders `SiteShell` and the auth providers, a `next.config.mjs` that
+     exports `createNextConfig()`, a Tailwind config that uses the shared preset and content globs, and a `package.json`
+     whose name is `<name>` with `dev`, `build`, and `preview` scripts like the other apps.
+  3. Add `apps/<name>/wrangler.jsonc` naming the Worker `typhed-<name>` and its route on the `typhed.com` zone. The
+     deploy workflow picks the app up from that file; no workflow edit is needed.
+  4. In Cloudflare, create a proxied DNS record for the hostname (an originless `AAAA 100::` record is enough).
 
-Anything specific to that product, including a stack that differs from the others, is documented in its own repository.
-This page and the shared layer only cover what every property has in common.
+The [architecture reference](../architecture.md) covers the build and deploy details behind each step.
 
 </div>

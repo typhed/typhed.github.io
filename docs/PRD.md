@@ -12,32 +12,42 @@ or plug in a data connector, then analyse, build, fine-tune, and disconnect.
 
 <div align = "center">
 
-| Property | Document Version | Status |
+| Document | Document Version | Status |
 | :---: | :---: | :---: |
-| **`typhed.com`** | v1.0.0-dev.0 | WIP |
+| **`TyPhed web estate`** | v1.0.0-dev.0 | WIP |
 
 </div>
 
 ## Document Scope
 
-This PRD governs **`typhed.com` alone** (main domain), the property this repository builds. Every TyPhed property keeps its own
-requirements document in its own repository, because each answers a different question about what it should contain: this one
-shapes the brand layer, `blog.typhed.com` shapes the blog, `trading.typhed.com` shapes the products related to stock market
-trading tips, indicators, etc., and each product shapes its own product. Nothing written here constrains a subdomain, and a
-decision made on a subdomain does not reach back into this document.
+This PRD governs the three web properties built from this monorepo: the brand hub at **`typhed.com`** and its two
+product subdomains, **`blog.typhed.com`** and **`trading.typhed.com`**. Each property has its own section below, and a
+requirement in one section does not constrain the others. What the properties share is the brand, not the
+requirements: the shared layer in `packages/` carries the brand contract, the design tokens, the page shell, and the
+sign-in, and the [domain and subdomain model](brand/subdomain-model.md) records how the properties are laid out across
+domains and hosting.
 
-What the properties share is the brand, not the requirements. The shared layer carries the brand contract, the design tokens,
-and the [domain and subdomain model](../shared/documents/docs/brand/subdomain-model.md), which records how the ecosystem is
-laid out across domains, repositories, and hosts.
+## Domain Architecture
 
-## Product Overview
+The architecture follows a domain and subdomain model. Shared brand elements, such as the main layout and the primary
+navigation links, stay consistent across every property. Everything else lives on its own subdomain, which keeps control
+and maintenance simpler.
+
+```text
+  https://typhed.com/          → Brand, Marketing, SEO, Legal, and Informational Hub
+  https://blog.typhed.com/     → Blog, Product Notes, and Example Documentation
+  https://trading.typhed.com/  → The Trading Product: Indicators, Strategies, and Algorithms
+```
+
+Every property renders the same brand header and footer. A property that needs its own navigation, such as the trading
+tools, shows it in a collapsible menu on the left of the page, so the brand header never changes from one property to
+the next. One TyPhed account signs a visitor in on every property.
+
+## typhed.com - The Brand Hub
 
 The platform serves as the **central brand, marketing, SEO, and informational website** for the product ecosystem. Its
 primary responsibility is to establish and communicate the parent brand identity, not to host the products themselves.
-
-Each product is deployed and operated under its own subdomain, allowing it to maintain its own technical architecture,
-UX, and design requirements while remaining part of the same brand ecosystem. This website is the authoritative
-destination for:
+This website is the authoritative destination for:
 
   * Overall brand positioning, messaging, and visual identity,
   * Product ecosystem overview and discovery,
@@ -49,22 +59,43 @@ destination for:
   * Cross-product navigation and links to the relevant product subdomains, and
   * Other trust, credibility, and informational content associated with the parent brand.
 
-## Domain Architecture
+The home page is a work-in-progress holding page with a launch countdown, and `/about/` is a placeholder. Permanent
+short links under `/permalink/` redirect to documents the brand points at, such as the Code of Conduct.
 
-The architecture follows a domain and subdomain model. Shared brand elements, such as the main layout and the primary
-navigation links, stay consistent across every property. Everything else lives on its own subdomain, which keeps control and
-maintenance simpler.
+## blog.typhed.com - The Blog
 
-```text
-  https://typhed.com/          → Brand, Marketing, SEO, Legal, and Informational Hub
-  https://blog.typhed.com/     → Blog, Product Notes, and Example Documentation
-  https://trading.typhed.com/  → The Trading Product: Indicators, Strategies, and Algorithms
-```
+Product notes, engineering write-ups, and example documentation. Posts are MDX files that build into static pages, with
+support for mathematics, diagrams, charts, and highlighted code. Every post declares an access tier:
 
-The parent domain, which this repository builds, is therefore the **brand and acquisition layer**, while each subdomain hosts
-an independent product experience. The subdomains are maintained in separate repositories and may not be visible from this
-one at all. The DNS records, the one-repository-per-property rule, and the single sign-on that spans them are covered in the
-[domain and subdomain model](../shared/documents/docs/brand/subdomain-model.md) individually.
+<div align = "center">
+
+| Tier | Meaning |
+| :---: | --- |
+| 👥 Public | Free for everyone. No account needed. |
+| 🔓 Freemium | Sign in with a free account to read the full post. |
+
+</div>
+
+Analytics, advertising, and search-console verification switch on only when their identifiers are configured.
+
+## trading.typhed.com - The Trading Product
+
+One stop chart and analysis tool. Bring your own data, analyse, and disconnect. Visitors upload their own market data
+and answer the questions retail charts skip: how much quantity, how much risk, how to size and allocate capital. The
+data stays in the browser.
+
+<div align = "center">
+
+| Area | What It Holds |
+| :---: | --- |
+| Workspace | Upload CSV or XLSX data, map its columns, chart it with indicators, and run the analysis tools |
+| Tools | EMA Swing Lab, Monte Carlo Lab, IPO Dashboard |
+| Budgeting | Modified 50-30-20 Rule |
+
+</div>
+
+The workspace asks the visitor to sign in. Free tools are open to every signed-in account; Pro tools unlock with the
+Pro tier or an individual grant on the account.
 
 ### PRD Documentation Decision
 
@@ -74,23 +105,23 @@ Two questions settle almost every case, and they are asked in this order:
 
 | Question Intent | ANSWER | Documentation Lookup |
 | --- | :---: | --- |
-| Does it describe the brand, or sell a product a visitor has not chosen yet? | YES | Here, on `typhed.com` |
-| Is it part of using a product a visitor has already chosen? | YES | That product's subdomain and repository |
-| Is it a brand string, a colour, a footer link, or a shared component? | YES | The shared layer, where every property reads it |
+| Does it describe the brand, or sell a product a visitor has not chosen yet? | YES | The `typhed.com` section |
+| Is it part of using a product a visitor has already chosen? | YES | That product's section |
+| Is it a brand string, a colour, a footer link, or a shared component? | YES | The shared layer in `packages/`, which every property reads |
 
 </div>
 
 A feature that belongs to one product does not belong on the brand layer, and brand-level content does not belong inside
 a product. When the answer is genuinely unclear, the tie-breaker is the visitor's position on the path above: before
-product selection is this site, after it is the product.
+product selection is the brand hub, after it is the product.
 
 ### Core Principle
 
-This website should not replicate or constrain the individual product interfaces. Instead, it should provide a
-consistent brand foundation and a clear path from **discovery → trust → product selection → product experience**, while
-allowing each product subdomain to evolve independently according to its own design and functional requirements.
+The brand hub does not replicate or constrain the individual product interfaces. It provides a consistent brand
+foundation and a clear path from **discovery → trust → product selection → product experience**, while each product
+subdomain evolves independently according to its own design and functional requirements.
 
-The resulting ecosystem should feel like a **single, coherent brand with multiple purpose-built products**, rather than a
+The resulting ecosystem feels like a **single, coherent brand with multiple purpose-built products**, rather than a
 monolithic application containing every product experience.
 
 </div>
