@@ -1,0 +1,16 @@
+{
+  // An assets-only Worker: Cloudflare serves the static export in ./out, no script runs.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "typhed-web",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./out",
+    // Next exports route/index.html (trailingSlash: true); /route redirects to /route/.
+    "html_handling": "auto-trailing-slash",
+    // Serve out/404.html for unknown paths.
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": { "enabled": true }
+}
