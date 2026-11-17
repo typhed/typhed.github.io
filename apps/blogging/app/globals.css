@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Brand palette note: the theme tokens (--background, --brand, --border, ... )
+     and --radius are NOT declared here. They are generated into app/theme.css
+     from shared/documents/brand/tokens/colors.json and imported by the root
+     layout ahead of this file. Change a colour there, never here.
+
+     The reader text-size properties (--font-scale-setting, --font-scale) are
+     not declared here either. The shared Tailwind preset emits both and opens
+     the reading scope on `main`, and @typhed/ui's FontSizeToggle drives them.
+
+     What remains below is blog-only and deliberately outside the brand
+     contract. */
+  :root {
+    /* Categorical chart series, validated against the light surface for
+       lightness band, chroma, CVD separation, and contrast. Read at runtime by
+       components/chart-inner.tsx, not mapped to a Tailwind utility. */
+    --chart-1: 239 84% 67%;
+    --chart-2: 188 91% 34%;
+    --chart-3: 17 88% 40%;
+    --chart-4: 295 72% 40%;
+  }
+
+  .dark {
+    /* Categorical chart series, validated against the dark surface. */
+    --chart-1: 189 82% 40%;
+    --chart-2: 248 90% 70%;
+    --chart-3: 32 64% 47%;
+    --chart-4: 332 67% 58%;
+  }
+
+  * {
+    @apply border-border;
+    /* Hide scrollbars (Firefox + legacy Edge/IE) while keeping scroll usable */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Hide scrollbars in Chromium-based browsers and Safari */
+  *::-webkit-scrollbar {
+    display: none;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  html {
+    /* No root font-size here. The reader's text-size control scales type only,
+       through the preset's --font-scale on the `main` reading scope; scaling
+       the root instead would drag spacing and layout with it, which is exactly
+       what that mechanism exists to avoid. */
+    -webkit-text-size-adjust: 100%;
+    /* Offset #anchor jumps by the sticky header height. */
+    scroll-padding-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    @apply bg-brand/25 text-foreground;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* MDX content: LaTeX (KaTeX) + code blocks (rehype-pretty-code)        */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /* Let long display equations scroll instead of overflowing the page. */
+  .katex-display {
+    @apply overflow-x-auto overflow-y-hidden py-2;
+  }
+
+  /* Inline code (single backticks, not inside a highlighted block). */
+  :not(pre) > code {
+    @apply border-border bg-muted text-foreground rounded border px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+
+  /* rehype-pretty-code figure + fenced code block */
+  [data-rehype-pretty-code-figure] {
+    @apply my-6;
+  }
+
+  [data-rehype-pretty-code-figure] pre {
+    @apply border-border bg-card overflow-x-auto rounded-lg border p-4 text-sm leading-relaxed;
+  }
+
+  [data-rehype-pretty-code-figure] code {
+    @apply font-mono;
+    counter-reset: line;
+  }
+
+  [data-rehype-pretty-code-figure] [data-line] {
+    @apply block;
+  }
+
+  [data-rehype-pretty-code-title] {
+    @apply border-border bg-muted text-muted-foreground mb-2 rounded-md border px-3 py-1.5 font-mono text-xs;
+  }
+}
+
+/* Dual-theme token colors from rehype-pretty-code (github-light / github-dark).
+   Each token span carries `--shiki-light` and `--shiki-dark` CSS variables;
+   we pick which one to apply based on the class-based dark mode. Plain CSS
+   (outside @layer) so these win over the inline variable defaults. */
+[data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-light);
+}
+
+.dark [data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-dark);
+}
