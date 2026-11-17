@@ -11,9 +11,8 @@
     @apply bg-background text-foreground;
   }
 
-  /* Deliberate trading-site divergence from the sibling sites (recorded in
-     the centralization review, phase T3): body prose justifies. Remove only
-     as a platform-wide decision, not a local cleanup. */
+  /* Trading justifies body prose; the other properties keep the default
+     alignment. */
   p {
     text-align: justify;
   }

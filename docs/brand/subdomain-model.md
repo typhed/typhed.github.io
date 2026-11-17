@@ -49,8 +49,7 @@ and `www.typhed.com` answers a 301 to `https://typhed.com/` through a Cloudflare
 
 One Clerk production instance serves every property: its Frontend API is `clerk.typhed.com` and its Account Portal is
 `accounts.typhed.com`. Every app builds with the same publishable key, so a visitor who signs in on any `*.typhed.com`
-property is recognised on all of them. Subdomains of the primary domain share the session without any satellite-domain
-setup.
+property is recognised on all of them.
 
 The publishable key is public and ships in the browser bundle, so it is a build-time value rather than a secret. The
 Clerk **secret** key belongs nowhere in this repository and never takes a `NEXT_PUBLIC_` name.

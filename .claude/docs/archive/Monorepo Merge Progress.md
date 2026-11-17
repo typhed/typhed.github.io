@@ -8,7 +8,7 @@
 
 Tracks the merge of five repositories into this monorepo and its move to Cloudflare Workers. The approved plan is
 archived as [Monorepo Merge Plan.md](../archive/Monorepo%20Merge%20Plan.md); the owner's cutover checklist is
-[cloudflare-cutover.md](cloudflare-cutover.md). Work happens on branch `monorepo`. Status as of 2026-11-17.
+[cloudflare-cutover.md](../tasks/cloudflare-cutover.md). Work happens on branch `monorepo`. Status as of 2026-11-17.
 
 ## Sources Merged
 
@@ -51,7 +51,7 @@ archived as [Monorepo Merge Plan.md](../archive/Monorepo%20Merge%20Plan.md); the
 
 ## Pending (Owner)
 
-  - [ ] Push `monorepo` and `cutover/routes`, then follow [cloudflare-cutover.md](cloudflare-cutover.md).
+  - [ ] Push `monorepo` and `cutover/routes`, then follow [cloudflare-cutover.md](../tasks/cloudflare-cutover.md).
 
 ## To Verify On The Full System
 

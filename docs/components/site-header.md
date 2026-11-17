@@ -12,13 +12,12 @@ the desktop right side shows the primary nav links, the Login / Sign Up call-to-
 light/dark switch, and the mobile menu button. The mobile menu collapses the nav and CTA into a full-width hamburger
 panel.
 
-The header never resizes itself. [FontSizeToggle](font-size-toggle.md) only reaches the reading scope the preset opens on
-`main`, so the toolbar keeps the stock type at every step, as do the footer and the copyright bar.
+The header never resizes itself. [FontSizeToggle](font-size-toggle.md) only reaches the reading scope the preset opens
+on `main`, so the toolbar keeps the stock type at every step, as do the footer and the copyright bar.
 
 It is a Server Component. Both the desktop and mobile nav read `NAV_LINKS` and `LOGIN_CTA` from
-[@typhed/brand](../../packages/brand/index.ts), so the two never drift. The
-`FontSizeToggle`, `ThemeToggle`, and `MobileNav` children are Client Components that handle their own state and
-interactivity.
+[@typhed/brand](../../packages/brand/index.ts), so the two never drift. The `FontSizeToggle`, `ThemeToggle`, and
+`MobileNav` children are Client Components that handle their own state and interactivity.
 
 ## Source And Import
 
@@ -34,8 +33,8 @@ import { SiteHeader } from "@typhed/ui/components/site-header"
 ## Props
 
 Both props are slots for the sign-in control. They exist so this package carries no auth dependency of its own: a Clerk
-import here would couple every TyPhed property to one site's auth choice. When either is omitted, that side falls back to
-a plain link to `LOGIN_CTA`, so the header is still complete with no arguments at all.
+import here would couple every TyPhed property to one site's auth choice. When either is omitted, that side falls back
+to a plain link to `LOGIN_CTA`, so the header is still complete with no arguments at all.
 
 | Prop | Type | Default | Description |
 | :---: | :---: | :---: | --- |
@@ -48,10 +47,10 @@ Everything else is read from constants rather than passed in.
 
 The root is a sticky `<header>` at `top-0 z-40` spanning the full viewport width. Its first child is an inline
 `<script>` carrying `FONT_SCALE_SCRIPT` from [lib/font-scale.ts](../../packages/ui/lib/font-scale.ts). It applies the
-visitor's saved text size before the page below it paints, the same trick `next-themes` uses for the colour theme.
-The header rather than the toggle carries it because a Server Component this close to the top of the body is parsed
-before any readable text renders; without it, a visitor on the larger setting watches the page render at the default
-size and then reflow. The tag is `display: none` and never affects layout.
+visitor's saved text size before the page below it paints, the same trick `next-themes` uses for the colour theme. The
+header rather than the toggle carries it because a Server Component this close to the top of the body is parsed before
+any readable text renders; without it, a visitor on the larger setting watches the page render at the default size and
+then reflow. The tag is `display: none` and never affects layout.
 
   1. **Logo link**: an `<a href="/">` wrapping `<BrandMark />` with `aria-label`. It carries a focus ring for keyboard
      navigation. The `/` is relative on purpose. It means the home page of whichever property is rendering, which every
@@ -61,27 +60,27 @@ size and then reflow. The tag is `display: none` and never affects layout.
      (`text-muted-foreground`), brighten on hover (`hover:text-foreground`). An entry naming a page the brand layer
      hosts arrives from `@typhed/brand` as a full URL, so the nav still reaches `typhed.com` when this header renders on
      a product subdomain.
-  3. **Login / Sign Up** (hidden on mobile, shown md and above): a `Button variant="default" size="sm"` as an anchor. The
-     label and href come from `LOGIN_CTA` in [@typhed/brand](../../packages/brand/index.ts), so both desktop and
+  3. **Login / Sign Up** (hidden on mobile, shown md and above): a `Button variant="default" size="sm"` as an anchor.
+     The label and href come from `LOGIN_CTA` in [@typhed/brand](../../packages/brand/index.ts), so both desktop and
      mobile use the same CTA text and destination. Currently links to `#` (placeholder until the auth flow exists).
   4. **Font Size Toggle**: a [FontSizeToggle](font-size-toggle.md) pair of buttons, a small "A" and a larger one,
      stepping the page content through seven text sizes, 2.5px apart. It sets `--font-scale-setting`, which only reaches
      `main`, so the header itself never moves. Both buttons show at every breakpoint; the group is the same `h-8 w-14`
      footprint as the theme switch beside it.
   5. **Theme Toggle**: a [ThemeToggle](theme-toggle.md) component that lets users switch between dark and light themes.
-  6. **Mobile Menu Button** (hidden md and above): a hamburger `Button variant="ghost" size="icon"` that toggles the mobile
-     nav panel. See the **Mobile Navigation** section below.
+  6. **Mobile Menu Button** (hidden md and above): a hamburger `Button variant="ghost" size="icon"` that toggles the
+     mobile nav panel. See the **Mobile Navigation** section below.
 
 ### Mobile Navigation
 
-The `MobileNav` child component is a Client Component that handles the hamburger menu on small screens. It wraps a Button
-(the hamburger toggle) and a conditionally rendered full-width panel.
+The `MobileNav` child component is a Client Component that handles the hamburger menu on small screens. It wraps a
+Button (the hamburger toggle) and a conditionally rendered full-width panel.
 
   * **Toggle button**: a `Button` with `aria-label` ("Open menu" when closed, "Close menu" when open), `aria-expanded`
     (true/false), and `aria-controls="mobile-menu"`. The icon swaps between `Menu` and `X` from `lucide-react`.
-  * **Menu panel**: a `<div id="mobile-menu">` positioned `absolute inset-x-0 top-full z-50` below the header. It contains a
-    `<nav aria-label="Primary">` listing the same `NAV_LINKS` plus a full-width Login button (from `LOGIN_CTA`). Each link has an `onClick`
-    that closes the menu.
+  * **Menu panel**: a `<div id="mobile-menu">` positioned `absolute inset-x-0 top-full z-50` below the header. It
+    contains a `<nav aria-label="Primary">` listing the same `NAV_LINKS` plus a full-width Login button (from
+    `LOGIN_CTA`). Each link has an `onClick` that closes the menu.
   * **Keyboard support**: pressing Escape while the menu is open closes it.
   * **State**: the default closed state matches the server render (no hydration mismatch).
 
@@ -103,15 +102,14 @@ See the `usage.header_backdrop` block in [colors.yml](../design/colors.yml).
 ## Examples
 
 ```tsx
-// SiteHeader is called once in the root layout.
-import { SiteHeader } from "@typhed/ui/components/site-header"
+// SiteShell renders SiteHeader once for every page.
+import { SiteShell } from "@typhed/ui/components/site-shell"
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <SiteHeader />
-        <main>{children}</main>
+        <SiteShell propertyId="web">{children}</SiteShell>
       </body>
     </html>
   )
@@ -151,17 +149,17 @@ export default function RootLayout({ children }) {
   * The mobile menu panel has `id="mobile-menu"`, matching the button's `aria-controls`.
   * Each mobile nav link has an `onClick` that closes the menu, so screen reader users are not trapped.
   * The two controls keep their own contracts, recorded on [font-size-toggle.md](font-size-toggle.md) and
-    [theme-toggle.md](theme-toggle.md). The text-size control is a `role="group"` of labelled buttons with a live region;
-    the theme control is a `role="switch"` with `aria-checked`. Both stay reachable at every breakpoint, so a phone
-    reader can still resize the page.
+    [theme-toggle.md](theme-toggle.md). The text-size control is a `role="group"` of labelled buttons with a live
+    region; the theme control is a `role="switch"` with `aria-checked`. Both stay reachable at every breakpoint, so a
+    phone reader can still resize the page.
   * The inline script is inert markup with no accessible representation. It sets a CSS custom property and nothing else.
 
 ## Usage Guidelines
 
-Render `SiteHeader` once in the root layout. Drive the nav links from `NAV_LINKS` in constants. When you add new routes,
-add them to the links list; do not hardcode them in the header. Keep the focus ring visible on the logo link for keyboard
-accessibility. The mobile menu state is local to `MobileNav` and closes on link click or Escape; do not try to control it
-from above.
+`SiteShell` renders `SiteHeader` once for every page. The nav links come from `NAV_LINKS` in `@typhed/brand`
+(`navigation.json`); add a new route there, never in the header. Keep the focus ring visible on the logo link for
+keyboard accessibility. The mobile menu state is local to `MobileNav` and closes on link click or Escape; do not try to
+control it from above.
 
 Leave the inline `<script>` as the first child of `<header>`. It is placed there so it parses before any readable text
 below it, which is what keeps a saved text size from flashing at the default on load. Moving it later, or into

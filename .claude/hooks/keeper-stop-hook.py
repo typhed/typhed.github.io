@@ -17,15 +17,13 @@ config-only, and no-change turns are left alone.
 :NOTE: Every failure path (no git, malformed input, non-zero git status) allows
     the stop silently, so the hook can never wedge a session. It fails open.
 
-:NOTE: The shared packages live in-tree under packages/, so a change
-    inside one surfaces here as an ordinary file path such as
+:NOTE: The shared packages live under packages/, so a change inside
+    one surfaces here as an ordinary file path such as
     packages/ui/components/site-header.tsx. The prefix is deliberately
     NOT ignored: a change under packages/ is a source change and must
     nudge, since that is exactly when the docs need reconciling.
 
 .. versionadded:: 2026-06-28 Add Keeper Documentation Reconciliation Hook
-.. versionchanged:: 2026-08-23 Document Submodule Gitlink Behaviour
-.. versionchanged:: 2026-11-17 Document In-Tree Packages Behaviour
 """
 
 import json

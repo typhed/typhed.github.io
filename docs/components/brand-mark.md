@@ -7,9 +7,9 @@
 <div align = "justify">
 
 `BrandMark` is the TyPhed identity: the official brand mark paired with the "TyPhed" wordmark. The mark is the gradient
-glyph published as artwork in [assets/brand/mark](../../packages/brand/assets/mark) and synced into each app's `public/brand`;
-it is a full-colour SVG that
-reads on both themes, so a single file serves light and dark. The wordmark uses the display font set by the app theme.
+glyph published as artwork in [assets/brand/mark](../../packages/brand/assets/mark) and synced into each app's
+`public/brand`; it is a full-colour SVG that reads on both themes, so a single file serves light and dark. The wordmark
+uses the display font set by the app theme.
 
 It is a Server Component. The mark is rendered as an `<img>` that references the canonical asset rather than being
 inlined, so the logo artwork lives in exactly one place and is never re-drawn by hand. For the full lockup (mark plus
@@ -37,8 +37,8 @@ import { BrandMark } from "@typhed/ui/components/brand-mark"
 
 The root is an `inline-flex items-center gap-3` span.
 
-  1. **Mark**: an `<img>` referencing `markSrc` with an `alt` of "TyPhed logo", sized `h-9 w-9 object-contain` by default.
-     The artwork is the shipped brand mark, so its colours are baked into the file, not read from theme tokens.
+  1. **Mark**: an `<img>` referencing `markSrc` with an `alt` of "TyPhed logo", sized `h-9 w-9 object-contain` by
+     default. The artwork is the shipped brand mark, so its colours are baked into the file, not read from theme tokens.
   2. **Wordmark** (when `showWordmark` is true): a `font-display` span reading "Ty" in `text-foreground` and "Phed" in
      `text-brand`.
 
@@ -70,17 +70,17 @@ mark artwork and the token palette in the same colour family on any rebrand.
 
 ## Accessibility
 
-The mark is a labelled image (`alt="TyPhed logo"`), so it announces as the logo even when the wordmark is hidden. When you
-place it inside a link, label the link too, as the header does with `aria-label`. The wordmark is real text, which also
-helps search relevance for the brand name.
+The mark is a labelled image (`alt="TyPhed logo"`), so it announces as the logo even when the wordmark is hidden. When
+you place it inside a link, label the link too, as the header does with `aria-label`. The wordmark is real text, which
+also helps search relevance for the brand name.
 
 ## Usage Guidelines
 
 Use `BrandMark` for the compact brand identity wherever a mark plus wordmark fits, such as the header. Resize through
-`glyphClassName` and `className` rather than scaling transforms, so the artwork stays crisp. For the full lockup with the
-tagline use [BrandLockup](brand-lockup.md). For a favicon, use the shipped favicon set wired in
-`app/layout.tsx`; for the OG image use the raster generator in
-`app/`. This component is for in-app rendering.
+`glyphClassName` and `className` rather than scaling transforms, so the artwork stays crisp. For the full lockup with
+the tagline use [BrandLockup](brand-lockup.md). For a favicon, use the shipped favicon set that `buildMetadata` in
+`@typhed/ui/lib/metadata` wires up; for the OG image use the raster generator in `app/`. This component is for in-app
+rendering.
 
 ## Do's And Don'ts
 

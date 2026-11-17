@@ -41,15 +41,14 @@ $ pnpm --filter web preview
   1. Never invent copy, logos, or icons. Take values from `packages/brand` or existing strings, and record anything
      missing in `.claude/docs/gaps.md`.
   2. Never hardcode a brand string, link, or colour; edit the JSON in `packages/brand` (colours in `tokens/`).
-  3. A change in `packages/` reaches every site: add the new shape, migrate the apps, then remove the old one.
+  3. A change in `packages/` reaches every site: add the new shape, update the apps, then remove the old one.
   4. Keep `@typhed/ui` auth-free and property-neutral; property-only behaviour stays in its app or behind a prop.
   5. Adding analytics, tracking, or any third-party tag that observes visitors is a brand decision: ask first.
-  6. Never rewrite history (no squash, rebase, or amend); land work with a merge commit or a fast-forward.
-  7. Docs describe what exists, in present tense, once. Architecture, product, and design live in `docs/`; decisions
-     are dated records in `docs/adr/`. `.claude/docs/` holds harness material only and points into `docs/`.
-  8. Markdown follows `markdown-format` and `humanize-text`; commits follow `git-commiter`.
-  9. Do not tune code or config to one machine; record environment problems for the owner instead.
-  10. Update the docs a change affects as the last step of the change.
+  6. Docs describe what exists, in present tense, once. Architecture, product, design, and decisions live in `docs/`;
+     `.claude/docs/` holds harness material only and points into `docs/`.
+  7. Markdown follows `markdown-format` and `humanize-text`; commits follow `git-commiter`.
+  8. Do not tune code or config to one machine; record environment problems for the owner instead.
+  9. Update the docs a change affects as the last step of the change.
 
 ## Read Only What The Task Needs
 
@@ -59,13 +58,13 @@ Read the row that matches the task, never a whole directory.
 | :---: | --- |
 | Product scope, a new page or feature | `docs/PRD.md` |
 | Build, workspace, packages, theming, shell, auth, redirects, deploy | `docs/architecture.md` |
-| Why something is built the way it is | `docs/adr/README.md`, then the dated record |
+| Why the repository is one monorepo | `docs/adr/README.md`, then the dated record |
 | A shared component in `packages/ui` | `docs/components/README.md`, then the component's page |
 | Colours, spacing, type | `docs/design/colors.yml`, `spacing.yml`, `typography.yml` |
 | Domains, DNS, Workers, adding a subdomain | `docs/brand/subdomain-model.md` |
 | An app's local setup and layout | `apps/<app>/README.md` |
 | Open questions for the owner | `.claude/docs/gaps.md` |
-| Work in progress and the cutover checklist | `.claude/docs/tasks/` |
+| Going live on Cloudflare Workers | `.claude/docs/tasks/cloudflare-cutover.md` |
 | Past plans (only when asked) | `.claude/docs/archive/` |
 
 ## Memory

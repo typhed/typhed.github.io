@@ -1,7 +1,7 @@
 /**
  * The serverless entitlement gate - the hard gate for a paid tool whose
- * computation is the product. It is NOT part of the static GitHub Pages
- * build; deploy it separately (Cloudflare Workers, Vercel Edge, or any
+ * computation is the product. It is NOT part of the static export;
+ * deploy it separately (Cloudflare Workers, Vercel Edge, or any
  * fetch-handler runtime) and point the paid tool at it.
  *
  * Why this exists: the in-app `<Entitled>` gate is a soft gate - a Pro

@@ -24,26 +24,26 @@ export; only this one function runs on a server.
 
 ## Flow
 
-1. The handler rejects any request whose `Origin` is not on the configured allowlist (403), and answers CORS
-   preflights only for allowed origins.
-2. The browser gets the current Clerk session token client-side and calls the gate with
-   `Authorization: Bearer <token>` plus the tool inputs.
-3. The handler verifies the token via `@clerk/backend` `verifyToken` (JWKS-backed signature and lifetime checks).
-4. A fixed-window per-user rate limit (default 30 requests/minute) brakes hot callers before any computation runs.
-5. It checks `publicMetadata.tier` / `entitlements` for the requested feature.
-6. Only a verified, entitled, in-budget caller receives the computed result; others get 401, 403, or 429.
+  1. The handler rejects any request whose `Origin` is not on the configured allowlist (403), and answers CORS
+     preflights only for allowed origins.
+  2. The browser gets the current Clerk session token client-side and calls the gate with
+     `Authorization: Bearer <token>` plus the tool inputs.
+  3. The handler verifies the token via `@clerk/backend` `verifyToken` (JWKS-backed signature and lifetime checks).
+  4. A fixed-window per-user rate limit (default 30 requests/minute) brakes hot callers before any computation runs.
+  5. It checks `publicMetadata.tier` / `entitlements` for the requested feature.
+  6. Only a verified, entitled, in-budget caller receives the computed result; others get 401, 403, or 429.
 
 ## Deploying
 
-- Host on Cloudflare Workers, Vercel Edge, or any runtime with a `fetch(Request) -> Response` shape; wire it via
-  `createGateHandler({ secretKey, allowedOrigins })` as shown in the file's doc comment.
-- Set `CLERK_SECRET_KEY` (or the instance's PEM `CLERK_JWT_KEY` for networkless verification) as a deployment
-  secret - never in the client bundle.
-- Customise the Clerk session token to include `{"publicMetadata": "{{user.public_metadata}}"}` (Dashboard >
-  Sessions), or the entitlement claims this gate reads will be absent and every caller gets 403.
-- Set `allowedOrigins` to exactly the sites that may call the gate (for example `https://trading.typhed.com`).
-- The bundled rate limiter is in-memory and per isolate - a brake, not a distributed quota. Move the counters to
-  KV / Durable Objects / Redis before the gate fronts real spend.
+  * Host on Cloudflare Workers, Vercel Edge, or any runtime with a `fetch(Request) -> Response` shape; wire it via
+    `createGateHandler({ secretKey, allowedOrigins })` as shown in the file's doc comment.
+  * Set `CLERK_SECRET_KEY` (or the instance's PEM `CLERK_JWT_KEY` for networkless verification) as a deployment
+    secret - never in the client bundle.
+  * Customise the Clerk session token to include `{"publicMetadata": "{{user.public_metadata}}"}` (Dashboard >
+    Sessions), or the entitlement claims this gate reads will be absent and every caller gets 403.
+  * Set `allowedOrigins` to exactly the sites that may call the gate (for example `https://trading.typhed.com`).
+  * The bundled rate limiter is in-memory and per isolate - a brake, not a distributed quota. Move the counters to
+    KV / Durable Objects / Redis before the gate fronts real spend.
 
 ## Status
 

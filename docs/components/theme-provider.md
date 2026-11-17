@@ -6,9 +6,9 @@
 
 <div align = "justify">
 
-`ThemeProvider` is a thin wrapper around the `next-themes` provider. It exists so apps import the provider from the shared
-`@typhed/ui` package instead of depending on `next-themes` directly. It forwards every prop straight through, so the
-consumer decides the default theme, the attribute strategy, and the rest.
+`ThemeProvider` is a thin wrapper around the `next-themes` provider. It exists so apps import the provider from the
+shared `@typhed/ui` package instead of depending on `next-themes` directly. It forwards every prop straight through, so
+the consumer decides the default theme, the attribute strategy, and the rest.
 
 It is a Client Component (`"use client"`). It carries no logic of its own beyond passing props down.
 
@@ -24,8 +24,8 @@ import { ThemeProvider } from "@typhed/ui/components/theme-provider"
 
 ## Props
 
-It accepts the full prop set of the `next-themes` provider (`React.ComponentProps<typeof NextThemesProvider>`). The props
-the app actually sets are below.
+It accepts the full prop set of the `next-themes` provider (`React.ComponentProps<typeof NextThemesProvider>`). The
+props the app actually sets are below.
 
 | Prop | Type | App value | Description |
 | :---: | :---: | :---: | --- |
@@ -40,9 +40,9 @@ Any other `next-themes` prop (`storageKey`, `themes`, `forcedTheme`, and so on) 
 ## How It Connects To The Tokens
 
 `attribute="class"` is the link between this provider and the color system. The dark palette in
-[brand/tokens/colors.json](../../packages/brand/tokens/colors.json) is written under the `.dark` selector into each app's `app/theme.css` by
-`typhed-brand-sync`, so the provider toggling that class is what
-swaps Midnight Indigo for Aurora Glass. See [colors.yml](../design/colors.yml) for the token tables.
+[brand/tokens/colors.json](../../packages/brand/tokens/colors.json) is written under the `.dark` selector into each
+app's `app/theme.css` by `typhed-brand-sync`, so the provider toggling that class is what swaps Midnight Indigo for
+Aurora Glass. See [colors.yml](../design/colors.yml) for the token tables.
 
 ## Examples
 
@@ -65,13 +65,13 @@ after hydration.
 ## Accessibility
 
 The provider has no UI and no direct accessibility surface. It does shape perceived behavior: `enableSystem` honors a
-user's OS preference on first visit, which is the accessible default. Keep it on unless there is a strong reason to force a
-single theme.
+user's OS preference on first visit, which is the accessible default. Keep it on unless there is a strong reason to
+force a single theme.
 
 ## Usage Guidelines
 
-Use one provider near the root. Set the theme strategy here, not in child components. If you need to read or set the theme
-in a component, call `useTheme` from `next-themes` inside a Client Component nested under this provider, the way
+Use one provider near the root. Set the theme strategy here, not in child components. If you need to read or set the
+theme in a component, call `useTheme` from `next-themes` inside a Client Component nested under this provider, the way
 [ThemeToggle](theme-toggle.md) does.
 
 ## Do's And Don'ts
