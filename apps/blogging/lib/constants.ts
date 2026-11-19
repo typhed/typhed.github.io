@@ -7,8 +7,9 @@
  * reaches every TyPhed property. Only what is genuinely specific to
  * blog.typhed.com is declared here: the default author and the access tiers.
  *
- * Every metadata, canonical, sitemap, robots, and JSON-LD value derives from
- * `SITE`.
+ * The sitemap and JSON-LD values derive from `SITE`. The shared metadata,
+ * robots, and manifest builders in @typhed/ui/lib/metadata read the same
+ * properties.json entry, so canonical URLs resolve against the same origin.
  */
 import { SITE as BRAND, getProperty } from "@typhed/brand"
 

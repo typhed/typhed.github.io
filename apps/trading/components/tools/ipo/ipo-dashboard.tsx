@@ -17,6 +17,7 @@ import { deriveIpoMetrics } from "@/lib/ipo/analytics"
 import { deriveAllApplications, subscriptionByCategory } from "@/lib/ipo/applications"
 import { ipoFileName, safeParseIpoDataset, serializeIpoDataset } from "@/lib/ipo/io"
 import { downloadJson } from "@/lib/download"
+import { localIsoDate } from "@/lib/utils"
 import { Button } from "@typhed/ui/components/ui/button"
 import { IpoOverview } from "@/components/tools/ipo/ipo-overview"
 import { IpoTimeline } from "@/components/tools/ipo/ipo-timeline"
@@ -25,15 +26,6 @@ import { IpoFinancials } from "@/components/tools/ipo/ipo-financials"
 import { IpoApplications } from "@/components/tools/ipo/ipo-applications"
 import { IpoEditPanel } from "@/components/tools/ipo/ipo-edit-panel"
 import { MembersOnly } from "@/components/tools/members-gate"
-
-/** Local calendar date as ISO "yyyy-mm-dd" - NOT the UTC date, which is a day
- * behind for IST users between midnight and 05:30. */
-function localIsoDate(): string {
-  const now = new Date()
-  const mm = String(now.getMonth() + 1).padStart(2, "0")
-  const dd = String(now.getDate()).padStart(2, "0")
-  return `${now.getFullYear()}-${mm}-${dd}`
-}
 
 export function IpoDashboard() {
   const [data, setData] = React.useState<IpoDataset>(DEFAULT_IPO_DATASET)

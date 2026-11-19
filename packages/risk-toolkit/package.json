@@ -13,7 +13,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "gen:fixtures": "python scripts/gen_fixtures.py",
+    "gen:fixtures": "python scripts/gen_fixtures.py && prettier --write test/fixtures",
     "clean": "rimraf .turbo"
   },
   "devDependencies": {

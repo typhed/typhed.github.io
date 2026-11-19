@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { faRotateLeft, faStop } from "@fortawesome/free-solid-svg-icons"
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons"
 import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import {
@@ -13,8 +13,15 @@ import {
 
 import { fmtMoney, fmtNumber, fmtPercent } from "@/lib/format"
 import { useSimulation } from "@/lib/use-simulation"
+import { clamp } from "@/lib/utils"
 import { Button } from "@typhed/ui/components/ui/button"
-import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls"
+import {
+  NumberField,
+  RunProgress,
+  Segmented,
+  StatTile,
+  ToolCard,
+} from "@/components/tools/controls"
 import { Distribution } from "@/components/tools/distribution"
 import { FanChart } from "@/components/tools/fan-chart"
 
@@ -33,10 +40,6 @@ const PATH_TIERS = [
 ] as const
 
 type PathTier = (typeof PATH_TIERS)[number]["value"]
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
-}
 
 /**
  * The data-driven Monte Carlo tool (MC v2): simulates forward from the
@@ -184,26 +187,7 @@ export function MonteCarloLab({ candles }: { candles: readonly Candle[] }) {
           <Icon icon={faRotateLeft} className="h-4 w-4" />
           Repeat, next seed
         </Button>
-        {status === "running" && (
-          <div className="flex items-center gap-2">
-            <div
-              className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
-              role="progressbar"
-              aria-valuenow={Math.round(progress * 100)}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <div
-                className="h-full bg-brand transition-[width]"
-                style={{ width: `${Math.round(progress * 100)}%` }}
-              />
-            </div>
-            <Button variant="ghost" size="sm" onClick={cancel}>
-              <Icon icon={faStop} className="h-4 w-4" />
-              Cancel
-            </Button>
-          </div>
-        )}
+        {status === "running" && <RunProgress progress={progress} onCancel={cancel} />}
       </div>
 
       {error && (

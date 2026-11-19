@@ -2,15 +2,7 @@ import Link from "next/link"
 
 import { AccessBadge } from "@/components/access-badge"
 import { SITE } from "@/lib/constants"
-import { getAllPosts } from "@/lib/posts"
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
-}
+import { formatPostDate, getAllPosts } from "@/lib/posts"
 
 export default function HomePage() {
   const posts = getAllPosts()
@@ -44,7 +36,7 @@ export default function HomePage() {
                 >
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     <AccessBadge category={post.accessCategory} />
-                    <time dateTime={post.date}>{formatDate(post.date)}</time>
+                    <time dateTime={post.date}>{formatPostDate(post.date)}</time>
                     <span aria-hidden="true">·</span>
                     <span>{post.readingTimeText}</span>
                   </div>

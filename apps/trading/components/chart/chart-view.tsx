@@ -6,7 +6,7 @@ import type { IChartApi, ISeriesApi, UTCTimestamp } from "lightweight-charts"
 import type { Candle } from "@typhed/chart-engine"
 
 import { chartColors } from "@/lib/chart-theme"
-import type { ChartIndicators } from "@/lib/indicators"
+import { INDICATOR_COLORS, type ChartIndicators } from "@/lib/indicators"
 
 interface Handles {
   chart: IChartApi
@@ -178,7 +178,7 @@ export function ChartView({ candles, hasVolume, indicators }: ChartProps) {
       if (ind.rsi) {
         rsiSeries = chart.addSeries(
           lwc.LineSeries,
-          { color: "#22d3ee", lineWidth: 2, priceLineVisible: false },
+          { color: INDICATOR_COLORS.rsi, lineWidth: 2, priceLineVisible: false },
           paneCursor,
         )
         for (const level of [30, 50, 70]) {
@@ -201,12 +201,22 @@ export function ChartView({ candles, hasVolume, indicators }: ChartProps) {
         macdHist = chart.addSeries(lwc.HistogramSeries, { priceLineVisible: false }, paneCursor)
         macdLine = chart.addSeries(
           lwc.LineSeries,
-          { color: "#3b82f6", lineWidth: 2, priceLineVisible: false, lastValueVisible: false },
+          {
+            color: INDICATOR_COLORS.macd,
+            lineWidth: 2,
+            priceLineVisible: false,
+            lastValueVisible: false,
+          },
           paneCursor,
         )
         macdSignal = chart.addSeries(
           lwc.LineSeries,
-          { color: "#f59e0b", lineWidth: 2, priceLineVisible: false, lastValueVisible: false },
+          {
+            color: INDICATOR_COLORS.macdSignal,
+            lineWidth: 2,
+            priceLineVisible: false,
+            lastValueVisible: false,
+          },
           paneCursor,
         )
         paneCursor += 1

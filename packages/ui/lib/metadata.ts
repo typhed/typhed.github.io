@@ -1,11 +1,11 @@
-import type { Metadata, Viewport } from "next"
+import type { Metadata, MetadataRoute, Viewport } from "next"
 import { SITE, type Property } from "@typhed/brand"
 
 /**
  * The page metadata every property shares, built from its entry in
  * properties.json. The icons point at the brand artwork that typhed-brand-sync
  * copies into each app's public/brand, and the baked colours are the ones the
- * brand artwork uses (see docs/design/colors.yml). Pass `overrides` for
+ * brand artwork uses (see docs/brand/design/colors.yml). Pass `overrides` for
  * anything that belongs to one property alone, such as authors or site
  * verification; they replace the matching keys.
  */
@@ -69,6 +69,57 @@ export function buildMetadata(property: Property, overrides: Metadata = {}): Met
     },
     category: "technology",
     ...overrides,
+  }
+}
+
+/** A property's robots.txt: crawl everything, and find the sitemap at its root. */
+export function buildRobots(property: Property): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: "*",
+      allow: "/",
+    },
+    sitemap: `${property.url}/sitemap.xml`,
+    host: property.url,
+  }
+}
+
+/** A property's web app manifest, with the brand favicon set and the baked brand navy. */
+export function buildManifest(property: Property): MetadataRoute.Manifest {
+  return {
+    name: `${property.name} - ${SITE.tagline}`,
+    short_name: property.name,
+    description: property.description,
+    start_url: "/",
+    display: "standalone",
+    background_color: "#0b1020",
+    theme_color: "#0b1020",
+    icons: [
+      {
+        src: "/brand/favicon/favicon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "any",
+      },
+      {
+        src: "/brand/favicon/android-chrome-192x192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/brand/favicon/android-chrome-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/brand/favicon/maskable-icon-512x512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
+    ],
   }
 }
 

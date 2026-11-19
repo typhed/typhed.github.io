@@ -51,11 +51,15 @@ export interface ChartIndicators {
   macd: MacdPoint[] | null
 }
 
-const COLORS = {
+/** Every indicator line's colour, overlays and the RSI and MACD panes alike. */
+export const INDICATOR_COLORS = {
   sma: "#f59e0b",
   ema: "#3b82f6",
   bollinger: "#a855f7",
   bollingerBand: "rgba(168, 85, 247, 0.55)",
+  rsi: "#22d3ee",
+  macd: "#3b82f6",
+  macdSignal: "#f59e0b",
 } as const
 
 /** Compute the render-ready indicator series for the current candles. */
@@ -66,27 +70,27 @@ export function computeIndicators(
   const overlays: OverlayLine[] = []
 
   if (state.sma) {
-    overlays.push({ id: "sma", color: COLORS.sma, data: sma(candles, 20) })
+    overlays.push({ id: "sma", color: INDICATOR_COLORS.sma, data: sma(candles, 20) })
   }
   if (state.ema) {
-    overlays.push({ id: "ema", color: COLORS.ema, data: ema(candles, 21) })
+    overlays.push({ id: "ema", color: INDICATOR_COLORS.ema, data: ema(candles, 21) })
   }
   if (state.bollinger) {
     const bands = bollinger(candles, 20, 2)
     overlays.push({
       id: "bb-middle",
-      color: COLORS.bollinger,
+      color: INDICATOR_COLORS.bollinger,
       data: bands.map((p) => ({ time: p.time, value: p.middle })),
     })
     overlays.push({
       id: "bb-upper",
-      color: COLORS.bollingerBand,
+      color: INDICATOR_COLORS.bollingerBand,
       dashed: true,
       data: bands.map((p) => ({ time: p.time, value: p.upper })),
     })
     overlays.push({
       id: "bb-lower",
-      color: COLORS.bollingerBand,
+      color: INDICATOR_COLORS.bollingerBand,
       dashed: true,
       data: bands.map((p) => ({ time: p.time, value: p.lower })),
     })

@@ -72,7 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="min-h-dvh bg-background font-sans text-foreground antialiased">
         {/* AuthProvider sits inside ThemeProvider so the Clerk modal accent
             follows the active theme. */}
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           <AuthProvider>
             <SiteShell
               propertyId="blogging"

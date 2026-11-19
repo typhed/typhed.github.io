@@ -16,21 +16,32 @@ export function MonteCarlo() {
   const [ruinPct, setRuinPct] = React.useState(50)
   const [seed, setSeed] = React.useState(1)
 
-  const result = React.useMemo(
-    () =>
-      monteCarloDrawdown({
-        startEquity,
-        trials: Math.max(1, Math.min(20000, Math.round(trials))),
-        tradesPerTrial: Math.max(1, Math.min(2000, Math.round(tradesPerTrial))),
-        winRate: winRatePct / 100,
-        winReturn: winReturnPct / 100,
-        lossReturn: lossReturnPct / 100,
-        ruinFraction: ruinPct / 100,
-        seed: Math.round(seed),
-        samplePaths: 12,
-      }),
+  const input = React.useMemo(
+    () => ({
+      startEquity,
+      trials: Math.max(1, Math.min(20000, Math.round(trials))),
+      tradesPerTrial: Math.max(1, Math.min(2000, Math.round(tradesPerTrial))),
+      winRate: winRatePct / 100,
+      winReturn: winReturnPct / 100,
+      lossReturn: lossReturnPct / 100,
+      ruinFraction: ruinPct / 100,
+      seed: Math.round(seed),
+      samplePaths: 12,
+    }),
     [startEquity, trials, tradesPerTrial, winRatePct, winReturnPct, lossReturnPct, ruinPct, seed],
   )
+
+  // Debounced like the worker tools, so typing "20000" runs once, not five times.
+  // shortcut: that one run still blocks the main thread (about 1 s at the 20,000 x
+  // 2,000 cap on a slow laptop); move it to the shared worker if phones stall.
+  const [settled, setSettled] = React.useState(input)
+  React.useEffect(() => {
+    const timer = setTimeout(() => setSettled(input), 400)
+    return () => clearTimeout(timer)
+  }, [input])
+  const result = React.useMemo(() => monteCarloDrawdown(settled), [settled])
+  // The settled run's ruin threshold as a percent (0.33 -> 33, not 33.000000000000004).
+  const settledRuinPct = Math.round(settled.ruinFraction * 1e6) / 1e4
 
   const ruinTone = result.ruinProbability > 0.1 ? "negative" : "positive"
 
@@ -80,7 +91,7 @@ export function MonteCarlo() {
       </div>
 
       <div className="mt-6">
-        <EquityFan paths={result.paths} startEquity={startEquity} />
+        <EquityFan paths={result.paths} startEquity={settled.startEquity} />
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -105,7 +116,7 @@ export function MonteCarlo() {
           label="Risk of ruin"
           value={fmtPercent(result.ruinProbability)}
           tone={ruinTone}
-          note={`< ${ruinPct}% equity`}
+          note={`< ${settledRuinPct}% equity`}
         />
       </div>
 

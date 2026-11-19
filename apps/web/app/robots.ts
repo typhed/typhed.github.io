@@ -1,16 +1,8 @@
-import type { MetadataRoute } from "next"
-
-import { SITE } from "@typhed/brand"
+import { getProperty } from "@typhed/brand"
+import { buildRobots } from "@typhed/ui/lib/metadata"
 
 export const dynamic = "force-static"
 
-export default function robots(): MetadataRoute.Robots {
-  return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-    },
-    sitemap: `${SITE.url}/sitemap.xml`,
-    host: SITE.url,
-  }
+export default function robots() {
+  return buildRobots(getProperty("web"))
 }

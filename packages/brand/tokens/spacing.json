@@ -1,5 +1,5 @@
 {
-  "_comment": "Layout primitives the Tailwind preset configures. The step scale itself is stock Tailwind and is documented, not configured, in docs/design/spacing.yml.",
+  "_comment": "Layout primitives the Tailwind preset configures. The step scale itself is stock Tailwind and is documented, not configured, in docs/brand/design/spacing.yml.",
   "container": {
     "center": true,
     "padding": "1.5rem",

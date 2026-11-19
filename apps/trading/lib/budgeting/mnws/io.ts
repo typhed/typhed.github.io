@@ -13,7 +13,7 @@
  * dataset.
  */
 
-import { slugify } from "@/lib/utils"
+import { clamp, localIsoDate, slugify } from "@/lib/utils"
 import { asArray, coerceIsoDate, isObject, num, str } from "@/lib/parse"
 import {
   DEFAULT_ANNUAL_RETURN_PCT,
@@ -58,13 +58,17 @@ export function serializeMnwsDataset(data: MnwsDataset): string {
 /** Download filename, e.g. `mnws-my-mnws-plan-2026-07-18.json`. */
 export function mnwsFileName(data: MnwsDataset, today: string): string {
   const slug = slugify(data.meta.planName) || "plan"
-  const stamp = today || new Date().toISOString().slice(0, 10)
+  const stamp = today || localIsoDate()
   return `mnws-${slug}-${stamp}.json`
 }
 
-function clamp(value: number, lo: number, hi: number): number {
-  return Math.min(hi, Math.max(lo, value))
-}
+/**
+ * Upper bounds on rows accepted from an untrusted payload, as the IPO parser
+ * has. Far beyond a working life of raises and windfalls, but low enough that a
+ * crafted million-row import cannot hang the renderer. Rows past the cap are
+ * dropped silently, like malformed rows.
+ */
+const MAX_ROWS = { salaries: 1000, bonuses: 1000 } as const
 
 /**
  * Validate/clamp an untrusted payload into a fresh `MnwsDataset`. Never spreads
@@ -83,7 +87,7 @@ export function safeParseMnwsDataset(raw: unknown, opts?: { allowEmpty?: boolean
   const metaRaw = isObject(raw.meta) ? raw.meta : {}
   const settingsRaw = isObject(raw.settings) ? raw.settings : {}
 
-  const salaries = asArray(raw.salaries).flatMap((entry) => {
+  const salaries = asArray(raw.salaries, MAX_ROWS.salaries).flatMap((entry) => {
     if (!isObject(entry)) return []
     const date = coerceIsoDate(entry.date)
     if (date === null) return []
@@ -96,7 +100,7 @@ export function safeParseMnwsDataset(raw: unknown, opts?: { allowEmpty?: boolean
     ]
   })
 
-  const bonuses = asArray(raw.bonuses).flatMap((entry) => {
+  const bonuses = asArray(raw.bonuses, MAX_ROWS.bonuses).flatMap((entry) => {
     if (!isObject(entry)) return []
     const date = coerceIsoDate(entry.date)
     if (date === null) return []

@@ -63,7 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {/* The site is a static export, so Clerk runs entirely in the browser.
             AuthProvider sits inside ThemeProvider so the Clerk modal accent
             follows the active theme. */}
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider>
           <AuthProvider>
             <SiteShell
               propertyId="web"

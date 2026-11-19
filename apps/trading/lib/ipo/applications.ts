@@ -141,8 +141,12 @@ export function deriveApplicationMetrics(
       flags.push("QTY Mismatch with Lot Size")
     }
   } else {
-    const lotAmount = cutoffPrice * lotSize
-    appliedUnits = lotAmount > 0 ? Math.floor(applicationTotal / lotAmount) * lotSize : 0
+    // Whole paise on both sides: a fractional cut-off makes the lot amount a
+    // float (1.1 x 13,000 = 14300.000000000002) that a float division would
+    // floor one lot short of.
+    const lotPaise = Math.round(cutoffPrice * lotSize * 100)
+    appliedUnits =
+      lotPaise > 0 ? Math.floor(Math.round(applicationTotal * 100) / lotPaise) * lotSize : 0
     const remainder = applicationTotal - appliedUnits * cutoffPrice
     if (appliedUnits > 0 && remainder > 0.005) {
       flags.push("Corpus Not a Whole-Lot Multiple [FLOORED]")

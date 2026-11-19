@@ -19,7 +19,7 @@ import { cn } from "../lib/utils"
  * the control must never resize itself, wherever it is placed.
  */
 const CONTROL =
-  "inline-flex h-full w-7 items-center justify-center font-semibold leading-none text-muted-foreground transition-colors hover:text-brand focus-visible:relative focus-visible:z-10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-30"
+  "inline-flex h-full w-7 items-center justify-center font-semibold leading-none text-muted-foreground transition-colors hover:text-brand focus-visible:relative focus-visible:z-10 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset disabled:pointer-events-none disabled:opacity-30"
 
 /**
  * Text-size control for the page's reading area: a small "A" to step down and a

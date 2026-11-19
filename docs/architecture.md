@@ -9,8 +9,8 @@
 This page is the architecture reference for the monorepo. It records how the three sites and the redirect generator are
 built, how the workspace is wired together, how the sites deploy, and which constraints are load bearing. Open it when a
 change touches build configuration, the package graph, theming, the page shell, authentication, or deployment. What
-belongs on each site is settled by [PRD.md](PRD.md); how the properties sit across domains is in the
-[domain and subdomain model](brand/subdomain-model.md).
+belongs on each site is settled by the [product requirements](product.md); how the properties sit across domains is in
+the [domain and subdomain model](brand/subdomain-model.md).
 
 The source code is the truth. When this page and the code disagree, fix the page.
 
@@ -71,7 +71,7 @@ by its own Cloudflare Worker.
 | [apps/web](../apps/web), [apps/trading](../apps/trading), [apps/blogging](../apps/blogging) | The three sites. Each owns its routes, page metadata, and app-level CSS. |
 | [packages/brand](../packages/brand) | `@typhed/brand`: the brand JSON contract, `properties.json`, design tokens, brand artwork, and the `typhed-brand-sync` bin. |
 | [packages/ui](../packages/ui) | `@typhed/ui`: the page shell, header, footer, sidebar, theme components, Button, Icon, and the metadata helpers. |
-| [packages/auth](../packages/auth) | `@typhed/auth`: the only Clerk wiring - provider, header control, sign-in gate, entitlements. |
+| [packages/auth](../packages/auth) | `@typhed/auth`: the sites' only Clerk wiring - provider, header control, sign-in gate, entitlements. |
 | [packages/config-next](../packages/config-next) | `@typhed/next-config`: `createNextConfig()`, the static-export configuration. |
 | [packages/config-tailwind](../packages/config-tailwind), [packages/config-typescript](../packages/config-typescript) | `@typhed/tailwind-config` (base stylesheet, preset, shared content globs, PostCSS config) and `@typhed/tsconfig` (bases). |
 | [packages/chart-engine](../packages/chart-engine), [risk-toolkit](../packages/risk-toolkit), [backtest](../packages/backtest) | Trading domain libraries, tested with Vitest. |
@@ -79,7 +79,7 @@ by its own Cloudflare Worker.
 | [packages/analytics-python](../packages/analytics-python) | A NumPy/SciPy reference test for the trading app's in-browser Python analytics. Not a workspace package. |
 | [permalink](../permalink) | The redirect generator, its TOML link table, and its Jinja template. |
 | [scripts](../scripts) | `deploy-targets.mjs`, which picks the apps a deploy publishes. |
-| [docs](.) | This reference, the PRD, the brand and design references, and the component docs. |
+| [docs](.) | This reference, the product requirements, the developer guide, the brand and design references, and the agent references: component docs, decision records, and tool logs. |
 
 </div>
 
@@ -96,8 +96,8 @@ The root `package.json` also pins the toolchain: pnpm through `packageManager`, 
 `devEngines.runtime`. pnpm downloads that Node.js release, records it in the lockfile, and runs every workspace script
 with it. The install's dependency build scripts (`esbuild` and `workerd`) run on the `node` already on the `PATH`,
 so a machine needs Node.js as well as pnpm. In CI, `pnpm/setup` installs the pinned release before the install. pnpm
-installs a release only once it is a day old, its default `minimumReleaseAge`.
-Three versions are held below the newest release on purpose:
+installs a release only once it is a day old, its default `minimumReleaseAge`. Three versions are held below the newest
+release on purpose:
 
 <div align = "center">
 
@@ -111,7 +111,8 @@ Three versions are held below the newest release on purpose:
 
 [dependabot.yml](../.github/dependabot.yml) skips the TypeScript and KaTeX updates these holds rule out.
 
-[turbo.json](../turbo.json) defines the tasks. Every root script is a `turbo run <task>` fan-out:
+[turbo.json](../turbo.json) defines the tasks. Every root script except `format` and `format:check`, which run Prettier
+directly, is a `turbo run <task>` fan-out:
 
 <div align = "center">
 
@@ -120,7 +121,7 @@ Three versions are held below the newest release on purpose:
 | `build` | Depends on `^build`; caches `out/**` and `.next/**`; every `NEXT_PUBLIC_*` value is part of the hash. `web#build` also hashes `permalink/`. |
 | `dev` | Never cached, persistent. |
 | `lint`, `typecheck` | Depend on `^build`. |
-| `test` | Runs Vitest in `apps/trading`, the trading packages, and `@typhed/brand`. |
+| `test` | Depends on `^build`; runs Vitest in `apps/trading`, `apps/blogging`, the three trading packages, and `@typhed/brand`. |
 | `clean` | Never cached. |
 
 </div>
@@ -158,8 +159,9 @@ every raw file (`@typhed/brand/tokens/colors.json`); `@typhed/auth` exports `.`.
 is importable with no packaging change. React, React DOM, and Next resolve from the root `node_modules`, so every app
 and package shares one copy.
 
-`@typhed/tsconfig` ships `base.json`, `nextjs.json` (extended by the apps), and `react-library.json` (extended by the
-packages); `paths` resolve from each tsconfig's own folder, with no `baseUrl`.
+`@typhed/tsconfig` ships `base.json` (extended by the packages without React), `nextjs.json` (extended by the apps), and
+`react-library.json` (extended by `@typhed/ui` and `@typhed/auth`); `paths` resolve from each tsconfig's own folder, with
+no `baseUrl`.
 
 `@typhed/tailwind-config` carries the Tailwind CSS 4 setup. Each app's `globals.css` starts with
 `@import "@typhed/tailwind-config/base.css"`, which loads Tailwind and then Font Awesome's icon styles in Tailwind's
@@ -177,10 +179,11 @@ into `public/brand/`; both paths are generated and gitignored. Each app's layout
 `globals.css`, and `globals.css` holds only app-level CSS. The preset maps every token to a utility through
 `hsl(var(--token))`, so components write `bg-brand` or `text-success`, never a hex value.
 
-`next-themes` owns the `.dark` class (`attribute="class"`, `defaultTheme="dark"`, `enableSystem`,
-`disableTransitionOnChange`). Baked assets cannot read a CSS variable, so the manifest, the viewport `themeColor`, the
-tile colours, and the OG images carry literal hex that matches the dark theme; [colors.yml](design/colors.yml) lists
-every token and every baked value.
+`next-themes` owns the `.dark` class. `@typhed/ui`'s `ThemeProvider` sets the brand's four options as its defaults:
+`attribute="class"`, `defaultTheme="dark"`, `enableSystem`, and `disableTransitionOnChange`; each app's layout renders
+it with no props. Baked assets cannot read a CSS variable, so the manifests, the tile colours, and the OG images carry
+literal hex close to the dark theme, and the viewport `themeColor` carries one literal per theme;
+[colors.yml](brand/design/colors.yml) lists every token and every baked value.
 
 The base stylesheet also sets the theme colours on `html body` outside any cascade layer. Next's built-in 404 page ships
 an unlayered `body` colour rule that would otherwise beat Tailwind's layered base styles.
@@ -191,7 +194,7 @@ Every icon comes from Font Awesome Free, the solid set for interface icons and t
 through [Icon](../packages/ui/components/icon.tsx) in `@typhed/ui`: `<Icon icon={faSun} className="h-4 w-4" />`. `Icon`
 switches off Font Awesome's runtime style injection, so the stylesheet that `base.css` places in the base layer is the
 only one, and Tailwind utilities size every icon. No icon or logo is drawn by hand; the
-[decision record](adr/2026-11-17-font-awesome-for-every-icon.md) explains the choice.
+[decision record](agents/decisions/2026-11-17.2.md) explains the choice.
 
 ## Content Single Source Of Truth
 
@@ -219,9 +222,11 @@ to the brand hub, from `site.json`'s name and tagline, and prepends the privacy 
 </div>
 
 `getProperty(id)` returns a property's entry. The metadata helper `buildMetadata()` in `@typhed/ui/lib/metadata` builds
-each page's title, description, icons, Open Graph, Twitter, and robots metadata from it, and `allowedRedirectOrigins` in
-the auth provider lists every property URL. `resolveBrandHref` expands brand-layer paths such as `/about/` and
-`/permalink/conduct.html` against the brand URL, so header and footer links reach the brand hub from every subdomain.
+each page's title, description, icons, Open Graph, Twitter, and robots metadata from it, and `BRAND_VIEWPORT` beside it
+carries the browser theme colour of both themes. The web and blog apps serve `robots.txt` and the web app manifest from
+`app/robots.ts` and `app/manifest.ts`, which return `buildRobots()` and `buildManifest()` from the same helper, and
+`allowedRedirectOrigins` in the auth provider lists every property URL. `resolveBrandHref` expands brand-layer paths such as `/about/` and `/permalink/conduct.html` against the
+brand URL, so header and footer links reach the brand hub from every subdomain.
 Footer entries marked `external: true` open in a new tab with a safe `rel` and a screen-reader note, and no icon.
 
 ## Page Shell, Sidebar, And Scroll Model
@@ -230,10 +235,9 @@ Each app's layout wraps its pages in `ThemeProvider`, then `AuthProvider`, then
 [SiteShell](../packages/ui/components/site-shell.tsx). `SiteShell` renders the shared `SiteHeader`, the page, and the
 shared `SiteFooter`; the header and footer are identical on every property. When the property's entry has sidebar
 groups, `SiteShell` also renders [ProductSidebar](../packages/ui/components/product-sidebar.tsx): a left-hand menu,
-expanded by default, that animates as it collapses and remembers the choice per property in `localStorage`. Today only
-trading has one.
-`SiteShell` options turn on the animated background (web, blogging) and the `ScrollToTop` button (web). App extras sit
-beside the shell: trading's `PrivacyGuard` and chat button, and the blog's analytics.
+expanded by default, that animates as it collapses and remembers the choice per property in `localStorage`; only trading
+has one. `SiteShell` options turn on the animated background (web, blogging) and the `ScrollToTop` button (web). App
+extras sit beside the shell: trading's `PrivacyGuard` and chat button, and the blog's analytics.
 
 The sticky header is `h-16`, and the web app's `globals.css` offsets anchors with `scroll-padding-top: 4rem`; the two
 change together. The web home page snaps full-height sections with `scroll-snap-type: y proximity`.
@@ -241,7 +245,7 @@ change together. The web home page snaps full-height sections with `scroll-snap-
 ## Client Side Authentication
 
 Sign-in runs in the browser through Clerk's framework-agnostic `@clerk/react` SDK; `@clerk/nextjs` imports a Server
-Action that a static export cannot build. [packages/auth](../packages/auth/src) is the only package that imports Clerk:
+Action that a static export cannot build. [packages/auth](../packages/auth/src) is the only package the sites import Clerk through:
 
   * `AuthProvider` mounts `ClerkProvider` inside `ThemeProvider`, with the accent taken from the brand tokens for the
     active theme, `afterSignOutUrl="/"`, and every property URL as an allowed redirect origin.
@@ -253,7 +257,8 @@ Action that a static export cannot build. [packages/auth](../packages/auth/src) 
     its feature catalogue.
 
 The publishable key is public and inlined at build time from `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`. Without it, auth is
-off and every gate passes through; the deploy workflow refuses to build production without it. One Clerk production
+off: every `SignedInGate` passes through and `useEntitlements()` reports a free account, so the Pro tools stay locked;
+the deploy workflow refuses to build production without it. One Clerk production
 instance (`clerk.typhed.com`) serves every subdomain. `@typhed/ui` stays auth-free: the header takes the control as a
 slot.
 
@@ -299,7 +304,7 @@ Rule.
 | `pnpm format:check` | Prettier, with `prettier-plugin-tailwindcss` sorting class names |
 | `pnpm lint` | ESLint 10, `eslint .` in each app and each package with source code, with the root [eslint.config.mjs](../eslint.config.mjs) spreading `eslint-config-next/core-web-vitals` |
 | `pnpm typecheck` | `tsc --noEmit` in every app and package |
-| `pnpm test` | Vitest suites of `apps/trading`, `chart-engine`, `risk-toolkit`, `backtest`, and `brand` |
+| `pnpm test` | Vitest suites of `apps/trading`, `apps/blogging`, `chart-engine`, `risk-toolkit`, `backtest`, and `brand` |
 | `pnpm build` | The three static exports, which fail loudly on server-only code |
 
 </div>
@@ -317,7 +322,7 @@ Rule.
 | No `:root` or `.dark` palette in any `globals.css` | The generated `theme.css` carries the palette; a local copy silently wins. |
 | `apps/*/public/brand/` and `apps/*/app/theme.css` stay generated | `typhed-brand-sync` overwrites them before every build. |
 | Copy, nav, and property values come from `@typhed/brand` | Header, footer, metadata, and JSON-LD agree on every property. |
-| Only `@typhed/auth` imports Clerk | `@typhed/ui` stays usable by any property, whatever its auth. |
+| The sites import Clerk only through `@typhed/auth` | `@typhed/ui` stays usable by any property, whatever its auth. |
 | Every shared source directory is in `content.js` | Tailwind generates only classes it has scanned. |
 | Third-party versions live only in the root `package.json` | One version per dependency on every site, and one `node_modules`. |
 | Icons render through `@typhed/ui`'s `Icon` | It keeps Font Awesome's styles in the base layer, where utilities size every icon. |
@@ -336,12 +341,15 @@ renders Tailwind classes, joins `content.js`. A new dependency, with its version
 
 ## Related References
 
-  * [Component library](components/README.md) - props, variants, anatomy, and accessibility of the shared components.
-  * [colors.yml](design/colors.yml), [spacing.yml](design/spacing.yml), [typography.yml](design/typography.yml) - the
-    colour, layout, and type systems.
-  * [Architecture decision records](adr/README.md) - each design decision, dated, with its context and consequences.
-  * [PRD.md](PRD.md) - what each property is for and what belongs on it.
+  * [Component library](agents/components/README.md) - props, variants, anatomy, and accessibility of the shared
+    components.
+  * [colors.yml](brand/design/colors.yml), [spacing.yml](brand/design/spacing.yml),
+    [typography.yml](brand/design/typography.yml) - the colour, layout, and type systems.
+  * [Architecture decision records](agents/decisions/README.md) - each design decision, dated, with its context and
+    consequences.
+  * [product.md](product.md) - what each property is for and what belongs on it.
   * [subdomain-model.md](brand/subdomain-model.md) - domains, Workers, DNS, and the shared sign-in.
-  * [README.md](../README.md) - overview, local development, and commands.
+  * [developers.md](developers.md) - local development, environment variables, and commands.
+  * [README.md](../README.md) - the brand and its products.
 
 </div>

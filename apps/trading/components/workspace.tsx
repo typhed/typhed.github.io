@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams } from "next/navigation"
 import { faArrowsRotate, faFloppyDisk } from "@fortawesome/free-solid-svg-icons"
 import { Icon } from "@typhed/ui/components/icon"
 import {
@@ -84,15 +85,13 @@ export function Workspace() {
     rMultiples: number[]
   } | null>(null)
 
-  // Deep links from the tool registry (/?view=montecarlo): read once on
-  // mount; the view applies as soon as data is loaded.
-  React.useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("view")
-    if (requested && VIEW_OPTIONS.some((o) => o.value === requested)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- the deep link is in the URL, which only the browser has; reading it after hydration keeps the pre-rendered HTML valid
-      setView(requested as WorkspaceView)
-    }
-  }, [])
+  // Deep links from the sidebar (/?view=montecarlo) follow the URL; the view
+  // applies as soon as data is loaded.
+  const deepLink = (
+    <React.Suspense fallback={null}>
+      <ViewFromUrl onView={setView} />
+    </React.Suspense>
+  )
 
   function toggleIndicator(id: IndicatorId) {
     setIndicatorState((prev) => ({ ...prev, [id]: !prev[id] }))
@@ -189,6 +188,7 @@ export function Workspace() {
   if (step === "upload") {
     return (
       <div className="container py-16">
+        {deepLink}
         <WorkspaceIntro />
         <UploadPanel onFile={handleFile} error={error} />
         <SavedAnalyses onLoad={loadSaved} />
@@ -199,6 +199,7 @@ export function Workspace() {
   if (step === "map" && table && mapping) {
     return (
       <div className="container py-16">
+        {deepLink}
         <ColumnMapper
           headers={table.headers}
           mapping={mapping}
@@ -213,6 +214,7 @@ export function Workspace() {
   if (step === "chart" && dataset && base && selected) {
     return (
       <div className="container space-y-4 py-8">
+        {deepLink}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="font-display text-xl font-semibold">{fileName}</h1>
@@ -297,6 +299,25 @@ export function Workspace() {
       </div>
     )
   }
+
+  return null
+}
+
+/**
+ * Applies a `?view=` deep link every time it changes. Next keeps the page
+ * mounted when only the query changes, so a read on mount alone would miss a
+ * sidebar click made from inside the workspace. A missing or unknown view is
+ * the plain workspace, so the sidebar's "Workspace" link and Back return to the
+ * chart. It renders nothing, inside its own Suspense boundary, so the static
+ * export still pre-renders the workspace.
+ */
+function ViewFromUrl({ onView }: { onView: (view: WorkspaceView) => void }) {
+  const requested = useSearchParams().get("view")
+
+  React.useEffect(() => {
+    const known = VIEW_OPTIONS.some((o) => o.value === requested)
+    onView(known ? (requested as WorkspaceView) : "chart")
+  }, [requested, onView])
 
   return null
 }

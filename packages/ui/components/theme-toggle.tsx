@@ -47,7 +47,7 @@ export function ThemeToggle() {
       />
       <span
         className={cn(
-          "pointer-events-none relative z-10 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs transition-transform duration-200",
+          "pointer-events-none relative z-10 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xs transition-transform duration-200 motion-reduce:transition-none",
           isDark ? "translate-x-6" : "translate-x-0",
         )}
       >

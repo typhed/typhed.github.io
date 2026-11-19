@@ -109,6 +109,7 @@ apps/blogging/
   content/blog/   the MDX posts
   lib/            post loading, constants, remark and rehype plugins
   public/         ads.txt (brand/ is generated)
+  tests/          Vitest checks of the post loader (pnpm --filter blogging test)
   wrangler.jsonc  the typhed-blogging Worker
 ```
 

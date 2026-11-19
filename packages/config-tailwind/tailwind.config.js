@@ -150,14 +150,6 @@ module.exports = {
         "9xl": scaled("8rem", "1"),
       },
       keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
         "drift-slow": {
           "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
           "50%": { transform: "translate3d(4%, -6%, 0) scale(1.08)" },
@@ -170,24 +162,11 @@ module.exports = {
           from: { opacity: "0", transform: "translateY(12px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        shimmer: {
-          "0%": { backgroundPosition: "200% 0" },
-          "100%": { backgroundPosition: "-200% 0" },
-        },
-        "pulse-ring": {
-          "0%": { opacity: "0.6", transform: "scale(0.95)" },
-          "50%": { opacity: "0.25", transform: "scale(1.05)" },
-          "100%": { opacity: "0.6", transform: "scale(0.95)" },
-        },
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
         "drift-slow": "drift-slow 18s ease-in-out infinite",
         "drift-slower": "drift-slower 26s ease-in-out infinite",
         "fade-up": "fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both",
-        shimmer: "shimmer 6s linear infinite",
-        "pulse-ring": "pulse-ring 4s ease-in-out infinite",
       },
     },
   },

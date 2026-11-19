@@ -82,12 +82,31 @@ function readAllRaw(): RawPost[] {
     .filter((post) => isVisible(post.data))
 }
 
+/**
+ * The post date as "yyyy-mm-dd". YAML reads an unquoted `date: 2026-07-13` as a
+ * `Date` at UTC midnight, so it is turned back into its UTC calendar day; a
+ * quoted date is already the string.
+ */
+function isoDay(date: unknown): string {
+  return date instanceof Date ? date.toISOString().slice(0, 10) : String(date)
+}
+
+/** "July 13, 2026" for a "yyyy-mm-dd" post date, whatever the build machine's zone. */
+export function formatPostDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  })
+}
+
 function toMeta({ slug, data, body }: RawPost): PostMeta {
   return {
     slug,
     title: data.title,
     description: data.description,
-    date: data.date,
+    date: isoDay(data.date),
     tags: data.tags ?? [],
     author: data.author,
     draft: data.draft,
@@ -134,13 +153,4 @@ export function getRelatedPosts(slugs: string[] | undefined, currentSlug?: strin
     if (post) related.push(post)
   }
   return related
-}
-
-/** All unique tags across visible posts, alphabetized. */
-export function getAllTags(): string[] {
-  const tags = new Set<string>()
-  for (const post of readAllRaw()) {
-    for (const tag of post.data.tags ?? []) tags.add(tag)
-  }
-  return Array.from(tags).sort()
 }

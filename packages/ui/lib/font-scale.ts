@@ -29,9 +29,6 @@ export const FONT_STEP_KEY = "typhed-font-step"
 /** Set on `<html>`. Carries the visitor's choice down to the scope. */
 export const FONT_SCALE_SETTING_PROPERTY = "--font-scale-setting"
 
-/** Read by every text size. `1` outside the reading scope, the setting inside. */
-export const FONT_SCALE_PROPERTY = "--font-scale"
-
 /** The stock root size the whole scale is anchored on. */
 export const FONT_BASE_PX = 16
 

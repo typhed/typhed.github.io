@@ -88,6 +88,20 @@ describe("profit tiers (full-allotment product rule)", () => {
     expect(m.bestCaseProfit).toBeCloseTo(2132 * GMP)
   })
 
+  it("total mode keeps a whole lot at a fractional cut-off price", () => {
+    // 1.1 x 13,000 is 14300.000000000002 in floating point, a hair above the
+    // corpus, so a float division would floor exactly one lot to zero.
+    const m = deriveApplicationMetrics(totalModeApp("RETAIL", [14_300]), {
+      latestGmp: 0,
+      cutoffPrice: 1.1,
+      lotSize: 13_000,
+      subscriptionByCategory: { RETAIL: 1 },
+    })
+    expect(m.appliedUnits).toBe(13_000)
+    expect(m.lots).toBe(1)
+    expect(m.flags.some((f) => f.includes("FLOORED"))).toBe(false)
+  })
+
   it("unknown subscription: probability is null and flagged, tiers still computable", () => {
     const m = deriveApplicationMetrics(detailedApp("RETAIL", LOT), params({}))
     expect(m.probabilityOfWinning).toBeNull()

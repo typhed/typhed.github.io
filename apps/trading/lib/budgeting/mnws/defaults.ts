@@ -21,11 +21,6 @@ export function makeBonusEntry(init: Omit<BonusEntry, "id">): BonusEntry {
   return { id: newId(), ...init }
 }
 
-/** A blank salary row with today's date pre-filled by the caller. */
-export function blankSalaryEntry(date: string): SalaryEntry {
-  return makeSalaryEntry({ date, amount: 0, note: "" })
-}
-
 /** A blank bonus row seeded with the default 25 / 0 / 75 split. */
 export function blankBonusEntry(date: string): BonusEntry {
   return makeBonusEntry({

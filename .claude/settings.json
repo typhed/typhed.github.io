@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python .claude/hooks/keeper-stop-hook.py"
+            "command": "python .agents/hooks/keeper-stop-hook.py"
           }
         ]
       }

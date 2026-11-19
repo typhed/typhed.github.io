@@ -15,7 +15,7 @@ import { mdxComponents } from "@/components/mdx-components"
 import { PostBody } from "@/components/post-body"
 import { ScrollToTop } from "@typhed/ui/components/scroll-to-top"
 import { SITE } from "@/lib/constants"
-import { getAllSlugs, getPostBySlug, getRelatedPosts } from "@/lib/posts"
+import { formatPostDate, getAllSlugs, getPostBySlug, getRelatedPosts } from "@/lib/posts"
 import { rehypeCollectHeadings, type TocItem } from "@/lib/rehype-collect-headings"
 import { remarkDiagrams } from "@/lib/remark-diagrams"
 
@@ -55,14 +55,6 @@ export async function generateMetadata({
       description: post.description,
     },
   }
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -118,7 +110,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               <header className="mb-8 border-b border-border/60 pb-8">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   <AccessBadge category={post.accessCategory} />
-                  <time dateTime={post.date}>{formatDate(post.date)}</time>
+                  <time dateTime={post.date}>{formatPostDate(post.date)}</time>
                   <span aria-hidden="true">·</span>
                   <span>{post.readingTimeText}</span>
                   <span aria-hidden="true">·</span>

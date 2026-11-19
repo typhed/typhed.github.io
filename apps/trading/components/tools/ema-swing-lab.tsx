@@ -1,15 +1,19 @@
 "use client"
 
 import * as React from "react"
-import { faStop } from "@fortawesome/free-solid-svg-icons"
-import { Icon } from "@typhed/ui/components/icon"
 import type { Candle } from "@typhed/chart-engine"
 import type { StrategyTemplate, SweepParams, SweepResult, SweepRow } from "@typhed/backtest"
 
 import { fmtNumber, fmtPercent } from "@/lib/format"
 import { useSweep } from "@/lib/use-sweep"
-import { Button } from "@typhed/ui/components/ui/button"
-import { NumberField, Segmented, StatTile, ToolCard } from "@/components/tools/controls"
+import { clamp } from "@/lib/utils"
+import {
+  NumberField,
+  RunProgress,
+  Segmented,
+  StatTile,
+  ToolCard,
+} from "@/components/tools/controls"
 import { EmaLabDetail } from "@/components/tools/ema-lab-detail"
 import { cn } from "@typhed/ui/lib/utils"
 
@@ -46,10 +50,6 @@ const SORT_VALUE: Record<SortKey, (row: SweepRow) => number> = {
   touchFidelity: (row) => row.cell.touchFidelity ?? -1,
   score: (row) => row.cell.score,
   outOfSampleScore: (row) => row.cell.outOfSampleScore,
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value))
 }
 
 /**
@@ -186,24 +186,7 @@ export function EmaSwingLab({
       </div>
 
       {status === "running" && (
-        <div className="mt-4 flex items-center gap-2">
-          <div
-            className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
-            role="progressbar"
-            aria-valuenow={Math.round(progress * 100)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div
-              className="h-full bg-brand transition-[width]"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </div>
-          <Button variant="ghost" size="sm" onClick={cancel}>
-            <Icon icon={faStop} className="h-4 w-4" />
-            Cancel
-          </Button>
-        </div>
+        <RunProgress className="mt-4" progress={progress} onCancel={cancel} />
       )}
 
       {error && (
@@ -302,9 +285,18 @@ export function EmaSwingLab({
                 return (
                   <tr
                     key={row.emaPeriod}
+                    tabIndex={0}
+                    aria-expanded={isSelected}
                     onClick={() => setSelected(isSelected ? null : row)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        // Space would also scroll the page without preventDefault.
+                        e.preventDefault()
+                        setSelected(isSelected ? null : row)
+                      }
+                    }}
                     className={cn(
-                      "cursor-pointer border-b border-border/40 transition-colors hover:bg-accent/50",
+                      "cursor-pointer border-b border-border/40 transition-colors hover:bg-accent/50 focus-visible:bg-accent/50",
                       cell.lowSample && "text-muted-foreground/60",
                       isSelected && "bg-accent/60",
                     )}

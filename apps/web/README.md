@@ -35,7 +35,8 @@ apps/web/
   wrangler.jsonc  the typhed-web Worker
 ```
 
-The shell, sign-in, and brand content come from `packages/`; the [root README](../../README.md) lists the common changes
-and where to make them.
+The shell, sign-in, and brand content come from `packages/`; the
+[developer guide](../../docs/developers.md#-common-changes-you-might-want) lists the common changes and where to make
+them.
 
 </div>

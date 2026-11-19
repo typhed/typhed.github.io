@@ -55,7 +55,7 @@ $ pnpm test
 ```
 
 `build` writes the static export to `apps/trading/out`, which the `typhed-trading` Cloudflare Worker serves. `pnpm test`
-runs the Vitest suites of this app and its three packages.
+runs every Vitest suite in the workspace, and `pnpm --filter trading test` runs this app's alone.
 
 ## 🔒 Data And Privacy
 

@@ -41,12 +41,6 @@ export function monthIndexFromIso(iso: string): number | null {
   return ym === null ? null : ymToIndex(ym)
 }
 
-/** The index of the month AFTER the given ISO date's month (allocation start). */
-export function monthAfterIso(iso: string): number | null {
-  const index = monthIndexFromIso(iso)
-  return index === null ? null : index + 1
-}
-
 /** "yyyy-mm" key for a month index, e.g. `-> "2016-12"`. */
 export function indexToKey(index: number): string {
   const { year, month } = indexToYm(index)

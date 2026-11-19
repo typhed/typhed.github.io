@@ -93,15 +93,17 @@ function json(status: number, body: unknown, headers: HeadersInit = {}): Respons
 }
 
 /**
- * Build the fetch handler for the gate. Wire it to the runtime like:
+ * Build the fetch handler for the gate. Build it once per isolate, so the rate
+ * limiter keeps its counts across requests, and wire it to the runtime like:
  *
  *   // Cloudflare Workers
+ *   let gate: ((req: Request) => Promise<Response>) | undefined
  *   export default {
  *     fetch: (req: Request, env: Env) =>
- *       createGateHandler({
+ *       (gate ??= createGateHandler({
  *         secretKey: env.CLERK_SECRET_KEY,
  *         allowedOrigins: ["https://trading.typhed.com"],
- *       })(req),
+ *       }))(req),
  *   };
  */
 export function createGateHandler(config: GateConfig) {

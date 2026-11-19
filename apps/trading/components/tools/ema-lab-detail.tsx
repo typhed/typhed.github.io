@@ -299,6 +299,10 @@ function EquityPanel({ equity }: { equity: readonly number[] }) {
       height - ddHeight - ((v - min) / (max - min)) * (height - ddHeight - 8) - 4
 
     const stride = Math.max(1, Math.ceil(n / 1000))
+    // Every stride-th bar, plus the last one, as the price panel samples.
+    const sampled: number[] = []
+    for (let i = 0; i < n; i += stride) sampled.push(i)
+    if (n > 0 && (n - 1) % stride !== 0) sampled.push(n - 1)
     const points: string[] = []
     let peak = equity[0] ?? 0
     const drawdowns: number[] = new Array(n)
@@ -310,14 +314,14 @@ function EquityPanel({ equity }: { equity: readonly number[] }) {
       drawdowns[i] = dd
       if (dd > worst) worst = dd
     }
-    for (let i = 0; i < n; i += stride) {
+    for (const i of sampled) {
       points.push(`${x(i).toFixed(1)},${y(equity[i]!).toFixed(1)}`)
     }
 
     const ddScale = worst > 0 ? worst : 1
     const ddY = (dd: number) => height - ddHeight + (dd / ddScale) * (ddHeight - 2)
     const area: string[] = [`M 0 ${height - ddHeight}`]
-    for (let i = 0; i < n; i += stride) {
+    for (const i of sampled) {
       area.push(`L ${x(i).toFixed(1)} ${ddY(drawdowns[i]!).toFixed(1)}`)
     }
     area.push(`L ${width} ${height - ddHeight} Z`)

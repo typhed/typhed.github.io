@@ -31,7 +31,8 @@ export; only this one function runs on a server.
   3. The handler verifies the token via `@clerk/backend` `verifyToken` (JWKS-backed signature and lifetime checks).
   4. A fixed-window per-user rate limit (default 30 requests/minute) brakes hot callers before any computation runs.
   5. It checks `publicMetadata.tier` / `entitlements` for the requested feature.
-  6. Only a verified, entitled, in-budget caller receives the computed result; others get 401, 403, or 429.
+  6. Only a verified, entitled, in-budget caller receives the computed result; others get 400 for a malformed request,
+     401, 403, 405 for a method other than POST, or 429.
 
 ## Deploying
 
@@ -47,7 +48,7 @@ export; only this one function runs on a server.
 
 ## Status
 
-**Implemented but not deployed.** The handler compiles and typechecks as the `@typhed/serverless-gate` workspace
+**Implemented but not deployed.** The handler compiles and typechecks as the `@typhed/entitlement-gate` workspace
 package, with real token verification, an origin allowlist, and rate limiting - but nothing hosts it yet and no tool
 calls it. Until it is deployed, the Pro tools (Monte Carlo, Advanced analytics) remain **convenience-gated only**:
 their code ships in the static bundle behind the soft `<Entitled>` gate, and Pro must not be marketed as

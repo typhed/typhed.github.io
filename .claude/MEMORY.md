@@ -5,38 +5,33 @@ checkout path. `CLAUDE.md` imports it, so it loads on every request: keep it sho
 
 ## Owner Preferences
 
-  * Keep all Claude context in this repository: this file, open questions in `.claude/docs/gaps.md`, tasks in
-    `.claude/docs/tasks/`, past plans in `.claude/docs/archive/`. Never write any of it under `~/.claude/`.
-  * `docs/` is the single source for architecture, product, design, and decisions; `.claude/` points into it and never
-    copies a page. Architecture decisions are dated records in `docs/adr/`.
-  * The sites are a work in progress: keep docs lean, factual, and in present tense, describing what exists.
-  * Never invent logos, icons, artwork, or copy. Take values from `packages/brand` or existing strings, and record
-    anything missing in `.claude/docs/gaps.md`.
-  * Markdown follows `markdown-format` and `humanize-text`, with `flaunt-product` for product-facing prose only.
-    Commits follow `git-commiter`.
-  * Do not tune code or config to one machine; fix the environment or record a task for the owner instead.
-  * Tokens are costly: no speculative research or agent fan-out; use known facts and verify locally.
-  * Every dependency and its one version lives in the root `package.json`, with one `node_modules` at the root; apps
-    and packages list only `@typhed/*` links. No exceptions.
-  * Versions are the newest stable (LTS where one exists) that every other module supports; never an alpha, beta, or
-    release candidate. Check compatibility before upgrading, and explain any version held back.
-  * Font Awesome is the only icon source; lucide and hand-drawn icons are not used.
+  * `README.md` and `docs/README.md` are the owner's authoritative pages: align every other document with them and keep
+    their voice. Why: the owner writes them as the source of truth for the brand and for the docs.
+  * Docs read as if written fresh for the code as it stands, with no "moved from", "previously", or "since" history and
+    no commit or branch references. Why: the repository starts from a single initial commit.
+  * Leave the owner's blank sections blank (Brand Story, Voice Attributes, and Application Rules in
+    `docs/brand/README.md`) and record the gap instead. Why: the owner writes brand copy; rule 1 forbids inventing it.
 
 ## Environment
 
-  * pnpm 12.21.0 (`packageManager`) and Node.js 26.13.1 LTS (`devEngines.runtime`, downloaded by pnpm); Python 3.13 with
-    Jinja2 for `permalink/`. Node 26 ships no Corepack, so pnpm is installed with `npm install --global pnpm`.
-  * Windows checkouts use Git Bash; `.gitattributes` keeps LF in the repository.
+  * The links from `.claude/` into `.agents/` need Git's `core.symlinks` set to `true` and, on Windows, Developer Mode
+    or an elevated shell; otherwise each checks out as a plain text file and Claude Code finds no `keeper` or `verify`.
+  * The owner's machine has no Python on its `PATH`, only the Microsoft Store alias, so the keeper Stop hook cannot
+    start there, and the web build's redirect step needs a Python 3.13 environment with `jinja2==3.1.6`.
+  * pnpm downloads the pinned Node.js for the workspace scripts, but its install scripts run on the `node` already on
+    the `PATH`, so a machine needs both.
 
 ## Decisions And Changes
 
-  * 2026-11-17: one monorepo for all three properties; see `docs/adr/2026-11-17-monorepo-over-multiple-repositories.md`.
-  * 2026-11-17: Font Awesome for every icon; see `docs/adr/2026-11-17-font-awesome-for-every-icon.md`.
+  * 2026-11-18: The documentation describes the code as it stands, with no change history; see `docs/README.md`.
+  * 2026-11-18: One vendor-neutral agent harness; see `docs/agents/decisions/2026-11-18.1.md`.
+  * 2026-11-17: Font Awesome for every icon; see `docs/agents/decisions/2026-11-17.2.md`.
+  * 2026-11-17: One pnpm and Turborepo monorepo; see `docs/agents/decisions/2026-11-17.1.md`.
 
 ## Open Items
 
-  * Owner questions: `.claude/docs/gaps.md`.
-  * Going live on Cloudflare Workers: `.claude/docs/tasks/cloudflare-cutover.md`. `master` carries the routes, so
-    pushing it is the switch; never push it before the checklist's step 1 is done.
-  * The owner's machine checks (toolchain and gates passed 2026-11-17), the picomatch advisory with no fix yet, the
-    first GitHub runs still to watch, and the machine's environment notes: `.claude/docs/tasks/owner-machine-checks.md`.
+  * Finding 17 of the 2026-11-18 ponytail audit, the trading sidebar marking "Workspace" current on the `?view=` tool
+    links, waits on the owner's choice between those links and a route per tool; the other findings are resolved. See
+    `docs/agents/tools/ponytail/2026-11-18.md`.
+  * The missing legal pages and the brand questions wait on the owner; see `.claude/docs/gaps.md`.
+  * The Cloudflare go-live and the first CI run on GitHub are pending; see `.claude/docs/tasks/`.

@@ -42,6 +42,29 @@ describe("parseXlsx (SheetJS round-trip)", () => {
     expect(table.rows[1]).toMatchObject({ close: 101.75, volume: 800 })
   })
 
+  it("reads a date cell as UTC in any time zone", () => {
+    const zone = process.env.TZ
+    // UTC+05:30: reading the cell in local time would land 5.5 hours early.
+    process.env.TZ = "Asia/Kolkata"
+    try {
+      // 45293 is the Excel serial for 2024-01-02; the fraction adds 09:15.
+      const sheet = XLSX.utils.aoa_to_sheet([
+        ["time", "close"],
+        [{ t: "n", v: 45293 + (9 * 60 + 15) / 1440, z: "yyyy-mm-dd hh:mm" }, 100],
+      ])
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, sheet, "Data")
+      const buffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer
+
+      const time = parseXlsx(buffer).rows[0]?.time
+      expect(time).toBeInstanceOf(Date)
+      expect((time as Date).toISOString()).toBe("2024-01-02T09:15:00.000Z")
+    } finally {
+      if (zone === undefined) delete process.env.TZ
+      else process.env.TZ = zone
+    }
+  })
+
   it("returns an empty table for a sheet with no rows", () => {
     const sheet = XLSX.utils.json_to_sheet([])
     const workbook = XLSX.utils.book_new()

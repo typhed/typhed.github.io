@@ -1,5 +1,5 @@
 {
-  "_comment": "Font stacks the Tailwind preset maps to font-sans / font-display / font-mono. Each app wires the webfonts itself (next/font/google) and must expose the CSS variables named below. Documented in docs/design/typography.yml.",
+  "_comment": "Font stacks the Tailwind preset maps to font-sans / font-display / font-mono. Each app wires the webfonts itself (next/font/google) and must expose the CSS variables named below. Documented in docs/brand/design/typography.yml.",
   "fontFamily": {
     "sans": ["var(--font-inter)", "ui-sans-serif", "system-ui", "sans-serif"],
     "display": ["var(--font-space-grotesk)", "ui-sans-serif", "system-ui", "sans-serif"],

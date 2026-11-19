@@ -21,6 +21,18 @@ describe("safeParseMnwsDataset empty handling", () => {
     expect(parsed.data.settings.annualReturnPct).toBe(blankMnwsDataset().settings.annualReturnPct)
   })
 
+  it("caps the rows an untrusted payload can add", () => {
+    const row = { date: "2020-01-01", amount: 1 }
+    const parsed = safeParseMnwsDataset({
+      salaries: Array.from({ length: 1001 }, () => row),
+      bonuses: Array.from({ length: 1001 }, () => row),
+    })
+    expect(parsed.ok).toBe(true)
+    if (!parsed.ok) return
+    expect(parsed.data.salaries).toHaveLength(1000)
+    expect(parsed.data.bonuses).toHaveLength(1000)
+  })
+
   it("parses a populated dataset identically in both modes", () => {
     const payload = JSON.parse(serializeMnwsDataset(defaultMnwsDataset()))
     const strict = safeParseMnwsDataset(payload)

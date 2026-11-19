@@ -10,6 +10,8 @@
     "preview": "wrangler dev --port 8789",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "clean": "rimraf .next out .turbo .wrangler"
   },
   "dependencies": {

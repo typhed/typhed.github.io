@@ -46,8 +46,9 @@
     }
   }
 
+  /* The body's colours come from the shared base stylesheet and its smoothing
+     from the layout's `antialiased` class; only the text rendering is local. */
   body {
-    @apply bg-background text-foreground antialiased;
     text-rendering: optimizeLegibility;
   }
 

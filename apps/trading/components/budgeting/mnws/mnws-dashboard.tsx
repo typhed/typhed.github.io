@@ -15,6 +15,8 @@ import { MNWS_STORAGE_KEY } from "@/lib/budgeting/mnws/types"
 import { blankMnwsDataset, DEFAULT_MNWS_DATASET } from "@/lib/budgeting/mnws/defaults"
 import { computeMnws } from "@/lib/budgeting/mnws/engine"
 import { mnwsFileName, safeParseMnwsDataset, serializeMnwsDataset } from "@/lib/budgeting/mnws/io"
+import { downloadJson } from "@/lib/download"
+import { localIsoDate } from "@/lib/utils"
 import { Button } from "@typhed/ui/components/ui/button"
 import { MnwsRuleExplainer } from "@/components/budgeting/mnws/mnws-rule-explainer"
 import { MnwsBottomLine, MnwsOverview } from "@/components/budgeting/mnws/mnws-overview"
@@ -36,7 +38,7 @@ export function MnwsDashboard() {
   // Client-only: set today and restore the last-edited plan from this browser.
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- today's date and the saved plan exist only in the browser, so they load after hydration
-    setToday(new Date().toISOString().slice(0, 10))
+    setToday(localIsoDate())
     try {
       const raw = window.localStorage.getItem(MNWS_STORAGE_KEY)
       if (raw) {
@@ -77,15 +79,7 @@ export function MnwsDashboard() {
     applyEdit((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }))
 
   function handleDownload() {
-    const blob = new Blob([serializeMnwsDataset(data)], {
-      type: "application/json",
-    })
-    const url = URL.createObjectURL(blob)
-    const anchor = document.createElement("a")
-    anchor.href = url
-    anchor.download = mnwsFileName(data, today)
-    anchor.click()
-    URL.revokeObjectURL(url)
+    downloadJson(mnwsFileName(data, today), serializeMnwsDataset(data))
   }
 
   async function handleImportFile(file: File) {

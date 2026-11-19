@@ -6,8 +6,8 @@
 
 <div align = "justify">
 
-How the TyPhed web estate is laid out across domains, code, and hosting. [PRD.md](../PRD.md) says what belongs on each
-property; this page says where each one lives and how they fit together.
+How the TyPhed web estate is laid out across domains, code, and hosting. The [product requirements](../product.md) say
+what belongs on each property; this page says where each one lives and how they fit together.
 
 ## The Shape
 

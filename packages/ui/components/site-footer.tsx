@@ -129,7 +129,7 @@ export function SiteFooter({ className }: { className?: string }) {
                     <a
                       key={link.label}
                       href={link.href}
-                      aria-label={link.label}
+                      aria-label={link.external ? `${link.label} (opens in a new tab)` : link.label}
                       title={link.label}
                       {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/40 text-muted-foreground transition-colors hover:border-brand/50 hover:text-brand"

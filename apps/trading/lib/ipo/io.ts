@@ -36,7 +36,7 @@ import {
   makeMilestone,
   makeSubscriptionRow,
 } from "./defaults"
-import { slugify } from "@/lib/utils"
+import { localIsoDate, slugify } from "@/lib/utils"
 import { asArray, coerceIsoDate, enumOr, isObject, num, str } from "@/lib/parse"
 
 export type ParseResult = { ok: true; data: IpoDataset } | { ok: false; error: string }
@@ -97,7 +97,7 @@ export function serializeIpoDataset(data: IpoDataset): string {
 /** Download filename, e.g. `ipo-sample-ipo-2026-07-16.json`. */
 export function ipoFileName(data: IpoDataset, today: string): string {
   const slug = slugify(data.meta.companyName) || "dashboard"
-  const stamp = today || new Date().toISOString().slice(0, 10)
+  const stamp = today || localIsoDate()
   return `ipo-${slug}-${stamp}.json`
 }
 

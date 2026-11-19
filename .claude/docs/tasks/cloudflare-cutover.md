@@ -9,8 +9,8 @@
 The owner's steps to move typhed.com, trading.typhed.com, and blog.typhed.com from GitHub Pages to their Cloudflare
 Workers. The sites are a work in progress with no real users, so a short outage is acceptable and the whole move fits in
 one sitting. The order below still avoids an outage, at no extra cost: all four hostnames are already proxied through
-Cloudflare, so the Workers take over the moment their routes attach, before any DNS record changes. Since 2026-11-18
-`master` carries those routes (branch `cutover/routes` is merged), so the next push of `master` is the switch.
+Cloudflare, so the Workers take over the moment their routes attach, before any DNS record changes. Each app's
+`wrangler.jsonc` on `master` carries its route, so the next push of `master` is the switch.
 
 ## Where Things Stand
 
@@ -47,13 +47,10 @@ Cloudflare, so the Workers take over the moment their routes attach, before any 
 
 ## 2. Go Live With One Push
 
-  - [ ] **Push.** `git push origin master`, once step 1 is done and no earlier than 11:15 UTC (16:45 IST) on
-    2026-11-18. `master` already carries the routes, so this push is the switch: CI runs the gates, and **Deploy to
-    Cloudflare Workers** builds the three apps on Linux and publishes them with their routes. Each hostname switches to
-    its Worker as its deploy finishes. If the run fails before a deploy, GitHub Pages keeps serving that site. A push
-    before 11:15 UTC stops at the install step, because pnpm rejects the lockfile while wrangler 4.164.0 is under a day
-    old (see [owner-machine-checks.md](owner-machine-checks.md)): nothing deploys, and re-running the workflows after
-    that time passes.
+  - [ ] **Push.** `git push origin master`, once step 1 is done. `master` already carries the routes, so this push is
+    the switch: CI runs the gates, and **Deploy to Cloudflare Workers** builds the three apps on Linux and publishes
+    them with their routes. Each hostname switches to its Worker as its deploy finishes. If the run fails before a
+    deploy, GitHub Pages keeps serving that site.
   - [ ] **Verify.** `curl -sI https://typhed.com/`, and the same for `trading.typhed.com` and `blog.typhed.com`, shows
     `server: cloudflare` and no `x-github-request-id` header. `curl -sI https://www.typhed.com/` answers 301 to
     `https://typhed.com/`, and `curl -sI https://typhed.com/permalink/conduct.html` answers 302 to the Code of Conduct.
@@ -82,17 +79,14 @@ Cloudflare, so the Workers take over the moment their routes attach, before any 
 
 ## 5. Retire The Merged Repositories
 
-Four repositories now live inside this monorepo with their full histories, so they can retire. Archive them rather than
-delete them: an archived repository stays readable, so old links, issues, and releases keep working, while deleting
-removes all of that for good. Do it after step 4, because the two product repositories serve their subdomains until
-then.
+This monorepo holds the code of four older repositories, so they can retire. Archive them rather than delete them: an
+archived repository stays readable, so old links, issues, and releases keep working, while deleting removes all of that
+for good. Do it after step 4, because the two product repositories serve their subdomains until then.
 
   - [ ] Archive `typhed/blog.typhed.com` and `typhed/trading.typhed.com` (Settings -> General -> Danger Zone -> Archive
     this repository).
   - [ ] Archive `typhed/shared.components` and `typhed/shared.documents`.
   - [ ] Delete the old tags and releases of `typhed/typhed.github.io`.
-  - [ ] In the local clone, `git remote remove blogging`, then the same for `trading`, `shared-components`, and
-    `shared-documents`. Then `git branch -d monorepo cutover/routes`.
 
 These stay: `typhed/typhed.github.io` (this monorepo), `typhed/typhed.project.data` (the account backend's data,
 repointed in step 1), and the organisation's `.github` and `.github-private` repositories.

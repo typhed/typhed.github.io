@@ -1,6 +1,9 @@
 "use client"
 
 import * as React from "react"
+import { faStop } from "@fortawesome/free-solid-svg-icons"
+import { Icon } from "@typhed/ui/components/icon"
+import { Button } from "@typhed/ui/components/ui/button"
 
 import { cn } from "@typhed/ui/lib/utils"
 
@@ -91,31 +94,6 @@ export function TextField({
   )
 }
 
-/** A labelled native date input bound to an ISO "yyyy-mm-dd" string. */
-export function DateField({
-  label,
-  value,
-  onChange,
-}: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-}) {
-  return (
-    <label className="block text-sm">
-      <span className="mb-1 block font-medium">{label}</span>
-      <div className="flex items-center rounded-md border border-input bg-background focus-within:ring-2 focus-within:ring-ring">
-        <input
-          type="date"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-transparent px-3 py-2 text-sm [color-scheme:light] outline-hidden dark:[color-scheme:dark]"
-        />
-      </div>
-    </label>
-  )
-}
-
 /** A stat tile: a label, a large value, and an optional sub-note. */
 export function StatTile({
   label,
@@ -140,6 +118,39 @@ export function StatTile({
       <p className="text-xs text-muted-foreground">{label}</p>
       <p className={cn("mt-1 font-display text-2xl font-semibold", toneClass)}>{value}</p>
       {note && <p className="mt-1 text-xs text-muted-foreground">{note}</p>}
+    </div>
+  )
+}
+
+/** The progress bar and Cancel button a worker-backed tool shows while it runs. */
+export function RunProgress({
+  progress,
+  onCancel,
+  className,
+}: {
+  /** 0..1. */
+  progress: number
+  onCancel: () => void
+  className?: string
+}) {
+  const percent = Math.round(progress * 100)
+
+  return (
+    <div className={cn("flex items-center gap-2", className)}>
+      <div
+        className="h-1.5 w-40 overflow-hidden rounded-full bg-secondary"
+        role="progressbar"
+        aria-label="Run progress"
+        aria-valuenow={percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div className="h-full bg-brand transition-[width]" style={{ width: `${percent}%` }} />
+      </div>
+      <Button variant="ghost" size="sm" onClick={onCancel}>
+        <Icon icon={faStop} className="h-4 w-4" />
+        Cancel
+      </Button>
     </div>
   )
 }

@@ -6,10 +6,6 @@
     @apply border-border;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
   /* Trading justifies body prose; the other properties keep the default
      alignment. */
   p {
